@@ -1,0 +1,45 @@
+services:
+  veterinaryapi:
+    image: veterinary-api:latest
+    build:
+      context: ../
+      dockerfile: Dockerfile
+    env_file:
+       - ./.env
+    
+    ports:
+      - "8080:8080"
+      - "7256:7256"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: "https://+:7256;http://+:8080"
+      ASPNETCORE_Kestrel__Certificates__Default__Path: /https/localhost.pfx
+      ASPNETCORE_Kestrel__Certificates__Default__Password: "devpassword"
+    volumes:
+      - ./src/VeterinaryApi/certificates:/https/:ro
+      - ./src/VeterinaryApi/.env:/app/.env:ro
+
+  veterinary.database:
+    image: postgres:latest
+    environment:
+    - POSTGRES_DB=veterinary_db
+    - POSTGRES_USER=veterinary_user
+    - POSTGRES_PASSWORD=2501
+    volumes:
+      - veterinary-db-data:/var/lib/postgresql
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+ 
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: billelmh501@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: billel501
+    ports:
+      - "5050:80"
+    depends_on:
+      - veterinary.database
+
+volumes:
+  veterinary-db-data:
