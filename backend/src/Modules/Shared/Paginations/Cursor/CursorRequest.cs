@@ -1,6 +1,6 @@
-using Shared.CQRS;
+using Modules.Shared.CQRS;
 
-namespace Shared.Paginations.Cursor;
+namespace Modules.Shared.Paginations.Cursor;
 
 public class CursorRequest<TResponse> : IQuery<CursorPagedList<TResponse>>
 {

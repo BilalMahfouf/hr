@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 using Application.Tests.Helpers;
 using Microsoft.EntityFrameworkCore;
 using Moq;
-using Identity.Abstracions;
-using Shared.Abstracions;
-using Shared.Paginations.OffSet;
-using Identity.Domain.Users;
-using Identity.Application.Users;
+using Modules.Identity.Abstracions;
+using Modules.Shared.Abstracions;
+using Modules.Shared.Paginations.OffSet;
+using Modules.Identity.Domain.Users;
+using Modules.Identity.Application.Users;
 using Xunit;
 
 namespace Application.Tests.Users;
@@ -41,7 +41,7 @@ public class GetAllUsersTests
         // Arrange
         SetupUsersDbSet([]);
         var handler = CreateHandler();
-        var query = TableRequest<Identity.Application.Users.Shared.Response>.Create(10, 1);
+        var query = TableRequest<Modules.Identity.Application.Users.Shared.Response>.Create(10, 1);
 
         // Act
         var result = await handler.Handle(query, CancellationToken.None);
@@ -63,7 +63,7 @@ public class GetAllUsersTests
         SetupUsersDbSet([doctor1, doctor2, admin]);
 
         var handler = CreateHandler();
-        var query = TableRequest<Identity.Application.Users.Shared.Response>.Create(10, 1, null, "username", "desc");
+        var query = TableRequest<Modules.Identity.Application.Users.Shared.Response>.Create(10, 1, null, "username", "desc");
 
         // Act
         var result = await handler.Handle(query, CancellationToken.None);
@@ -87,7 +87,7 @@ public class GetAllUsersTests
         SetupUsersDbSet([doctor1, doctor2]);
 
         var handler = CreateHandler();
-        var query = TableRequest<Identity.Application.Users.Shared.Response>.Create(10, 1, "ann", "username", "asc");
+        var query = TableRequest<Modules.Identity.Application.Users.Shared.Response>.Create(10, 1, "ann", "username", "asc");
 
         // Act
         var result = await handler.Handle(query, CancellationToken.None);

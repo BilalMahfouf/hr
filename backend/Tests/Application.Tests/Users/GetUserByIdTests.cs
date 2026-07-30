@@ -5,12 +5,12 @@ using System.Threading.Tasks;
 using Application.Tests.Helpers;
 using Microsoft.EntityFrameworkCore;
 using Moq;
-using Identity.Abstracions;
-using Shared.Abstracions;
-using Shared.Domain.Common;
-using VeterinaryApi.Domain.Subscriptions;
-using Identity.Domain.Users;
-using Identity.Application.Users;
+using Modules.Identity.Abstracions;
+using Modules.Shared.Abstracions;
+using Modules.Shared.Domain.Common;
+using PublicApi.Domain.Subscriptions;
+using Modules.Identity.Domain.Users;
+using Modules.Identity.Application.Users;
 using Xunit;
 
 namespace Application.Tests.Users;

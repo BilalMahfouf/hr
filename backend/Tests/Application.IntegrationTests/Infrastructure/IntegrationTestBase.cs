@@ -1,17 +1,17 @@
-using Identity.Abstracions;
-using Identity.Application.Users;
+using Modules.Identity.Abstracions;
+using Modules.Identity.Application.Users;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Http;
-using Shared.Abstracions;
-using VeterinaryApi.Common.Abstracions;
-using Shared.Abstracions.Emails;
-using VeterinaryApi.Common.Abstracions.Payments;
-using VeterinaryApi.Features.Subscriptions.Endpoints;
-using VeterinaryApi.Infrastructure.Interceptors;
-using VeterinaryApi.Infrastructure.OutboxMessages;
-using VeterinaryApi.Infrastructure.Persistence;
-using VeterinaryApi.Infrastructure.Services.Hashers;
-using VeterinaryApi.Infrastructure.Tenants;
+using Modules.Shared.Abstracions;
+using PublicApi.Common.Abstracions;
+using Modules.Shared.Abstracions.Emails;
+using PublicApi.Common.Abstracions.Payments;
+using PublicApi.Features.Subscriptions.Endpoints;
+using PublicApi.Infrastructure.Interceptors;
+using PublicApi.Infrastructure.OutboxMessages;
+using PublicApi.Infrastructure.Persistence;
+using PublicApi.Infrastructure.Services.Hashers;
+using PublicApi.Infrastructure.Tenants;
 
 namespace Application.IntegrationTests.Infrastructure;
 

@@ -1,6 +1,6 @@
-using Shared.Errors;
+using Modules.Shared.Errors;
 
-namespace Shared.Domain.Common;
+namespace Modules.Shared.Domain.Common;
 
 public class Entity : IEntity, ISoftDelete, ITenantOwned
 {

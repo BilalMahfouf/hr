@@ -1,6 +1,6 @@
-using Shared.Domain.Common;
+using Modules.Shared.Domain.Common;
 
-namespace Shared.CQRS;
+namespace Modules.Shared.CQRS;
 
 public interface IDomainEventDispatcher
 {

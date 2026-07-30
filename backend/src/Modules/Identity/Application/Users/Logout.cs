@@ -1,12 +1,12 @@
-using Identity.Abstracions;
-using Identity.Domain.Users;
+using Modules.Identity.Abstracions;
+using Modules.Identity.Domain.Users;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Shared.CQRS;
-using Shared.Endpoints;
-using Shared.Results;
+using Modules.Shared.CQRS;
+using Modules.Shared.Endpoints;
+using Modules.Shared.Results;
 
-namespace Identity.Application.Users;
+namespace Modules.Identity.Application.Users;
 
 public class Logout
 {

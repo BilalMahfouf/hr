@@ -2,10 +2,10 @@ using Application.IntegrationTests.Infrastructure;
 using Application.IntegrationTests.TestBases;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
-using VeterinaryApi.Domain.Subscriptions;
-using VeterinaryApi.Domain.Subscriptions.Errors;
-using VeterinaryApi.Features.Subscriptions.Endpoints;
-using VeterinaryApi.Infrastructure.Persistence;
+using PublicApi.Domain.Subscriptions;
+using PublicApi.Domain.Subscriptions.Errors;
+using PublicApi.Features.Subscriptions.Endpoints;
+using PublicApi.Infrastructure.Persistence;
 
 namespace Application.IntegrationTests.Subscriptions;
 

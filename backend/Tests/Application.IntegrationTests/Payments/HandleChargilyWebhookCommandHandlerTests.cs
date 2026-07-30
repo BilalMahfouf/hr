@@ -2,9 +2,9 @@ using System.Text.Json;
 using Application.IntegrationTests.Infrastructure;
 using Application.IntegrationTests.TestBases;
 using Microsoft.Extensions.DependencyInjection;
-using VeterinaryApi.Domain.Subscriptions;
-using VeterinaryApi.Features.Subscriptions.Webhooks;
-using VeterinaryApi.Infrastructure.Persistence;
+using PublicApi.Domain.Subscriptions;
+using PublicApi.Features.Subscriptions.Webhooks;
+using PublicApi.Infrastructure.Persistence;
 
 namespace Application.IntegrationTests.Payments;
 

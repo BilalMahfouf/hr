@@ -1,4 +1,4 @@
-namespace Shared.Abstracions;
+namespace Modules.Shared.Abstracions;
 
 public interface ICurrentTenant
 {

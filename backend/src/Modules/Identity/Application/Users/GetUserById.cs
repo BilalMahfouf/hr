@@ -1,13 +1,13 @@
-using Identity.Abstracions;
-using Identity.Domain.Users;
+using Modules.Identity.Abstracions;
+using Modules.Identity.Domain.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
-using Shared.CQRS;
-using Shared.Endpoints;
-using Shared.Results;
-using static Identity.Application.Users.Shared;
+using Modules.Shared.CQRS;
+using Modules.Shared.Endpoints;
+using Modules.Shared.Results;
+using static Modules.Identity.Application.Users.Shared;
 
-namespace Identity.Application.Users;
+namespace Modules.Identity.Application.Users;
 
 public static class GetUserById
 {

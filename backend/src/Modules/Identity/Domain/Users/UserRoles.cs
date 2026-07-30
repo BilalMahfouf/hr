@@ -1,4 +1,4 @@
-namespace Identity.Domain.Users;
+namespace Modules.Identity.Domain.Users;
 
 public enum UserRoles : byte
 {

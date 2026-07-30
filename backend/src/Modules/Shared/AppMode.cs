@@ -1,4 +1,4 @@
-namespace Shared;
+namespace Modules.Shared;
 
 public enum AppMode
 {

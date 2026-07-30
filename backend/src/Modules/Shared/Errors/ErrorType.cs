@@ -1,4 +1,4 @@
-namespace Shared.Errors;
+namespace Modules.Shared.Errors;
 
 public enum ErrorType
 {

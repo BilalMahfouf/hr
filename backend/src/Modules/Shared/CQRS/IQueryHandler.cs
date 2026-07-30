@@ -1,6 +1,6 @@
-using Shared.Results;
+using Modules.Shared.Results;
 
-namespace Shared.CQRS;
+namespace Modules.Shared.CQRS;
 
 public interface IQueryHandler<in TQuery, TResponse>
     where TQuery : IQuery<TResponse>

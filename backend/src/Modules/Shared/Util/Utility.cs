@@ -1,4 +1,4 @@
-namespace Shared.Util
+namespace Modules.Shared.Util
 {
     public static class Utility
     {

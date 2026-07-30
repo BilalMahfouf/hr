@@ -4,11 +4,11 @@ using Chargily.Pay;
 using Chargily.Pay.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
-using VeterinaryApi.Domain.Subscriptions;
-using VeterinaryApi.Domain.Subscriptions.Errors;
-using Identity.Domain.Users;
-using VeterinaryApi.Features.Subscriptions.Endpoints;
-using VeterinaryApi.Infrastructure.Persistence;
+using PublicApi.Domain.Subscriptions;
+using PublicApi.Domain.Subscriptions.Errors;
+using Modules.Identity.Domain.Users;
+using PublicApi.Features.Subscriptions.Endpoints;
+using PublicApi.Infrastructure.Persistence;
 
 namespace Application.IntegrationTests.Subscriptions;
 

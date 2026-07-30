@@ -1,4 +1,4 @@
-# AGENTS.md — VeterinaryApi
+# AGENTS.md — PublicApi
 
 ## Project structure
 
@@ -7,13 +7,16 @@ AGENTS.md
 backend/
 ├── Veterinary.slnx              # .NET solution file
 ├── docker-compose.yml           # Postgres + pgAdmin + API
-├── src/VeterinaryApi/           # ASP.NET Core 10 minimal API
+├── src/PublicApi/               # ASP.NET Core 10 minimal API
 │   ├── Program.cs               # Entry point, DI composition
 │   ├── Domain/                  # Pure domain, no infra deps
 │   ├── Features/                # Vertical slices (one folder per feature)
 │   ├── Infrastructure/          # EF Core, JWT, SignalR, Quartz, outbox
 │   ├── Common/                  # Cross-cutting: CQRS interfaces, Result<T>, errors
 │   └── Migrations/              # EF Core auto-generated migrations
+├── src/Modules/
+│   ├── Modules.Shared/          # CQRS interfaces, Result pattern, pagination, domain base types
+│   └── Modules.Identity/        # User management, auth, JWT abstractions
 ├── Tests/
 │   ├── Application.Tests/       # Unit tests (xUnit + Moq)
 │   └── Application.IntegrationTests/  # Integration tests (Testcontainers.PostgreSql)
@@ -25,13 +28,13 @@ backend/
 
 | Action | Command |
 |---|---|
-| Build | `dotnet build src/VeterinaryApi/VeterinaryApi.csproj` |
-| Run API | `dotnet run --project src/VeterinaryApi/VeterinaryApi.csproj` |
+| Build | `dotnet build src/PublicApi/PublicApi.csproj` |
+| Run API | `dotnet run --project src/PublicApi/PublicApi.csproj` |
 | Unit tests | `dotnet test Tests/Application.Tests` |
 | Integration tests | `dotnet test Tests/Application.IntegrationTests` |
 | All tests | `dotnet test Veterinary.slnx` |
-| New migration | `dotnet ef migrations add <Name> --project src/VeterinaryApi` |
-| Apply migration | `dotnet ef database update --project src/VeterinaryApi` |
+| New migration | `dotnet ef migrations add <Name> --project src/PublicApi` |
+| Apply migration | `dotnet ef database update --project src/PublicApi` |
 | Scalar API UI | `https://localhost:<port>/scalar` (dev only) |
 | Docker Compose | `docker compose up --build` (starts API + Postgres 16 + pgAdmin) |
 

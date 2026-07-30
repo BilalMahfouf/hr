@@ -1,6 +1,6 @@
-using Shared.CQRS;
+using Modules.Shared.CQRS;
 
-namespace Shared.Paginations.OffSet;
+namespace Modules.Shared.Paginations.OffSet;
 
 public class TableRequest<TResponse> : IQuery<OffSetPagedList<TResponse>>
 {

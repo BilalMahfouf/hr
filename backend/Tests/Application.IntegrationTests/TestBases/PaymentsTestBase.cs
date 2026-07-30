@@ -1,7 +1,7 @@
 using Application.IntegrationTests.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
-using VeterinaryApi.Features.Subscriptions.Webhooks;
+using PublicApi.Features.Subscriptions.Webhooks;
 
 namespace Application.IntegrationTests.TestBases;
 
@@ -14,7 +14,7 @@ public abstract class PaymentsTestBase : SubscriptionsTestBase
     protected HandleChargilyWebhook.CommandHandler CreateWebhookHandler(IServiceProvider services)
     {
         return new HandleChargilyWebhook.CommandHandler(
-            services.GetRequiredService<VeterinaryApi.Common.Abstracions.IApplicationDbContext>(),
+            services.GetRequiredService<PublicApi.Common.Abstracions.IApplicationDbContext>(),
             NullLogger<HandleChargilyWebhook.CommandHandler>.Instance);
     }
 }

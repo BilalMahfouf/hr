@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\VeterinaryApi\VeterinaryApi.csproj" />
+    <ProjectReference Include="..\..\src\PublicApi\PublicApi.csproj" />
     <ProjectReference Include="..\..\src\Modules\Identity\Identity.csproj" />
   </ItemGroup>
 

@@ -2,9 +2,9 @@ using Application.IntegrationTests.Infrastructure;
 using Application.IntegrationTests.TestBases;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
-using Identity.Domain.Users;
-using Identity.Application.Users;
-using VeterinaryApi.Infrastructure.Persistence;
+using Modules.Identity.Domain.Users;
+using Modules.Identity.Application.Users;
+using PublicApi.Infrastructure.Persistence;
 
 namespace Application.IntegrationTests.Users;
 

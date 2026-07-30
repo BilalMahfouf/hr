@@ -1,9 +1,9 @@
-using Identity.Abstracions;
+using Modules.Identity.Abstracions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Shared.Abstracions;
-using VeterinaryApi.Common.Abstracions;
-using VeterinaryApi.Domain.Subscriptions;
+using Modules.Shared.Abstracions;
+using PublicApi.Common.Abstracions;
+using PublicApi.Domain.Subscriptions;
 
 namespace Application.IntegrationTests.Infrastructure;
 

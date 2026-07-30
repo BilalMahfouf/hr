@@ -1,9 +1,9 @@
-using Identity.Domain.Users;
-using Shared.Abstracions.Emails;
-using Shared.CQRS;
-using Shared.Util;
+using Modules.Identity.Domain.Users;
+using Modules.Shared.Abstracions.Emails;
+using Modules.Shared.CQRS;
+using Modules.Shared.Util;
 
-namespace Identity.Application.Users;
+namespace Modules.Identity.Application.Users;
 
 public sealed class UserForgetPasswordDomainEventHandler(
     IEmailService emailService,

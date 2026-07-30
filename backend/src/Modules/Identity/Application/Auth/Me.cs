@@ -1,10 +1,10 @@
-using Identity.Application.Users;
-using Shared.Abstracions;
-using Shared.CQRS;
-using Shared.Endpoints;
-using Shared.Results;
+using Modules.Identity.Application.Users;
+using Modules.Shared.Abstracions;
+using Modules.Shared.CQRS;
+using Modules.Shared.Endpoints;
+using Modules.Shared.Results;
 
-namespace Identity.Application.Auth;
+namespace Modules.Identity.Application.Auth;
 
 public static class Me
 {
@@ -14,7 +14,7 @@ public static class Me
         {
             app.MapGet("/auth/me", async (
                 ICurrentTenant currentTenant,
-                IQueryHandler<GetUserById.GetUserByIdQuery, Identity.Application.Users.Shared.Response> handler,
+                IQueryHandler<GetUserById.GetUserByIdQuery, Modules.Identity.Application.Users.Shared.Response> handler,
                 CancellationToken ct = default) =>
             {
                 var userId = currentTenant.UserId!.Value;

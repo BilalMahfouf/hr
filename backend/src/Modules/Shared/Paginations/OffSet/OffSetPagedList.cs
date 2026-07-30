@@ -1,4 +1,4 @@
-namespace Shared.Paginations.OffSet;
+namespace Modules.Shared.Paginations.OffSet;
 
 public class OffSetPagedList<T>
 {

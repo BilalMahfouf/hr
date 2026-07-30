@@ -1,11 +1,11 @@
 using Application.IntegrationTests.Infrastructure;
 using Application.IntegrationTests.TestBases;
 using Microsoft.Extensions.DependencyInjection;
-using Shared.Abstracions;
-using Shared.Domain.Common;
-using Identity.Domain.Users;
-using Identity.Application.Users;
-using VeterinaryApi.Infrastructure.Persistence;
+using Modules.Shared.Abstracions;
+using Modules.Shared.Domain.Common;
+using Modules.Identity.Domain.Users;
+using Modules.Identity.Application.Users;
+using PublicApi.Infrastructure.Persistence;
 
 namespace Application.IntegrationTests.Users;
 

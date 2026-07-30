@@ -1,8 +1,8 @@
 using Application.IntegrationTests.Infrastructure;
 using Application.IntegrationTests.TestBases;
 using Microsoft.Extensions.DependencyInjection;
-using Identity.Domain.Users;
-using Identity.Application.Users;
+using Modules.Identity.Domain.Users;
+using Modules.Identity.Application.Users;
 
 namespace Application.IntegrationTests.Users;
 
@@ -17,7 +17,7 @@ public sealed class LoginCommandHandlerTests : UsersTestBase
     {
         ResetHttpContext();
         using var scope = CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<VeterinaryApi.Infrastructure.Persistence.ApplicationDbContext>();
+        var db = scope.ServiceProvider.GetRequiredService<PublicApi.Infrastructure.Persistence.ApplicationDbContext>();
         var user = await SeedUserAsync(db, email: "doctor@test.local", password: "Pass1234!");
         var handler = CreateLoginHandler(scope.ServiceProvider);
 
@@ -53,7 +53,7 @@ public sealed class LoginCommandHandlerTests : UsersTestBase
     public async Task Handle_WhenPasswordInvalid_ReturnsFailure()
     {
         using var scope = CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<VeterinaryApi.Infrastructure.Persistence.ApplicationDbContext>();
+        var db = scope.ServiceProvider.GetRequiredService<PublicApi.Infrastructure.Persistence.ApplicationDbContext>();
         var user = await SeedUserAsync(db, email: "doctor@test.local", password: "Pass1234!");
         var handler = CreateLoginHandler(scope.ServiceProvider);
 

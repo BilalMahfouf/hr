@@ -3,10 +3,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
-using Shared.Abstracions.Emails;
-using Shared.Results;
-using Identity.Domain.Users;
-using Identity.Application.Users;
+using Modules.Shared.Abstracions.Emails;
+using Modules.Shared.Results;
+using Modules.Identity.Domain.Users;
+using Modules.Identity.Application.Users;
 using Xunit;
 
 namespace Application.Tests.Users;

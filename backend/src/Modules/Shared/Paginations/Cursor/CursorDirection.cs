@@ -1,4 +1,4 @@
-namespace Shared.Paginations.Cursor;
+namespace Modules.Shared.Paginations.Cursor;
 
 public enum CursorDirection : byte
 {

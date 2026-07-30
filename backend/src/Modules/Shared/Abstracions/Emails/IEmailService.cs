@@ -1,6 +1,6 @@
-using Shared.Results;
+using Modules.Shared.Results;
 
-namespace Shared.Abstracions.Emails;
+namespace Modules.Shared.Abstracions.Emails;
 
 public interface IEmailService
 {

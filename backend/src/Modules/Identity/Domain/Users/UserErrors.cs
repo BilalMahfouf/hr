@@ -1,6 +1,6 @@
-using Shared.Errors;
+using Modules.Shared.Errors;
 
-namespace Identity.Domain.Users;
+namespace Modules.Identity.Domain.Users;
 
 public static class UserErrors
 {

@@ -1,5 +1,5 @@
-using Shared.Abstracions.Emails;
-using Shared.Results;
+using Modules.Shared.Abstracions.Emails;
+using Modules.Shared.Results;
 
 namespace Application.IntegrationTests.Infrastructure;
 

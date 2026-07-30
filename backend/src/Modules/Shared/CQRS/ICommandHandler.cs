@@ -1,6 +1,6 @@
-using Shared.Results;
+using Modules.Shared.Results;
 
-namespace Shared.CQRS;
+namespace Modules.Shared.CQRS;
 
 public interface ICommandHandler<in TCommand>
     where TCommand : ICommand

@@ -4,14 +4,14 @@ using Chargily.Pay.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Moq;
-using Shared.Abstracions;
-using VeterinaryApi.Common.Abstracions;
-using Shared.Domain.Common;
-using VeterinaryApi.Domain.Common;
-using VeterinaryApi.Domain.Subscriptions;
-using Identity.Domain.Users;
-using VeterinaryApi.Features.Subscriptions.Endpoints;
-using VeterinaryApi.Infrastructure.Payments;
+using Modules.Shared.Abstracions;
+using PublicApi.Common.Abstracions;
+using Modules.Shared.Domain.Common;
+using PublicApi.Domain.Common;
+using PublicApi.Domain.Subscriptions;
+using Modules.Identity.Domain.Users;
+using PublicApi.Features.Subscriptions.Endpoints;
+using PublicApi.Infrastructure.Payments;
 
 namespace Application.Tests.Subscriptions;
 

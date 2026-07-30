@@ -1,6 +1,6 @@
-using Shared.Domain.Common;
+using Modules.Shared.Domain.Common;
 
-namespace Identity.Domain.Users;
+namespace Modules.Identity.Domain.Users;
 
 public sealed record UserForgetPasswordDomainEvent(
     Guid UserId, string Email, string ClientUri,string Token) : DomainEvent;

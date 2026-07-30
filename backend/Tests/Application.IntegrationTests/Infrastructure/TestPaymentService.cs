@@ -1,6 +1,6 @@
-using VeterinaryApi.Common.Abstracions.Payments;
-using Shared.Errors;
-using Shared.Results;
+using PublicApi.Common.Abstracions.Payments;
+using Modules.Shared.Errors;
+using Modules.Shared.Results;
 
 namespace Application.IntegrationTests.Infrastructure;
 

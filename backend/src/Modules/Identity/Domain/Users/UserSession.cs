@@ -1,6 +1,6 @@
-using Shared.Domain.Common;
+using Modules.Shared.Domain.Common;
 
-namespace Identity.Domain.Users
+namespace Modules.Identity.Domain.Users
 {
     public class UserSession : Entity
     {

@@ -1,7 +1,7 @@
-using Identity.Domain.Users;
+using Modules.Identity.Domain.Users;
 using Microsoft.EntityFrameworkCore;
 
-namespace Identity.Abstracions;
+namespace Modules.Identity.Abstracions;
 
 public interface IIdentityApplicationDbContext
 {

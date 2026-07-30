@@ -1,4 +1,4 @@
-namespace Shared.Domain.Common;
+namespace Modules.Shared.Domain.Common;
 
 public interface ITenantOwned
 {

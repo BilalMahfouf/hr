@@ -1,4 +1,4 @@
-namespace Identity.Application.Users;
+namespace Modules.Identity.Application.Users;
 
 public static class Shared
 {

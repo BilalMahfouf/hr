@@ -2,13 +2,13 @@ using Chargily.Pay.Abstractions;
 using Chargily.Pay.Models;
 using Microsoft.Extensions.Options;
 using Moq;
-using VeterinaryApi.Common.Abstracions.Payments;
-using VeterinaryApi.Infrastructure.Payments;
+using PublicApi.Common.Abstracions.Payments;
+using PublicApi.Infrastructure.Payments;
 
 namespace Application.Tests.Subscriptions;
 
 using ChargilyCheckoutResponse = Chargily.Pay.Models.Response<CheckoutResponse>;
-using PaymentCurrency = VeterinaryApi.Common.Abstracions.Payments.Currency;
+using PaymentCurrency = PublicApi.Common.Abstracions.Payments.Currency;
 
 public class ChargilyPaymentServiceTests
 {

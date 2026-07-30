@@ -1,14 +1,14 @@
 using Application.IntegrationTests.Infrastructure;
 using Application.IntegrationTests.TestBases;
 using Microsoft.Extensions.DependencyInjection;
-using VeterinaryApi.Common.Abstracions.Payments;
-using Shared.Errors;
-using Shared.Results;
-using PaymentCreateCheckout = VeterinaryApi.Common.Abstracions.Payments.CreateCheckout;
-using VeterinaryApi.Domain.Subscriptions;
-using VeterinaryApi.Domain.Subscriptions.Errors;
-using VeterinaryApi.Features.Subscriptions.Endpoints;
-using VeterinaryApi.Infrastructure.Persistence;
+using PublicApi.Common.Abstracions.Payments;
+using Modules.Shared.Errors;
+using Modules.Shared.Results;
+using PaymentCreateCheckout = PublicApi.Common.Abstracions.Payments.CreateCheckout;
+using PublicApi.Domain.Subscriptions;
+using PublicApi.Domain.Subscriptions.Errors;
+using PublicApi.Features.Subscriptions.Endpoints;
+using PublicApi.Infrastructure.Persistence;
 
 namespace Application.IntegrationTests.Subscriptions;
 

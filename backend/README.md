@@ -1,6 +1,6 @@
-# VeterinaryApi — Backend Documentation
+# PublicApi — Backend Documentation
 
-> **Production-grade, enterprise-level documentation for the VeterinaryApi backend.**  
+> **Production-grade, enterprise-level documentation for the PublicApi backend.**  
 > Target audience: Backend developers onboarding to the project, DevOps engineers, and technical leads.
 
 ---
@@ -41,7 +41,7 @@
 
 ## 1. Project Overview
 
-**VeterinaryApi** is a multi-tenant SaaS backend for a veterinary clinic management system built on **.NET 10** with ASP.NET Core minimal APIs. It allows individual veterinary clinic doctors (tenants) to manage:
+**PublicApi** is a multi-tenant SaaS backend for a veterinary clinic management system built on **.NET 10** with ASP.NET Core minimal APIs. It allows individual veterinary clinic doctors (tenants) to manage:
 
 - **Clinics** — Clinic registration and profile management.
 - **Clients** — Pet owners associated with a clinic.
@@ -120,7 +120,7 @@ The system is designed to be **deployed via Docker Compose** with a PostgreSQL d
 ## 4. Folder Structure
 
 ```
-src/VeterinaryApi/
+src/PublicApi/
 ├── Program.cs                      # Application entry point, DI composition root
 ├── appsettings.json                # Non-sensitive configuration
 ├── appsettings.Development.json    # Development overrides
@@ -473,16 +473,16 @@ app.ApplyMigrations(); // Calls dbContext.Database.Migrate() on startup
 
 ```bash
 dotnet ef migrations add <MigrationName> \
-  --project src/VeterinaryApi \
-  --startup-project src/VeterinaryApi
+  --project src/PublicApi \
+  --startup-project src/PublicApi
 ```
 
 **Applying migrations manually:**
 
 ```bash
 dotnet ef database update \
-  --project src/VeterinaryApi \
-  --startup-project src/VeterinaryApi
+  --project src/PublicApi \
+  --startup-project src/PublicApi
 ```
 
 ---
@@ -785,8 +785,8 @@ cd VeterinaryApplication
 2. **Create `.env` file**
 
 ```bash
-cp backend/src/VeterinaryApi/.env.example \
-   backend/src/VeterinaryApi/.env
+cp backend/src/PublicApi/.env.example \
+   backend/src/PublicApi/.env
 # Edit .env and fill in all required values
 ```
 
@@ -811,7 +811,7 @@ ConnectionStrings__Default="Host=localhost;Port=5432;Database=veterinary_db;User
 5. **Run the API**
 
 ```bash
-cd backend/src/VeterinaryApi
+cd backend/src/PublicApi
 dotnet run
 ```
 
@@ -839,7 +839,7 @@ This starts:
 ### Build for Production
 
 ```bash
-cd backend/src/VeterinaryApi
+cd backend/src/PublicApi
 dotnet publish -c Release -o ./publish
 ```
 
@@ -847,7 +847,7 @@ dotnet publish -c Release -o ./publish
 
 ```bash
 docker build \
-  -f src/VeterinaryApi/Dockerfile \
+  -f src/PublicApi/Dockerfile \
   -t veterinaryapi:latest \
   .
 ```

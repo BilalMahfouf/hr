@@ -1,6 +1,6 @@
-using Shared.Errors;
+using Modules.Shared.Errors;
 
-namespace Shared.Results;
+namespace Modules.Shared.Results;
 
 public static class ResultExtension
 {

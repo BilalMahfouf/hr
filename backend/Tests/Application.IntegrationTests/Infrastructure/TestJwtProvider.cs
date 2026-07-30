@@ -1,5 +1,5 @@
-using Identity.Abstracions;
-using Identity.Domain.Users;
+using Modules.Identity.Abstracions;
+using Modules.Identity.Domain.Users;
 
 namespace Application.IntegrationTests.Infrastructure;
 

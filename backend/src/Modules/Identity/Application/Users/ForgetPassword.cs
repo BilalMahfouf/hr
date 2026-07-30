@@ -1,14 +1,14 @@
-using Identity.Abstracions;
-using Identity.Domain.Users;
+using Modules.Identity.Abstracions;
+using Modules.Identity.Domain.Users;
 using Microsoft.EntityFrameworkCore;
-using Shared.Abstracions;
-using Shared.Abstracions.Emails;
-using Shared.CQRS;
-using Shared.Endpoints;
-using Shared.Results;
-using Shared.Util;
+using Modules.Shared.Abstracions;
+using Modules.Shared.Abstracions.Emails;
+using Modules.Shared.CQRS;
+using Modules.Shared.Endpoints;
+using Modules.Shared.Results;
+using Modules.Shared.Util;
 
-namespace Identity.Application.Users;
+namespace Modules.Identity.Application.Users;
 
 public static class ForgetPassword
 {

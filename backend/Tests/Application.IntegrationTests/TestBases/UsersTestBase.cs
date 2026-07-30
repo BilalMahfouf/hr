@@ -1,12 +1,12 @@
 using Application.IntegrationTests.Infrastructure;
-using Identity.Abstracions;
-using Identity.Application.Users;
-using Identity.Domain.Users;
+using Modules.Identity.Abstracions;
+using Modules.Identity.Application.Users;
+using Modules.Identity.Domain.Users;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using Shared.Abstracions;
-using Shared.Abstracions.Emails;
-using VeterinaryApi.Infrastructure.Persistence;
+using Modules.Shared.Abstracions;
+using Modules.Shared.Abstracions.Emails;
+using PublicApi.Infrastructure.Persistence;
 
 namespace Application.IntegrationTests.TestBases;
 

@@ -1,15 +1,15 @@
-using Identity.Abstracions;
-using Identity.Domain.Users;
+using Modules.Identity.Abstracions;
+using Modules.Identity.Domain.Users;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
-using Shared.CQRS;
-using Shared.Endpoints;
-using Shared.Paginations.OffSet;
-using Shared.Results;
-using static Identity.Application.Users.Shared;
+using Modules.Shared.CQRS;
+using Modules.Shared.Endpoints;
+using Modules.Shared.Paginations.OffSet;
+using Modules.Shared.Results;
+using static Modules.Identity.Application.Users.Shared;
 
-namespace Identity.Application.Users;
+namespace Modules.Identity.Application.Users;
 
 public static class GetAllUsers
 {

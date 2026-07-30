@@ -1,4 +1,4 @@
-namespace Shared.CQRS;
+namespace Modules.Shared.CQRS;
 
 public interface IBaseCommand;
 

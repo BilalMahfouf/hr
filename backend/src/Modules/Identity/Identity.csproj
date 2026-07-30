@@ -4,7 +4,8 @@
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <RootNamespace>Identity</RootNamespace>
+    <RootNamespace>Modules.Identity</RootNamespace>
+    <AssemblyName>Modules.Identity</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>

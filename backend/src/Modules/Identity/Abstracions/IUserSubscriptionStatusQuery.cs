@@ -1,4 +1,4 @@
-namespace Identity.Abstracions;
+namespace Modules.Identity.Abstracions;
 
 public interface IUserSubscriptionStatusQuery
 {

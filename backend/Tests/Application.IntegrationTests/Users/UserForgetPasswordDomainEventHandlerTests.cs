@@ -1,7 +1,7 @@
 using Application.IntegrationTests.Infrastructure;
 using Microsoft.Extensions.Logging.Abstractions;
-using Identity.Domain.Users;
-using Identity.Application.Users;
+using Modules.Identity.Domain.Users;
+using Modules.Identity.Application.Users;
 
 namespace Application.IntegrationTests.Users;
 

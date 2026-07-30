@@ -5,10 +5,10 @@ using Application.Tests.Helpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Moq;
-using Identity.Abstracions;
-using Shared.Abstracions;
-using Identity.Domain.Users;
-using Identity.Application.Users;
+using Modules.Identity.Abstracions;
+using Modules.Shared.Abstracions;
+using Modules.Identity.Domain.Users;
+using Modules.Identity.Application.Users;
 using Xunit;
 
 namespace Application.Tests.Users;

@@ -1,6 +1,6 @@
 using Carter;
 
-namespace Shared.Endpoints
+namespace Modules.Shared.Endpoints
 {
     public interface IEndpoint : ICarterModule
     {

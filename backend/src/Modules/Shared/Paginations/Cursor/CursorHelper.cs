@@ -1,7 +1,7 @@
 using System.Text;
 using System.Text.Json;
 
-namespace Shared.Paginations.Cursor;
+namespace Modules.Shared.Paginations.Cursor;
 
 public static class CursorHelper
 {

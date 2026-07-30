@@ -1,4 +1,4 @@
-using Shared.Abstracions;
+using Modules.Shared.Abstracions;
 
 namespace Application.IntegrationTests.Infrastructure;
 
