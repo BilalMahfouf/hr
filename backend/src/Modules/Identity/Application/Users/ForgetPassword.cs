@@ -1,24 +1,20 @@
+using Microsoft.EntityFrameworkCore;
 using Modules.Identity.Abstracions;
 using Modules.Identity.Domain.Users;
-using Microsoft.EntityFrameworkCore;
-using Modules.Shared.Abstracions;
 using Modules.Shared.Abstracions.Emails;
 using Modules.Shared.CQRS;
 using Modules.Shared.Endpoints;
 using Modules.Shared.Results;
-using Modules.Shared.Util;
 
 namespace Modules.Identity.Application.Users;
 
 public static class ForgetPassword
 {
-    public record ForgetPasswordCommand(string Email, string ClientUri)
-        : ICommand;
+    public record ForgetPasswordCommand(string Email, string ClientUri) : ICommand;
 
     public record Response();
 
-    public class ForgetPasswordCommandHandler
-        : ICommandHandler<ForgetPasswordCommand>
+    public class ForgetPasswordCommandHandler : ICommandHandler<ForgetPasswordCommand>
     {
         private readonly IIdentityApplicationDbContext _db;
         private readonly IJwtProvider _jwtProvider;
@@ -27,7 +23,8 @@ public static class ForgetPassword
         public ForgetPasswordCommandHandler(
             IIdentityApplicationDbContext db,
             IJwtProvider jwtProvider,
-            IEmailService emailService)
+            IEmailService emailService
+        )
         {
             _db = db;
             _jwtProvider = jwtProvider;
@@ -36,15 +33,16 @@ public static class ForgetPassword
 
         public async Task<Result> Handle(
             ForgetPasswordCommand command,
-            CancellationToken cancellationToken = default)
+            CancellationToken cancellationToken = default
+        )
         {
-            var user = await _db.Users
-               .FirstOrDefaultAsync(e => e.Email == command.Email,
-               cancellationToken);
+            var user = await _db.Users.FirstOrDefaultAsync(
+                e => e.Email == command.Email,
+                cancellationToken
+            );
             if (user is null)
             {
-                return Result<Response>
-                    .Failure(UserErrors.UserNotFound(command.Email));
+                return Result<Response>.Failure(UserErrors.UserNotFound(command.Email));
             }
             var token = _jwtProvider.GenerateToken(user);
             var userSession = new UserSession()
@@ -52,7 +50,7 @@ public static class ForgetPassword
                 UserId = user.Id,
                 Token = token,
                 TokenType = UserSessionTokenType.ResetPassword,
-                ExpiresAt = DateTime.UtcNow.AddMinutes(15)
+                ExpiresAt = DateTime.UtcNow.AddMinutes(15),
             };
             user.ForgetPassword(token, command.ClientUri);
             _db.UserSessions.Add(userSession);
@@ -65,17 +63,23 @@ public static class ForgetPassword
     {
         public void AddRoutes(IEndpointRouteBuilder app)
         {
-            app.MapPost("/auth/forget-password", async (
-                ForgetPasswordCommand command,
-                ICommandHandler<ForgetPasswordCommand> handler,
-                CancellationToken cancellationToken = default) =>
-            {
-                var result = await handler.Handle(command, cancellationToken);
-                return result.IsSuccess ? Results.NoContent() : result.Problem();
-            })
-            .WithTags("Authentication")
-            .WithSummary("Request password reset")
-            .WithDescription("Sends a password reset email to the specified email address. The email contains a link with a reset token valid for 15 minutes.");
+            app.MapPost(
+                    "/auth/forget-password",
+                    async (
+                        ForgetPasswordCommand command,
+                        ICommandHandler<ForgetPasswordCommand> handler,
+                        CancellationToken cancellationToken = default
+                    ) =>
+                    {
+                        var result = await handler.Handle(command, cancellationToken);
+                        return result.IsSuccess ? Results.NoContent() : result.Problem();
+                    }
+                )
+                .WithTags("Authentication")
+                .WithSummary("Request password reset")
+                .WithDescription(
+                    "Sends a password reset email to the specified email address. The email contains a link with a reset token valid for 15 minutes."
+                );
         }
     }
 }

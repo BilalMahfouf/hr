@@ -1,10 +1,7 @@
-﻿using Modules.Identity.Abstracions;
-using Modules.Identity.Domain.Users;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Modules.Shared.Abstracions;
 using PublicApi.Common.Abstracions;
 using PublicApi.Domain.Notifications;
-using PublicApi.Infrastructure.Persistence.Configurations.Users;
 using PublicApi.Domain.Subscriptions;
 using PublicApi.Infrastructure.OutboxMessages;
 
@@ -12,15 +9,10 @@ namespace PublicApi.Infrastructure.Persistence;
 
 public class ApplicationDbContext : DbContext
     , IApplicationDbContext
-    , IIdentityApplicationDbContext
 {
-    public ApplicationDbContext(DbContextOptions options) : base(options)
+    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
     {
     }
-
-    public DbSet<User> Users { get; set; } = null!;
-
-    public DbSet<UserSession> UserSessions { get; set; } = null!;
 
     public DbSet<OutboxMessage> OutboxMessages { get; set; } = null!;
 
@@ -35,7 +27,7 @@ public class ApplicationDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(UserConfiguration).Assembly);
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(Program).Assembly);
     }
 
 }

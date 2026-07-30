@@ -1,13 +1,13 @@
-﻿using Modules.Identity.Abstracions;
-using Modules.Identity.Domain.Users;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Modules.Identity.Abstracions;
+using Modules.Identity.Domain.Users;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace PublicApi.Infrastructure.Auth;
+namespace Modules.Identity.Infrastructure.Auth;
 
 internal class JwtProvider : IJwtProvider
 {

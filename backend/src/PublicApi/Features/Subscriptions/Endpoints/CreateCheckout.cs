@@ -2,6 +2,7 @@
 using Chargily.Pay.Abstractions;
 using Chargily.Pay.Models;
 using HandlebarsDotNet;
+using Modules.Identity.Abstracions;
 using Modules.Identity.Domain.Users;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -36,6 +37,7 @@ public static class CreateCheckout
 
     public sealed class Handler(
         IApplicationDbContext db,
+        IIdentityApplicationDbContext identityDb,
         IChargilyPayClient chargilyPayClient,
         IOptions<ChargilyOptions> options
     ) : ICommandHandler<CreateSubscriptionCheckoutCommand, Response>
@@ -96,7 +98,7 @@ public static class CreateCheckout
                 );
             }
 
-            var isDoctorExist = await db.Users.AnyAsync(
+            var isDoctorExist = await identityDb.Users.AnyAsync(
                 d => d.Id == command.DoctorId,
                 cancellationToken
             );

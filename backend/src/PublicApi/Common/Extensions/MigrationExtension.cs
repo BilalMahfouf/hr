@@ -1,26 +1,21 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.Threading.Tasks;
+using Modules.Identity.Infrastructure.Persistence;
 using PublicApi.Infrastructure.Persistence;
 
 namespace PublicApi.Common.Extensions;
 
-/// <summary>Application builder extension methods for EF Core database migration.</summary>
 public static class MigrationExtension
 {
-    /// <summary>
-    /// Applies any pending EF Core migrations to the database on application startup.
-    /// Creates a scoped <see cref="ApplicationDbContext"/> to run <c>Database.Migrate()</c>.
-    /// </summary>
     public static void ApplyMigrations(this IApplicationBuilder app)
     {
         using IServiceScope scope = app.ApplicationServices.CreateScope();
+
+        var identityDb = scope.ServiceProvider.GetRequiredService<IdentityDbContext>();
+        identityDb.Database.Migrate();
 
         using ApplicationDbContext dbContext =
             scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
         dbContext.Database.Migrate();
-
-
     }
-
 }

@@ -6,6 +6,7 @@ using PublicApi.Common.Exceptions;
 using PublicApi.Common.Extensions;
 using PublicApi.Infrastructure.Notifications;
 using Modules.Shared;
+using Modules.Identity;
 using PublicApi.Infrastructure.Payments;
 
 
@@ -33,6 +34,8 @@ builder.Services.AddPayments();
 
 
 builder.Services.AddInfrastructure(builder.Configuration);
+
+builder.Services.AddIdentityModule();
 
 builder.Services.AddCarter();
 

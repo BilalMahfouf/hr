@@ -1,8 +1,8 @@
-﻿using Modules.Identity.Domain.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Modules.Identity.Domain.Users;
 
-namespace PublicApi.Infrastructure.Persistence.Configurations.Users;
+namespace Modules.Identity.Infrastructure.Persistence.Configurations;
 
 public class UserConfiguration : IEntityTypeConfiguration<User>
 {
@@ -73,7 +73,5 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 
         builder.Navigation(u => u.Sessions)
             .UsePropertyAccessMode(PropertyAccessMode.Field);
-
     }
-
 }

@@ -1,5 +1,4 @@
-﻿using Modules.Identity.Domain.Users;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using PublicApi.Domain.Notifications;
 using PublicApi.Domain.Subscriptions;
 using PublicApi.Infrastructure.OutboxMessages;
@@ -8,10 +7,6 @@ namespace PublicApi.Common.Abstracions;
 
 public interface IApplicationDbContext
 {
-    public DbSet<User> Users { get; }
-
-    public DbSet<UserSession> UserSessions { get; }
-
     public DbSet<OutboxMessage> OutboxMessages { get; }
 
     public DbSet<Notification> Notifications { get; }

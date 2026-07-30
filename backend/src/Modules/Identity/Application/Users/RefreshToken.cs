@@ -1,8 +1,7 @@
-using Modules.Identity.Abstracions;
-using Modules.Identity.Domain.Users;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Modules.Shared.Abstracions;
+using Modules.Identity.Abstracions;
+using Modules.Identity.Domain.Users;
 using Modules.Shared.CQRS;
 using Modules.Shared.Endpoints;
 using Modules.Shared.Results;
@@ -11,13 +10,11 @@ namespace Modules.Identity.Application.Users;
 
 public static class RefreshToken
 {
-    public record RefreshTokenCommand(string RefreshToken)
-        : ICommand<Response>;
+    public record RefreshTokenCommand(string RefreshToken) : ICommand<Response>;
 
     public record Response(string Token);
 
-    public sealed class RefreshTokenCommandHandler
-        : ICommandHandler<RefreshTokenCommand, Response>
+    public sealed class RefreshTokenCommandHandler : ICommandHandler<RefreshTokenCommand, Response>
     {
         private readonly IIdentityApplicationDbContext _db;
         private readonly IJwtProvider _jwtProvider;
@@ -26,7 +23,8 @@ public static class RefreshToken
         public RefreshTokenCommandHandler(
             IIdentityApplicationDbContext db,
             IJwtProvider jwtProvider,
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor
+        )
         {
             _db = db;
             _jwtProvider = jwtProvider;
@@ -35,10 +33,11 @@ public static class RefreshToken
 
         public async Task<Result<Response>> Handle(
             RefreshTokenCommand command,
-            CancellationToken cancellationToken = default)
+            CancellationToken cancellationToken = default
+        )
         {
-            var session = await _db.UserSessions
-                .Include(e => e.User)
+            var session = await _db
+                .UserSessions.Include(e => e.User)
                 .FirstOrDefaultAsync(e => e.Token == command.RefreshToken);
             if (session is null)
             {
@@ -55,14 +54,17 @@ public static class RefreshToken
             _db.UserSessions.Update(session);
             await _db.SaveChangesAsync();
 
-            _httpContextAccessor.HttpContext!.Response
-                .Cookies.Append("refreshToken", refreshToken, new CookieOptions
+            _httpContextAccessor.HttpContext!.Response.Cookies.Append(
+                "refreshToken",
+                refreshToken,
+                new CookieOptions
                 {
                     HttpOnly = true,
                     Expires = DateTimeOffset.UtcNow.AddDays(7),
                     SameSite = SameSiteMode.None,
-                    Secure = true
-                });
+                    Secure = true,
+                }
+            );
             var response = new Response(token);
             return Result<Response>.Success(response);
         }
@@ -72,21 +74,27 @@ public static class RefreshToken
     {
         public void AddRoutes(IEndpointRouteBuilder app)
         {
-            app.MapPost("/auth/refresh-token", async (
-                HttpContext httpContext,
-                [FromServices] ICommandHandler<RefreshTokenCommand, Response> handler,
-                CancellationToken cancellationToken = default) =>
-            {
-                var refreshToken = httpContext.Request
-                .Cookies["refreshToken"] ?? string.Empty;
+            app.MapPost(
+                    "/auth/refresh-token",
+                    async (
+                        HttpContext httpContext,
+                        [FromServices] ICommandHandler<RefreshTokenCommand, Response> handler,
+                        CancellationToken cancellationToken = default
+                    ) =>
+                    {
+                        var refreshToken =
+                            httpContext.Request.Cookies["refreshToken"] ?? string.Empty;
 
-                var command = new RefreshTokenCommand(refreshToken);
-                var result = await handler.Handle(command, cancellationToken);
-                return result.IsSuccess ? Results.Ok(result.Value) : result.Problem();
-            })
-            .WithTags("Authentication")
-            .WithSummary("Refresh access token")
-            .WithDescription("Generates a new JWT access token using the refresh token from cookies. Also rotates the refresh token for security.");
+                        var command = new RefreshTokenCommand(refreshToken);
+                        var result = await handler.Handle(command, cancellationToken);
+                        return result.IsSuccess ? Results.Ok(result.Value) : result.Problem();
+                    }
+                )
+                .WithTags("Authentication")
+                .WithSummary("Refresh access token")
+                .WithDescription(
+                    "Generates a new JWT access token using the refresh token from cookies. Also rotates the refresh token for security."
+                );
         }
     }
 }

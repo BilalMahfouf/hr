@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using PublicApi.Domain.Subscriptions;
-using Modules.Identity.Domain.Users;
 
 namespace PublicApi.Infrastructure.Persistence.Configurations.Subscriptions;
 
@@ -22,11 +21,6 @@ public class SubscriptionConfiguration : IEntityTypeConfiguration<Subscription>
         builder.Property(s => s.DoctorId)
             .HasColumnName("doctor_id")
             .IsRequired();
-        builder.HasOne<User>()
-            .WithMany()
-            .HasForeignKey(s => s.DoctorId)
-            .OnDelete(DeleteBehavior.Restrict)
-            .HasConstraintName("FK_subscriptions_doctor_id");
 
         builder.Property(s => s.PreviousSubscriptionId)
             .HasColumnName("previous_subscription_id");

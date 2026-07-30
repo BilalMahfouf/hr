@@ -4,6 +4,7 @@ using Chargily.Pay.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Moq;
+using Modules.Identity.Abstracions;
 using Modules.Shared.Abstracions;
 using PublicApi.Common.Abstracions;
 using Modules.Shared.Domain.Common;
@@ -20,6 +21,7 @@ using ChargilyCheckoutResponse = Chargily.Pay.Models.Response<CheckoutResponse>;
 public class CreateCheckoutTests
 {
     private readonly Mock<IApplicationDbContext> _dbMock = new();
+    private readonly Mock<IIdentityApplicationDbContext> _identityDbMock = new();
     private readonly Mock<IChargilyPayClient> _chargilyPayClientMock = new();
     private readonly IOptions<ChargilyOptions> _options = Options.Create(new ChargilyOptions
     {
@@ -44,6 +46,7 @@ public class CreateCheckoutTests
 
         return new CreateCheckout.Handler(
             _dbMock.Object,
+            _identityDbMock.Object,
             _chargilyPayClientMock.Object,
             _options);
     }
@@ -51,7 +54,7 @@ public class CreateCheckoutTests
     private void SetupDbSets()
     {
         var usersSet = DbSetMockHelper.CreateMockDbSet(_users);
-        _dbMock.Setup(db => db.Users).Returns(usersSet.Object);
+        _identityDbMock.Setup(db => db.Users).Returns(usersSet.Object);
 
         var plansSet = DbSetMockHelper.CreateMockDbSet(_plans);
         _dbMock.Setup(db => db.SubscriptionPlans).Returns(plansSet.Object);
