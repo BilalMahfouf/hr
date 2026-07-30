@@ -1,4 +1,5 @@
-﻿using VeterinaryApi.Common.Errors;
+﻿using Shared.Domain.Common;
+using Shared.Errors;
 
 namespace VeterinaryApi.Domain.Common;
 

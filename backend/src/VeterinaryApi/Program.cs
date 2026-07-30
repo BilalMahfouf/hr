@@ -1,6 +1,6 @@
 using Carter;
 using Microsoft.JSInterop.Infrastructure;
-using VeterinaryApi.Common.CQRS;
+using Shared.CQRS;
 using VeterinaryApi.Infrastructure;
 using DotNetEnv;
 using Scalar.AspNetCore;
@@ -8,7 +8,7 @@ using VeterinaryApi.Common.Exceptions;
 using FluentValidation;
 using VeterinaryApi.Common.Extensions;
 using VeterinaryApi.Infrastructure.Notifications;
-using VeterinaryApi.Common;
+using Shared;
 using VeterinaryApi.Infrastructure.Payments;
 
 

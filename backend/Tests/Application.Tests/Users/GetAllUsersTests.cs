@@ -6,8 +6,8 @@ using Application.Tests.Helpers;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using Identity.Abstracions;
-using VeterinaryApi.Common.Abstracions;
-using VeterinaryApi.Common.Paginations.OffSet;
+using Shared.Abstracions;
+using Shared.Paginations.OffSet;
 using Identity.Domain.Users;
 using Identity.Application.Users;
 using Xunit;
@@ -41,7 +41,7 @@ public class GetAllUsersTests
         // Arrange
         SetupUsersDbSet([]);
         var handler = CreateHandler();
-        var query = TableRequest<Shared.Response>.Create(10, 1);
+        var query = TableRequest<Identity.Application.Users.Shared.Response>.Create(10, 1);
 
         // Act
         var result = await handler.Handle(query, CancellationToken.None);
@@ -63,7 +63,7 @@ public class GetAllUsersTests
         SetupUsersDbSet([doctor1, doctor2, admin]);
 
         var handler = CreateHandler();
-        var query = TableRequest<Shared.Response>.Create(10, 1, null, "username", "desc");
+        var query = TableRequest<Identity.Application.Users.Shared.Response>.Create(10, 1, null, "username", "desc");
 
         // Act
         var result = await handler.Handle(query, CancellationToken.None);
@@ -87,7 +87,7 @@ public class GetAllUsersTests
         SetupUsersDbSet([doctor1, doctor2]);
 
         var handler = CreateHandler();
-        var query = TableRequest<Shared.Response>.Create(10, 1, "ann", "username", "asc");
+        var query = TableRequest<Identity.Application.Users.Shared.Response>.Create(10, 1, "ann", "username", "asc");
 
         // Act
         var result = await handler.Handle(query, CancellationToken.None);

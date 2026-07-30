@@ -1,6 +1,8 @@
 using Application.Tests.Helpers;
 using Moq;
+using Shared.Abstracions;
 using VeterinaryApi.Common.Abstracions;
+using Shared.Domain.Common;
 using VeterinaryApi.Domain.Common;
 using VeterinaryApi.Domain.Subscriptions;
 using VeterinaryApi.Features.SubscriptionPlans;

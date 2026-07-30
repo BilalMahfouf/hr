@@ -1,9 +1,11 @@
 ﻿using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using Shared.Abstracions;
 using VeterinaryApi.Common.Abstracions;
-using VeterinaryApi.Common.CQRS;
-using VeterinaryApi.Common.Endpoints;
-using VeterinaryApi.Common.Results;
+using Shared.CQRS;
+using Shared.Endpoints;
+using Shared.Results;
+using Shared.Domain.Common;
 using VeterinaryApi.Domain.Common;
 using VeterinaryApi.Domain.Subscriptions;
 using VeterinaryApi.Domain.Subscriptions.Errors;

@@ -1,6 +1,0 @@
-namespace VeterinaryApi.Domain.Common;
-
-public interface ITenantOwned
-{
-    public Guid TenantId { get; set; }
-}

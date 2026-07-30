@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore.Query.Internal;
+using Shared.Domain.Common;
 using VeterinaryApi.Domain.Common;
 
 namespace VeterinaryApi.Domain.Subscriptions;

@@ -1,7 +1,7 @@
 using Identity.Domain.Users;
-using VeterinaryApi.Common.Abstracions.Emails;
-using VeterinaryApi.Common.CQRS;
-using VeterinaryApi.Common.Util;
+using Shared.Abstracions.Emails;
+using Shared.CQRS;
+using Shared.Util;
 
 namespace Identity.Application.Users;
 

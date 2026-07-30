@@ -1,11 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Shared.Abstracions;
 using VeterinaryApi.Common.Abstracions;
-using VeterinaryApi.Common.CQRS;
-using VeterinaryApi.Common.Endpoints;
-using VeterinaryApi.Common.Errors;
-using VeterinaryApi.Common.Results;
+using Shared.CQRS;
+using Shared.Endpoints;
+using Shared.Errors;
+using Shared.Results;
 using VeterinaryApi.Domain.Subscriptions;
 
 namespace VeterinaryApi.Features.Subscriptions.Webhooks;

@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Quartz;
+using Shared.Abstracions;
 using VeterinaryApi.Common.Abstracions;
 using VeterinaryApi.Domain.Subscriptions;
 

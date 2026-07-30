@@ -1,12 +1,12 @@
 using Identity.Abstracions;
 using Identity.Domain.Users;
 using Microsoft.EntityFrameworkCore;
-using VeterinaryApi.Common.Abstracions;
-using VeterinaryApi.Common.Abstracions.Emails;
-using VeterinaryApi.Common.CQRS;
-using VeterinaryApi.Common.Endpoints;
-using VeterinaryApi.Common.Results;
-using VeterinaryApi.Common.Util;
+using Shared.Abstracions;
+using Shared.Abstracions.Emails;
+using Shared.CQRS;
+using Shared.Endpoints;
+using Shared.Results;
+using Shared.Util;
 
 namespace Identity.Application.Users;
 

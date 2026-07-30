@@ -1,8 +1,8 @@
 ﻿using Identity.Domain.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
-using VeterinaryApi.Common.Abstracions;
-using VeterinaryApi.Domain.Common;
+using Shared.Abstracions;
+using Shared.Domain.Common;
 
 namespace VeterinaryApi.Infrastructure.Tenants;
 

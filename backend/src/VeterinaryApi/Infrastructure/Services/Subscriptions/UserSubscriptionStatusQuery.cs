@@ -1,5 +1,6 @@
 using Identity.Abstracions;
 using Microsoft.EntityFrameworkCore;
+using Shared.Abstracions;
 using VeterinaryApi.Common.Abstracions;
 
 namespace VeterinaryApi.Infrastructure.Services.Subscriptions;

@@ -2,10 +2,10 @@ using FluentValidation;
 using Identity.Abstracions;
 using Identity.Domain.Users;
 using Microsoft.EntityFrameworkCore;
-using VeterinaryApi.Common.Abstracions;
-using VeterinaryApi.Common.CQRS;
-using VeterinaryApi.Common.Endpoints;
-using VeterinaryApi.Common.Results;
+using Shared.Abstracions;
+using Shared.CQRS;
+using Shared.Endpoints;
+using Shared.Results;
 
 namespace Identity.Application.Users;
 

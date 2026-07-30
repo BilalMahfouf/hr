@@ -1,5 +1,5 @@
 ﻿using Isopoh.Cryptography.Argon2;
-using VeterinaryApi.Common.Abstracions;
+using Shared.Abstracions;
 
 namespace VeterinaryApi.Infrastructure.Services.Hashers;
 

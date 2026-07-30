@@ -1,4 +1,4 @@
-using VeterinaryApi.Common.Abstracions;
+using Shared.Abstracions;
 
 namespace Application.IntegrationTests.Infrastructure;
 

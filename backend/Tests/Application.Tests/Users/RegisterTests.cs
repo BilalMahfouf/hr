@@ -6,7 +6,7 @@ using Application.Tests.Helpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Moq;
-using VeterinaryApi.Common.Abstracions;
+using Shared.Abstracions;
 using Identity.Abstracions;
 using Identity.Domain.Users;
 using Identity.Application.Users;

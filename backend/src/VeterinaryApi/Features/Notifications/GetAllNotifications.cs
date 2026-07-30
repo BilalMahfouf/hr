@@ -1,12 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Shared.Abstracions;
 using VeterinaryApi.Common.Abstracions;
-using VeterinaryApi.Common.CQRS;
-using VeterinaryApi.Common.Endpoints;
-using VeterinaryApi.Common.Paginations.Cursor;
-using VeterinaryApi.Common.Paginations.OffSet;
-using VeterinaryApi.Common.Results;
+using Shared.CQRS;
+using Shared.Endpoints;
+using Shared.Paginations.Cursor;
+using Shared.Paginations.OffSet;
+using Shared.Results;
 using VeterinaryApi.Domain.Notifications;
 using VeterinaryApi.Infrastructure.Persistence;
 

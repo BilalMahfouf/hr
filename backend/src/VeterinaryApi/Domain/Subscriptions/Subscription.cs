@@ -1,4 +1,4 @@
-﻿using VeterinaryApi.Domain.Common;
+﻿using Shared.Domain.Common;
 using VeterinaryApi.Domain.Subscriptions.Errors;
 
 namespace VeterinaryApi.Domain.Subscriptions;

@@ -1,7 +1,7 @@
 using Application.IntegrationTests.Infrastructure;
 using Application.IntegrationTests.TestBases;
 using Microsoft.Extensions.DependencyInjection;
-using VeterinaryApi.Common.Paginations.OffSet;
+using Shared.Paginations.OffSet;
 using Identity.Domain.Users;
 using Identity.Application.Users;
 using VeterinaryApi.Infrastructure.Persistence;
@@ -19,7 +19,7 @@ public sealed class GetAllUsersQueryHandlerTests : UsersTestBase
     {
         using var scope = CreateScope();
         var handler = CreateGetAllUsersHandler(scope.ServiceProvider);
-        var query = TableRequest<Shared.Response>.Create(null, null);
+        var query = TableRequest<Identity.Application.Users.Shared.Response>.Create(null, null);
 
         var result = await handler.Handle(query, CancellationToken.None);
 
@@ -35,7 +35,7 @@ public sealed class GetAllUsersQueryHandlerTests : UsersTestBase
         await SeedUserAsync(db, email: "alpha@test.local", userName: "alpha");
         await SeedUserAsync(db, email: "beta@test.local", userName: "beta");
         var handler = CreateGetAllUsersHandler(scope.ServiceProvider);
-        var query = TableRequest<Shared.Response>.Create(10, 1, search: "Alpha");
+        var query = TableRequest<Identity.Application.Users.Shared.Response>.Create(10, 1, search: "Alpha");
 
         var result = await handler.Handle(query, CancellationToken.None);
 
@@ -53,7 +53,7 @@ public sealed class GetAllUsersQueryHandlerTests : UsersTestBase
         await SeedUserAsync(db, email: "alpha@test.local", userName: "alpha");
         await SeedUserAsync(db, email: "beta@test.local", userName: "beta");
         var handler = CreateGetAllUsersHandler(scope.ServiceProvider);
-        var query = TableRequest<Shared.Response>.Create(10, 1, sortColumn: "username", sortOrder: "desc");
+        var query = TableRequest<Identity.Application.Users.Shared.Response>.Create(10, 1, sortColumn: "username", sortOrder: "desc");
 
         var result = await handler.Handle(query, CancellationToken.None);
 

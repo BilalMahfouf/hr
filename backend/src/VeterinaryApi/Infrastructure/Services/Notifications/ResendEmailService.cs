@@ -1,7 +1,7 @@
 ﻿using Resend;
-using VeterinaryApi.Common.Abstracions.Emails;
-using VeterinaryApi.Common.Errors;
-using VeterinaryApi.Common.Results;
+using Shared.Abstracions.Emails;
+using Shared.Errors;
+using Shared.Results;
 
 namespace VeterinaryApi.Infrastructure.Services.Notifications;
 

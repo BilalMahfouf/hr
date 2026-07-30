@@ -4,8 +4,8 @@ using Identity.Application.Users;
 using Identity.Domain.Users;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using VeterinaryApi.Common.Abstracions;
-using VeterinaryApi.Common.Abstracions.Emails;
+using Shared.Abstracions;
+using Shared.Abstracions.Emails;
 using VeterinaryApi.Infrastructure.Persistence;
 
 namespace Application.IntegrationTests.TestBases;

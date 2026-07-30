@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using VeterinaryApi.Domain.Common;
+using Shared.Domain.Common;
 
 namespace VeterinaryApi.Infrastructure.Persistence;
 

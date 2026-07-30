@@ -1,6 +1,7 @@
 using Identity.Abstracions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Shared.Abstracions;
 using VeterinaryApi.Common.Abstracions;
 using VeterinaryApi.Domain.Subscriptions;
 

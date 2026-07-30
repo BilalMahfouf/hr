@@ -3,7 +3,7 @@ using Chargily.Pay.Models;
 using HandlebarsDotNet;
 using Microsoft.Extensions.Options;
 using VeterinaryApi.Common.Abstracions.Payments;
-using VeterinaryApi.Common.Results;
+using Shared.Results;
 using VeterinaryApi.Domain.Subscriptions.Errors;
 
 namespace VeterinaryApi.Infrastructure.Payments;

@@ -6,7 +6,7 @@ using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using Identity.Abstracions;
-using VeterinaryApi.Common.Abstracions;
+using Shared.Abstracions;
 using Identity.Domain.Users;
 using Identity.Application.Users;
 using Xunit;

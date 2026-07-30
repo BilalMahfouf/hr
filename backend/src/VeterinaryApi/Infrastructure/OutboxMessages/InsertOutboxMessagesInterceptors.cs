@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Newtonsoft.Json;
-using VeterinaryApi.Common.Abstracions;
-using VeterinaryApi.Domain.Common;
+using Shared.Abstracions;
+using Shared.Domain.Common;
 using Identity.Domain.Users;
 
 namespace VeterinaryApi.Infrastructure.OutboxMessages

@@ -1,4 +1,4 @@
-using VeterinaryApi.Domain.Common;
+using Shared.Domain.Common;
 
 namespace Identity.Domain.Users
 {

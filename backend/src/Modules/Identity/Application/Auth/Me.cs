@@ -1,8 +1,8 @@
 using Identity.Application.Users;
-using VeterinaryApi.Common.Abstracions;
-using VeterinaryApi.Common.CQRS;
-using VeterinaryApi.Common.Endpoints;
-using VeterinaryApi.Common.Results;
+using Shared.Abstracions;
+using Shared.CQRS;
+using Shared.Endpoints;
+using Shared.Results;
 
 namespace Identity.Application.Auth;
 
@@ -14,7 +14,7 @@ public static class Me
         {
             app.MapGet("/auth/me", async (
                 ICurrentTenant currentTenant,
-                IQueryHandler<GetUserById.GetUserByIdQuery, Shared.Response> handler,
+                IQueryHandler<GetUserById.GetUserByIdQuery, Identity.Application.Users.Shared.Response> handler,
                 CancellationToken ct = default) =>
             {
                 var userId = currentTenant.UserId!.Value;

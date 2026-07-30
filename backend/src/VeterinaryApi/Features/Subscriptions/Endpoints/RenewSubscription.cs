@@ -4,11 +4,12 @@ using Chargily.Pay.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Reactive.Joins;
+using Shared.Abstracions;
 using VeterinaryApi.Common.Abstracions;
 using VeterinaryApi.Common.Abstracions.Payments;
-using VeterinaryApi.Common.CQRS;
-using VeterinaryApi.Common.Endpoints;
-using VeterinaryApi.Common.Results;
+using Shared.CQRS;
+using Shared.Endpoints;
+using Shared.Results;
 using VeterinaryApi.Domain.Subscriptions;
 using VeterinaryApi.Domain.Subscriptions.Errors;
 

@@ -1,5 +1,5 @@
 ﻿using System.Security.Claims;
-using VeterinaryApi.Common.Abstracions;
+using Shared.Abstracions;
 
 namespace VeterinaryApi.Infrastructure.Services.Users;
 

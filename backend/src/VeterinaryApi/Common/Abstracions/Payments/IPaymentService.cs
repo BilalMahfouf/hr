@@ -1,4 +1,4 @@
-﻿using VeterinaryApi.Common.Results;
+﻿using Shared.Results;
 
 namespace VeterinaryApi.Common.Abstracions.Payments;
 

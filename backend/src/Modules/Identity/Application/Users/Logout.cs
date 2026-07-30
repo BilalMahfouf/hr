@@ -2,9 +2,9 @@ using Identity.Abstracions;
 using Identity.Domain.Users;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using VeterinaryApi.Common.CQRS;
-using VeterinaryApi.Common.Endpoints;
-using VeterinaryApi.Common.Results;
+using Shared.CQRS;
+using Shared.Endpoints;
+using Shared.Results;
 
 namespace Identity.Application.Users;
 

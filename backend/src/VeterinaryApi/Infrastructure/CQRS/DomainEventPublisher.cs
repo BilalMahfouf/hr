@@ -1,6 +1,6 @@
 ﻿using System.Collections.Concurrent;
-using VeterinaryApi.Common.CQRS;
-using VeterinaryApi.Domain.Common;
+using Shared.CQRS;
+using Shared.Domain.Common;
 
 namespace VeterinaryApi.Infrastructure.CQRS;
 

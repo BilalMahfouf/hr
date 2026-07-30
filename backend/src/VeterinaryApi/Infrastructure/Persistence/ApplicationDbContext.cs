@@ -1,6 +1,7 @@
 ﻿using Identity.Abstracions;
 using Identity.Domain.Users;
 using Microsoft.EntityFrameworkCore;
+using Shared.Abstracions;
 using VeterinaryApi.Common.Abstracions;
 using VeterinaryApi.Domain.Notifications;
 using VeterinaryApi.Infrastructure.Persistence.Configurations.Users;

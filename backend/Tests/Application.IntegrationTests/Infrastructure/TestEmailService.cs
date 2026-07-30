@@ -1,5 +1,5 @@
-using VeterinaryApi.Common.Abstracions.Emails;
-using VeterinaryApi.Common.Results;
+using Shared.Abstracions.Emails;
+using Shared.Results;
 
 namespace Application.IntegrationTests.Infrastructure;
 

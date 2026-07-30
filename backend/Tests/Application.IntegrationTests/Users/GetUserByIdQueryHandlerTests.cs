@@ -1,6 +1,7 @@
 using Application.IntegrationTests.Infrastructure;
 using Application.IntegrationTests.TestBases;
 using Microsoft.Extensions.DependencyInjection;
+using Shared.Domain.Common;
 using VeterinaryApi.Domain.Common;
 using VeterinaryApi.Domain.Subscriptions;
 using Identity.Domain.Users;

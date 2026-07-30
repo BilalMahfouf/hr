@@ -1,4 +1,4 @@
-﻿using VeterinaryApi.Common.Errors;
+﻿using Shared.Errors;
 
 namespace VeterinaryApi.Domain.Notifications;
 

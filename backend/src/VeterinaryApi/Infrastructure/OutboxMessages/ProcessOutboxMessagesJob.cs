@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Quartz;
-using VeterinaryApi.Common.Abstracions;
-using VeterinaryApi.Common.CQRS;
-using VeterinaryApi.Domain.Common;
+using Shared.Abstracions;
+using Shared.CQRS;
+using Shared.Domain.Common;
 using VeterinaryApi.Infrastructure.Persistence;
 
 namespace VeterinaryApi.Infrastructure.OutboxMessages;

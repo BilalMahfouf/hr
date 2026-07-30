@@ -3,10 +3,10 @@ using Identity.Domain.Users;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
-using VeterinaryApi.Common.CQRS;
-using VeterinaryApi.Common.Endpoints;
-using VeterinaryApi.Common.Paginations.OffSet;
-using VeterinaryApi.Common.Results;
+using Shared.CQRS;
+using Shared.Endpoints;
+using Shared.Paginations.OffSet;
+using Shared.Results;
 using static Identity.Application.Users.Shared;
 
 namespace Identity.Application.Users;

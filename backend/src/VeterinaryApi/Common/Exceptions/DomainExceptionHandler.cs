@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using VeterinaryApi.Common.Errors;
-using VeterinaryApi.Domain.Common;
+using Shared.Errors;
+using Shared.Domain.Common;
 
 namespace VeterinaryApi.Common.Exceptions;
 

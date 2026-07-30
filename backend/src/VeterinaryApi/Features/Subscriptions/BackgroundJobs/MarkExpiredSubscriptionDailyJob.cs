@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Quartz;
 using System.Diagnostics.CodeAnalysis;
+using Shared.Abstracions;
 using VeterinaryApi.Common.Abstracions;
 using VeterinaryApi.Domain.Subscriptions;
 

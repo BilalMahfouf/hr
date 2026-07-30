@@ -1,7 +1,7 @@
 <Solution>
   <Folder Name="/src/">
     <Project Path="src/VeterinaryApi/VeterinaryApi.csproj" Id="9a9409ff-5a3c-43fc-b4ac-414740b210dc" />
-    <Project Path="src/Modules/Common/Common.csproj" Id="a1b2c3d4-e5f6-7890-abcd-ef1234567890" />
+    <Project Path="src/Modules/Shared/Shared.csproj" Id="a1b2c3d4-e5f6-7890-abcd-ef1234567890" />
     <Project Path="src/Modules/Identity/Identity.csproj" Id="b2c3d4e5-f6a7-8901-bcde-f12345678901" />
   </Folder>
   <Folder Name="/Tests/">

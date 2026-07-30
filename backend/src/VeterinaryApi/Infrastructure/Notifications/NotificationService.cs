@@ -2,6 +2,7 @@
 using System.Text.Json;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using Shared.Abstracions;
 using VeterinaryApi.Common.Abstracions;
 using VeterinaryApi.Domain.Notifications;
 using VeterinaryApi.Infrastructure.Persistence;
