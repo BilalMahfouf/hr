@@ -32,7 +32,7 @@ public sealed class ChangeEmailCommandHandlerTests : UsersTestBase
         var db = scope.ServiceProvider.GetRequiredService<IIdentityApplicationDbContext>();
         var user = await SeedUserAsync(db, email: "user1@test.local");
         var other = await SeedUserAsync(db, email: "user2@test.local");
-        SetCurrentTenant(user.Id);
+        SetCurrentUser(user.Id);
         var handler = CreateChangeEmailHandler(scope.ServiceProvider);
 
         var result = await handler.Handle(
@@ -47,7 +47,7 @@ public sealed class ChangeEmailCommandHandlerTests : UsersTestBase
     public async Task Handle_WhenUserNotFound_ReturnsFailure()
     {
         using var scope = CreateScope();
-        SetCurrentTenant(Guid.NewGuid());
+        SetCurrentUser(Guid.NewGuid());
         var handler = CreateChangeEmailHandler(scope.ServiceProvider);
 
         var result = await handler.Handle(
@@ -64,7 +64,7 @@ public sealed class ChangeEmailCommandHandlerTests : UsersTestBase
         using var scope = CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<IIdentityApplicationDbContext>();
         var user = await SeedUserAsync(db, email: "user@test.local");
-        SetCurrentTenant(user.Id);
+        SetCurrentUser(user.Id);
         var handler = CreateChangeEmailHandler(scope.ServiceProvider);
 
         var result = await handler.Handle(

@@ -43,7 +43,6 @@ public class User : Entity
             Role = role,
             IsActive = true,
         };
-        user.TenantId = user.Id;
         return user;
     }
 
@@ -65,7 +64,6 @@ public class User : Entity
             Role = UserRoles.Doctor,
             IsActive = true,
         };
-        user.TenantId = user.Id;
         return user;
     }
 
@@ -93,7 +91,6 @@ public class User : Entity
     public void ForgetPassword(string token, string clientUri)
     {
         var @event = new UserForgetPasswordDomainEvent(Id, Email, clientUri, token);
-        @event.TenantId = TenantId;
 
         RaiseDomainEvent(@event);
     }

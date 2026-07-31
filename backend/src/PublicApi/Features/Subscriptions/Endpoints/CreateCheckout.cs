@@ -118,8 +118,9 @@ public static class CreateCheckout
             }
 
             var pendingSubscription = await db
-                .Subscriptions.ForTenant(command.DoctorId)
-                .Where(e => e.Status == SubscriptionStatus.Pending)
+                .Subscriptions
+                .Where(e => e.DoctorId == command.DoctorId
+                    && e.Status == SubscriptionStatus.Pending)
                 .ToListAsync(cancellationToken);
 
             if (pendingSubscription.Any())
@@ -195,13 +196,13 @@ public static class CreateCheckout
                     async (
                         [FromBody] Request request,
                         [FromHeader(Name = $"{Shared.IdempotencyKeyHeader}")] string idempotencyKey,
-                        ICurrentTenant currentTenant,
+                        ICurrentUser currentUser,
                         ICommandHandler<CreateSubscriptionCheckoutCommand, Response> handler,
                         CancellationToken ct
                     ) =>
                     {
                         var command = new CreateSubscriptionCheckoutCommand(
-                            currentTenant.UserId!.Value,
+                            currentUser.UserId!.Value,
                             request.PlanId,
                             idempotencyKey
                         );

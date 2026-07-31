@@ -13,11 +13,11 @@ public static class Me
         public void AddRoutes(IEndpointRouteBuilder app)
         {
             app.MapGet("/auth/me", async (
-                ICurrentTenant currentTenant,
+                ICurrentUser currentUser,
                 IQueryHandler<GetUserById.GetUserByIdQuery, Modules.Identity.Application.Users.Shared.Response> handler,
                 CancellationToken ct = default) =>
             {
-                var userId = currentTenant.UserId!.Value;
+                var userId = currentUser.UserId!.Value;
                 var query = new GetUserById.GetUserByIdQuery(userId);
                 var result = await handler.Handle(query, ct);
                 return result.IsSuccess ? Results.Ok(result.Value)

@@ -15,20 +15,20 @@ namespace Application.Tests.Users;
 public class UpdateUserProfileTests
 {
     private readonly Mock<IIdentityApplicationDbContext> _mockDbContext;
-    private readonly Mock<ICurrentTenant> _mockCurrentTenant;
+    private readonly Mock<ICurrentUser> _mockCurrentUser;
     private Mock<DbSet<User>>? _mockUserDbSet;
 
     public UpdateUserProfileTests()
     {
         _mockDbContext = new Mock<IIdentityApplicationDbContext>();
-        _mockCurrentTenant = new Mock<ICurrentTenant>();
+        _mockCurrentUser = new Mock<ICurrentUser>();
     }
 
     private UpdateUserProfile.UpdateUserProfileCommandHandler CreateHandler()
     {
         return new UpdateUserProfile.UpdateUserProfileCommandHandler(
             _mockDbContext.Object,
-            _mockCurrentTenant.Object);
+            _mockCurrentUser.Object);
     }
 
     private void SetupUsersDbSet(List<User> users)
@@ -42,7 +42,7 @@ public class UpdateUserProfileTests
     {
         // Arrange
         var userId = Guid.NewGuid();
-        _mockCurrentTenant.SetupGet(t => t.UserId).Returns(userId);
+        _mockCurrentUser.SetupGet(t => t.UserId).Returns(userId);
         SetupUsersDbSet([]);
 
         var handler = CreateHandler();
@@ -62,7 +62,7 @@ public class UpdateUserProfileTests
         // Arrange
         var user = User.Register("olduser", "Jane", "Doe", "test@example.com", "hash");
         SetupUsersDbSet([user]);
-        _mockCurrentTenant.SetupGet(t => t.UserId).Returns(user.Id);
+        _mockCurrentUser.SetupGet(t => t.UserId).Returns(user.Id);
 
         _mockDbContext.Setup(db => db.SaveChangesAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(1);

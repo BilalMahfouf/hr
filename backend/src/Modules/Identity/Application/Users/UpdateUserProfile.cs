@@ -19,21 +19,21 @@ public static class UpdateUserProfile
         : ICommandHandler<UpdateUserProfileCommand>
     {
         private readonly IIdentityApplicationDbContext _db;
-        private readonly ICurrentTenant _currentTenant;
+        private readonly ICurrentUser _currentUser;
 
         public UpdateUserProfileCommandHandler(
             IIdentityApplicationDbContext db,
-            ICurrentTenant currentTenant)
+            ICurrentUser currentUser)
         {
             _db = db;
-            _currentTenant = currentTenant;
+            _currentUser = currentUser;
         }
 
         public async Task<Result> Handle(
             UpdateUserProfileCommand command,
             CancellationToken cancellationToken = default)
         {
-            var userId = _currentTenant.UserId;
+            var userId = _currentUser.UserId;
             var user = await _db.Users
                 .FirstOrDefaultAsync(e => e.Id == userId, cancellationToken);
             if (user is null)

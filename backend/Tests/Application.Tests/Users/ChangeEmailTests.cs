@@ -16,7 +16,7 @@ namespace Application.Tests.Users;
 public class ChangeEmailTests
 {
     private readonly Mock<IIdentityApplicationDbContext> _mockDbContext;
-    private readonly Mock<ICurrentTenant> _mockCurrentTenant;
+    private readonly Mock<ICurrentUser> _mockCurrentUser;
     private readonly IValidator<ChangeEmail.ChangeEmailCommand> _validator;
     private Mock<DbSet<User>>? _mockUserDbSet;
 
@@ -25,7 +25,7 @@ public class ChangeEmailTests
 _mockDbContext = new Mock<IIdentityApplicationDbContext>();
 
 
-        _mockCurrentTenant = new Mock<ICurrentTenant>();
+        _mockCurrentUser = new Mock<ICurrentUser>();
         _validator = new ChangeEmail.Validator();
     }
 
@@ -33,7 +33,7 @@ _mockDbContext = new Mock<IIdentityApplicationDbContext>();
     {
         return new ChangeEmail.ChangeEmailCommandHandler(
             _mockDbContext.Object,
-            _mockCurrentTenant.Object,
+            _mockCurrentUser.Object,
             _validator);
     }
 
@@ -48,7 +48,7 @@ _mockDbContext = new Mock<IIdentityApplicationDbContext>();
     {
         // Arrange
         SetupUsersDbSet([]);
-        _mockCurrentTenant.SetupGet(t => t.UserId).Returns(Guid.NewGuid());
+        _mockCurrentUser.SetupGet(t => t.UserId).Returns(Guid.NewGuid());
 
         var handler = CreateHandler();
         var command = new ChangeEmail.ChangeEmailCommand("not-an-email");
@@ -67,7 +67,7 @@ _mockDbContext = new Mock<IIdentityApplicationDbContext>();
         // Arrange
         var existingUser = User.Register("user1", "Jane", "Doe", "used@example.com", "hash");
         SetupUsersDbSet([existingUser]);
-        _mockCurrentTenant.SetupGet(t => t.UserId).Returns(Guid.NewGuid());
+        _mockCurrentUser.SetupGet(t => t.UserId).Returns(Guid.NewGuid());
 
         var handler = CreateHandler();
         var command = new ChangeEmail.ChangeEmailCommand("used@example.com");
@@ -86,7 +86,7 @@ _mockDbContext = new Mock<IIdentityApplicationDbContext>();
         // Arrange
         SetupUsersDbSet([]);
         var userId = Guid.NewGuid();
-        _mockCurrentTenant.SetupGet(t => t.UserId).Returns(userId);
+        _mockCurrentUser.SetupGet(t => t.UserId).Returns(userId);
 
         var handler = CreateHandler();
         var command = new ChangeEmail.ChangeEmailCommand("new@example.com");
@@ -105,7 +105,7 @@ _mockDbContext = new Mock<IIdentityApplicationDbContext>();
         // Arrange
         var user = User.Register("user1", "Jane", "Doe", "old@example.com", "hash");
         SetupUsersDbSet([user]);
-        _mockCurrentTenant.SetupGet(t => t.UserId).Returns(user.Id);
+        _mockCurrentUser.SetupGet(t => t.UserId).Returns(user.Id);
 
         _mockDbContext.Setup(db => db.SaveChangesAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(1);

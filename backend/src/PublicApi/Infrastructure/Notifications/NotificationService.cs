@@ -23,7 +23,6 @@ namespace PublicApi.Infrastructure.Notifications;
 public class NotificationService : INotificatioService
 {
     private readonly IHubContext<NotificationHub> _hubContext;
-    private readonly ICurrentTenant _currentUser;
     private readonly IApplicationDbContext _db;
     private readonly ILogger<NotificationService> _logger;
 
@@ -31,17 +30,14 @@ public class NotificationService : INotificatioService
     /// Initializes the service with required infrastructure dependencies.
     /// </summary>
     /// <param name="hubContext">The SignalR hub context for real-time in-app delivery.</param>
-    /// <param name="currentUser">The ambient current-user context.</param>
     /// <param name="db">The application database context for loading push subscriptions.</param>
     /// <param name="logger">Logger for diagnosing push delivery issues.</param>
     public NotificationService(
         IHubContext<NotificationHub> hubContext,
-        ICurrentTenant currentUser,
         IApplicationDbContext db,
         ILogger<NotificationService> logger)
     {
         _hubContext = hubContext;
-        _currentUser = currentUser;
         _db = db;
         _logger = logger;
     }
@@ -89,7 +85,7 @@ public class NotificationService : INotificatioService
         }
 
         var subscriptions = await _db.NotificationPushSubscriptions
-            .ForTenant(userId)
+            .Where(e => e.UserId == userId)
             .ToListAsync(cancellationToken);
 
         if (subscriptions.Count == 0)

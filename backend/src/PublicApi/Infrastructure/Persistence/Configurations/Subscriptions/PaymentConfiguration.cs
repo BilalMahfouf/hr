@@ -86,13 +86,6 @@ public class PaymentConfiguration : IEntityTypeConfiguration<Payment>
         builder.Property(p => p.DeletedOnUtc)
             .HasColumnName("deleted_on_utc");
 
-        builder.Property(p => p.TenantId)
-            .HasColumnName("tenant_id")
-            .IsRequired();
-
-        builder.HasIndex(p => p.TenantId)
-            .HasDatabaseName("ix_subscription_payments_tenant_id");
-
         builder.HasIndex(p => p.IdempotencyKey)
             .IsUnique()
             .HasDatabaseName("ix_subscription_payments_idempotency_key");

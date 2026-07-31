@@ -56,7 +56,7 @@ public sealed class GetUserByIdQueryHandlerTests : UsersTestBase
         var identityDb = scope.ServiceProvider.GetRequiredService<IIdentityApplicationDbContext>();
         var appDb = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         var user = await SeedUserAsync(identityDb, email: "user@test.local", userName: "user");
-        SetCurrentTenant(user.Id);
+        SetCurrentUser(user.Id);
         var plan = SubscriptionPlan.Create(
             "Basic",
             "basic",

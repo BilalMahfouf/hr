@@ -5,10 +5,12 @@ namespace PublicApi.Domain.Notifications;
 /// <summary>
 /// Represents a Web Push subscription for a user's browser.
 /// Each row corresponds to one browser/device that has subscribed to push notifications.
-/// The <c>TenantId</c> is automatically stamped by <c>TenantInterceptor</c> on insert.
 /// </summary>
 public sealed class NotificationPushSubscription : Entity
 {
+    /// <summary>The identifier of the user this push subscription belongs to.</summary>
+    public Guid UserId { get; private set; }
+
     /// <summary>The push endpoint URL provided by the browser's push service.</summary>
     public string Endpoint { get; private set; } = null!;
 
@@ -24,11 +26,13 @@ public sealed class NotificationPushSubscription : Entity
     /// <summary>
     /// Creates a new push subscription record.
     /// </summary>
+    /// <param name="userId">The identifier of the user this push subscription belongs to.</param>
     /// <param name="endpoint">The push endpoint URL from the browser.</param>
     /// <param name="p256dh">The P-256 DH public key from the browser subscription.</param>
     /// <param name="auth">The authentication secret from the browser subscription.</param>
     /// <param name="userAgent">Optional User-Agent of the subscribing browser.</param>
     public static NotificationPushSubscription Create(
+        Guid userId,
         string endpoint,
         string p256dh,
         string auth,
@@ -36,6 +40,7 @@ public sealed class NotificationPushSubscription : Entity
     {
         return new NotificationPushSubscription
         {
+            UserId = userId,
             Endpoint = endpoint,
             P256dh = p256dh,
             Auth = auth,

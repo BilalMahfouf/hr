@@ -34,7 +34,7 @@ public sealed class CreateSubscriptionCommandHandlerTests : SubscriptionsTestBas
         var appDb = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         var identityDb = scope.ServiceProvider.GetRequiredService<IIdentityApplicationDbContext>();
         var doctor = await SeedDoctorAsync(identityDb);
-        SetCurrentTenant(doctor.Id);
+        SetCurrentUser(doctor.Id);
         var plan = await SeedPlanAsync(appDb);
         await SeedSubscriptionAsync(appDb, doctor.Id, plan, SubscriptionStatus.Active);
         var handler = CreateCreateSubscriptionHandler(scope.ServiceProvider);
@@ -54,7 +54,7 @@ public sealed class CreateSubscriptionCommandHandlerTests : SubscriptionsTestBas
         var appDb = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         var identityDb = scope.ServiceProvider.GetRequiredService<IIdentityApplicationDbContext>();
         var doctor = await SeedDoctorAsync(identityDb);
-        SetCurrentTenant(doctor.Id);
+        SetCurrentUser(doctor.Id);
         var handler = CreateCreateSubscriptionHandler(scope.ServiceProvider);
         var planId = Guid.NewGuid();
 
@@ -73,7 +73,7 @@ public sealed class CreateSubscriptionCommandHandlerTests : SubscriptionsTestBas
         var appDb = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         var identityDb = scope.ServiceProvider.GetRequiredService<IIdentityApplicationDbContext>();
         var doctor = await SeedDoctorAsync(identityDb);
-        SetCurrentTenant(doctor.Id);
+        SetCurrentUser(doctor.Id);
         var plan = await SeedPlanAsync(appDb, trialDays: 0);
         var handler = CreateCreateSubscriptionHandler(scope.ServiceProvider);
 

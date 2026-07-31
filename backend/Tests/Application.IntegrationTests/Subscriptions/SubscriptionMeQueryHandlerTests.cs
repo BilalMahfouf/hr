@@ -37,7 +37,7 @@ public sealed class SubscriptionMeQueryHandlerTests : SubscriptionsTestBase
         var appDb = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         var identityDb = scope.ServiceProvider.GetRequiredService<IIdentityApplicationDbContext>();
         var doctor = await SeedDoctorAsync(identityDb);
-        SetCurrentTenant(doctor.Id);
+        SetCurrentUser(doctor.Id);
         var plan = await SeedPlanAsync(appDb);
 
         var oldSubscription = await SeedSubscriptionAsync(appDb, doctor.Id, plan, SubscriptionStatus.PastDue);

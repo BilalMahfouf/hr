@@ -19,7 +19,7 @@ public sealed class ChangePasswordCommandHandlerTests : UsersTestBase
     public async Task Handle_WhenUserNotFound_ReturnsFailure()
     {
         using var scope = CreateScope();
-        SetCurrentTenant(Guid.NewGuid());
+        SetCurrentUser(Guid.NewGuid());
         var handler = CreateChangePasswordHandler(scope.ServiceProvider);
 
         var result = await handler.Handle(
@@ -36,7 +36,7 @@ public sealed class ChangePasswordCommandHandlerTests : UsersTestBase
         using var scope = CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<IIdentityApplicationDbContext>();
         var user = await SeedUserAsync(db, email: "user@test.local", password: "Pass1234!");
-        SetCurrentTenant(user.Id);
+        SetCurrentUser(user.Id);
         var handler = CreateChangePasswordHandler(scope.ServiceProvider);
 
         var result = await handler.Handle(
@@ -53,7 +53,7 @@ public sealed class ChangePasswordCommandHandlerTests : UsersTestBase
         using var scope = CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<IIdentityApplicationDbContext>();
         var user = await SeedUserAsync(db, email: "user@test.local", password: "Pass1234!");
-        SetCurrentTenant(user.Id);
+        SetCurrentUser(user.Id);
         var handler = CreateChangePasswordHandler(scope.ServiceProvider);
 
         var exception = await Assert.ThrowsAsync<DomainException>(() => handler.Handle(
@@ -69,7 +69,7 @@ public sealed class ChangePasswordCommandHandlerTests : UsersTestBase
         using var scope = CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<IIdentityApplicationDbContext>();
         var user = await SeedUserAsync(db, email: "user@test.local", password: "Pass1234!");
-        SetCurrentTenant(user.Id);
+        SetCurrentUser(user.Id);
         var handler = CreateChangePasswordHandler(scope.ServiceProvider);
 
         var result = await handler.Handle(

@@ -8,6 +8,9 @@ namespace PublicApi.Domain.Notifications;
 /// </summary>
 public sealed class Notification : Entity
 {
+    /// <summary>The identifier of the user this notification belongs to.</summary>
+    public Guid UserId { get; private set; }
+
     /// <summary>Short heading text for the notification.</summary>
     public string Title { get; private set; } = null!;
 
@@ -18,12 +21,14 @@ public sealed class Notification : Entity
     public bool IsRead { get; private set; }
 
     /// <summary>Factory method that creates a new unread notification.</summary>
+    /// <param name="userId">The identifier of the user this notification belongs to.</param>
     /// <param name="title">The notification title.</param>
     /// <param name="body">The notification body text.</param>
     /// <returns>A new <see cref="Notification"/> with <see cref="IsRead"/> set to <c>false</c>.</returns>
-    public static Notification Create(string title, string body)
+    public static Notification Create(Guid userId, string title, string body)
     {
         var notficaiton = new Notification();
+        notficaiton.UserId = userId;
         notficaiton.Title = title;
         notficaiton.Body = body;
         notficaiton.IsRead = false;

@@ -4,15 +4,14 @@ using Modules.Identity.Infrastructure.Persistence;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Http;
 using Modules.Shared.Abstracions;
+using Modules.Shared.Infrastructure.Outbox;
 using PublicApi.Common.Abstracions;
 using Modules.Shared.Abstracions.Emails;
 using PublicApi.Common.Abstracions.Payments;
 using PublicApi.Features.Subscriptions.Endpoints;
 using PublicApi.Infrastructure.Interceptors;
-using PublicApi.Infrastructure.OutboxMessages;
 using PublicApi.Infrastructure.Persistence;
 using PublicApi.Infrastructure.Services.Hashers;
-using PublicApi.Infrastructure.Tenants;
 
 namespace Application.IntegrationTests.Infrastructure;
 
@@ -25,14 +24,14 @@ public abstract class IntegrationTestBase : IAsyncLifetime
     protected IntegrationTestBase(PostgresFixture fixture)
     {
         _fixture = fixture;
-        CurrentTenant = new TestCurrentTenant();
+        CurrentUser = new TestCurrentUser();
         HttpContextAccessor = new HttpContextAccessor
         {
             HttpContext = new DefaultHttpContext()
         };
     }
 
-    protected TestCurrentTenant CurrentTenant { get; }
+    protected TestCurrentUser CurrentUser { get; }
     protected HttpContextAccessor HttpContextAccessor { get; }
     protected TestEmailService EmailService { get; private set; } = new();
     protected IServiceProvider RootProvider { get; private set; } = null!;
@@ -73,9 +72,9 @@ public abstract class IntegrationTestBase : IAsyncLifetime
         HttpContextAccessor.HttpContext = new DefaultHttpContext();
     }
 
-    protected void SetCurrentTenant(Guid? userId)
+    protected void SetCurrentUser(Guid? userId)
     {
-        CurrentTenant.SetUserId(userId);
+        CurrentUser.SetUserId(userId);
     }
 
     protected virtual void ConfigureServices(IServiceCollection services)
@@ -87,26 +86,23 @@ public abstract class IntegrationTestBase : IAsyncLifetime
         var services = new ServiceCollection();
 
         services.AddLogging();
-        services.AddSingleton(CurrentTenant);
-        services.AddSingleton<ICurrentTenant>(sp => sp.GetRequiredService<TestCurrentTenant>());
+        services.AddSingleton(CurrentUser);
+        services.AddSingleton<ICurrentUser>(sp => sp.GetRequiredService<TestCurrentUser>());
         services.AddSingleton<IHttpContextAccessor>(HttpContextAccessor);
 
         services.AddScoped<InsertOutboxMessagesInterceptors>();
-        services.AddScoped<TenantInterceptor>();
 
         services.AddDbContext<ApplicationDbContext>((sp, options) =>
         {
             options.UseNpgsql(ConnectionString)
-                .AddInterceptors(sp.GetRequiredService<InsertOutboxMessagesInterceptors>())
-                .AddInterceptors(sp.GetRequiredService<TenantInterceptor>());
+                .AddInterceptors(sp.GetRequiredService<InsertOutboxMessagesInterceptors>());
         });
         services.AddScoped<IApplicationDbContext>(sp => sp.GetRequiredService<ApplicationDbContext>());
 
         services.AddDbContext<IdentityDbContext>((sp, options) =>
         {
             options.UseNpgsql(ConnectionString)
-                .AddInterceptors(sp.GetRequiredService<InsertOutboxMessagesInterceptors>())
-                .AddInterceptors(sp.GetRequiredService<TenantInterceptor>());
+                .AddInterceptors(sp.GetRequiredService<InsertOutboxMessagesInterceptors>());
         });
         services.AddScoped<IIdentityApplicationDbContext>(sp => sp.GetRequiredService<IdentityDbContext>());
 

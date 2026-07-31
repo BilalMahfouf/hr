@@ -4,7 +4,7 @@ using Modules.Shared.Abstracions;
 namespace PublicApi.Infrastructure.Services.Users;
 
 /// <summary>
-/// ASP.NET Core implementation of <see cref="ICurrentTenant"/> that resolves the authenticated
+/// ASP.NET Core implementation of <see cref="ICurrentUser"/> that resolves the authenticated
 /// user's identifier from the active HTTP request's claims principal.
 /// </summary>
 /// <remarks>
@@ -21,7 +21,7 @@ namespace PublicApi.Infrastructure.Services.Users;
 ///
 /// Callers (interceptors, handlers) must guard against the <c>null</c> case explicitly.
 /// </remarks>
-internal class CurrentUserService : ICurrentTenant
+internal class CurrentUserService : ICurrentUser
 {
     private readonly IHttpContextAccessor _contextAccessor;
 

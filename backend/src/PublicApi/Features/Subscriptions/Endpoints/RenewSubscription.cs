@@ -143,14 +143,14 @@ public static class RenewSubscription
         public void AddRoutes(IEndpointRouteBuilder app)
         {
             app.MapPost("/subscriptions/renew", async (
-                ICurrentTenant tenant,
+                ICurrentUser currentUser,
                 [FromHeader(Name = $"{Shared.IdempotencyKeyHeader}")]
                   string idempotencyKey,
                 [FromBody] Guid planId,
                 ICommandHandler<Command, Shared.Response> handler,
                 CancellationToken ct) =>
             {
-                var command = new Command(tenant.UserId!.Value, planId, idempotencyKey);
+                var command = new Command(currentUser.UserId!.Value, planId, idempotencyKey);
                 var result = await handler.Handle(command);
                 return result.IsSuccess ? Results.Ok(result.Value)
                      : result.Problem();

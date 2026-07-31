@@ -65,25 +65,4 @@ public static class CreateSubscirption
                 .NotEmpty().WithMessage("PlanId is required.");
         }
     }
-
-    //public sealed class Endpoint : IEndpoint
-    //{
-    //    public void AddRoutes(IEndpointRouteBuilder app)
-    //    {
-    //        app.MapPost("/subscriptions", async (
-    //            [FromBody] Request request,
-    //            [FromServices] ICurrentTenant tenant,
-    //            ICommandHandler<Command, Response> handler,
-    //            CancellationToken ct) =>
-    //        {
-    //            var command = new Command(tenant.UserId!.Value, request.PlanId);
-    //            var result = await handler.Handle(command);
-    //            return result.IsSuccess
-    //                ? Results.Ok(result.Value)
-    //                : result.Problem();
-    //        }).RequireAuthorization()
-    //        .WithTags($"{nameof(Subscriptions)}s")
-    //        .WithDescription("Create a new subscription for a doctor.");
-    //    }
-    //}
 }

@@ -27,16 +27,16 @@ public static class ChangeEmail
         : ICommandHandler<ChangeEmailCommand>
     {
         private readonly IIdentityApplicationDbContext _db;
-        private readonly ICurrentTenant _currentTenant;
+        private readonly ICurrentUser _currentUser;
         private readonly IValidator<ChangeEmailCommand> _validator;
 
         public ChangeEmailCommandHandler(
             IIdentityApplicationDbContext db,
-            ICurrentTenant currentTenant,
+            ICurrentUser currentUser,
             IValidator<ChangeEmailCommand> validator)
         {
             _db = db;
-            _currentTenant = currentTenant;
+            _currentUser = currentUser;
             _validator = validator;
         }
 
@@ -55,7 +55,7 @@ public static class ChangeEmail
 
             var user = await _db.Users
                 .FirstOrDefaultAsync(
-                e => e.Id == _currentTenant.UserId,
+                e => e.Id == _currentUser.UserId,
                 cancellationToken);
             if (user is null)
             {

@@ -75,15 +75,8 @@ public class SubscriptionConfiguration : IEntityTypeConfiguration<Subscription>
         builder.Property(s => s.DeletedOnUtc)
             .HasColumnName("deleted_on_utc");
 
-        builder.Property(s => s.TenantId)
-            .HasColumnName("tenant_id")
-            .IsRequired();
-
-        builder.HasIndex(s => s.TenantId)
-            .HasDatabaseName("ix_subscriptions_tenant_id");
-
-        builder.HasIndex(s => new { s.TenantId, s.DoctorId, s.Status })
-            .HasDatabaseName("ix_subscriptions_tenant_id_doctor_id_status");
+        builder.HasIndex(s => new { s.DoctorId, s.Status })
+            .HasDatabaseName("ix_subscriptions_doctor_id_status");
 
         builder.Navigation(s => s.Payments)
             .UsePropertyAccessMode(PropertyAccessMode.Field);

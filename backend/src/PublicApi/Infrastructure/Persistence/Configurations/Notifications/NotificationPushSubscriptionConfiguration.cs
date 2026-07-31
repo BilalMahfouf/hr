@@ -60,11 +60,11 @@ public class NotificationPushSubscriptionConfiguration
         builder.Property(e => e.DeletedOnUtc)
             .HasColumnName("deleted_at");
 
-        builder.Property(e => e.TenantId)
-            .HasColumnName("tenant_id")
+        builder.Property(e => e.UserId)
+            .HasColumnName("user_id")
             .IsRequired();
 
-        builder.HasIndex(e => e.TenantId)
-            .HasDatabaseName("ix_notification_push_subscriptions_tenant_id");
+        builder.HasIndex(e => e.UserId)
+            .HasDatabaseName("ix_notification_push_subscriptions_user_id");
     }
 }

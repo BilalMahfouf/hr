@@ -2,9 +2,8 @@
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Newtonsoft.Json;
 using Modules.Shared.Domain.Common;
-using Modules.Shared.Infrastructure.Outbox;
 
-namespace PublicApi.Infrastructure.OutboxMessages;
+namespace Modules.Shared.Infrastructure.Outbox;
 
 public class InsertOutboxMessagesInterceptors : SaveChangesInterceptor
 {

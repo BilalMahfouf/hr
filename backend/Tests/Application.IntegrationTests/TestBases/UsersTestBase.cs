@@ -67,7 +67,7 @@ public abstract class UsersTestBase : IntegrationTestBase
     {
         return new ChangeEmail.ChangeEmailCommandHandler(
             services.GetRequiredService<IIdentityApplicationDbContext>(),
-            services.GetRequiredService<ICurrentTenant>(),
+            services.GetRequiredService<ICurrentUser>(),
             services.GetRequiredService<FluentValidation.IValidator<ChangeEmail.ChangeEmailCommand>>());
     }
 
@@ -75,7 +75,7 @@ public abstract class UsersTestBase : IntegrationTestBase
     {
         return new ChangePassword.ChangePasswordCommandHandler(
             services.GetRequiredService<IIdentityApplicationDbContext>(),
-            services.GetRequiredService<ICurrentTenant>(),
+            services.GetRequiredService<ICurrentUser>(),
             services.GetRequiredService<IPasswordHasher>());
     }
 
@@ -83,7 +83,7 @@ public abstract class UsersTestBase : IntegrationTestBase
     {
         return new UpdateUserProfile.UpdateUserProfileCommandHandler(
             services.GetRequiredService<IIdentityApplicationDbContext>(),
-            services.GetRequiredService<ICurrentTenant>());
+            services.GetRequiredService<ICurrentUser>());
     }
 
     protected GetAllUsers.QueryHandler CreateGetAllUsersHandler(IServiceProvider services)

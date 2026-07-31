@@ -16,14 +16,14 @@ namespace Application.Tests.Users;
 public class ChangePasswordTests
 {
     private readonly Mock<IIdentityApplicationDbContext> _mockDbContext;
-    private readonly Mock<ICurrentTenant> _mockCurrentTenant;
+    private readonly Mock<ICurrentUser> _mockCurrentUser;
     private readonly Mock<IPasswordHasher> _mockPasswordHasher;
     private Mock<DbSet<User>>? _mockUserDbSet;
 
     public ChangePasswordTests()
     {
         _mockDbContext = new Mock<IIdentityApplicationDbContext>();
-        _mockCurrentTenant = new Mock<ICurrentTenant>();
+        _mockCurrentUser = new Mock<ICurrentUser>();
         _mockPasswordHasher = new Mock<IPasswordHasher>();
     }
 
@@ -31,7 +31,7 @@ public class ChangePasswordTests
     {
         return new ChangePassword.ChangePasswordCommandHandler(
             _mockDbContext.Object,
-            _mockCurrentTenant.Object,
+            _mockCurrentUser.Object,
             _mockPasswordHasher.Object);
     }
 
@@ -46,7 +46,7 @@ public class ChangePasswordTests
     {
         // Arrange
         var userId = Guid.NewGuid();
-        _mockCurrentTenant.SetupGet(t => t.UserId).Returns(userId);
+        _mockCurrentUser.SetupGet(t => t.UserId).Returns(userId);
         SetupUsersDbSet([]);
 
         var handler = CreateHandler();
@@ -68,7 +68,7 @@ public class ChangePasswordTests
     {
         // Arrange
         var user = User.Create("John", "Doe", "test@example.com", "old-hash", UserRoles.Doctor);
-        _mockCurrentTenant.SetupGet(t => t.UserId).Returns(user.Id);
+        _mockCurrentUser.SetupGet(t => t.UserId).Returns(user.Id);
         SetupUsersDbSet([user]);
 
         _mockPasswordHasher.Setup(ph => ph.Verify("wrong", user.PasswordHash)).Returns(false);
@@ -93,7 +93,7 @@ public class ChangePasswordTests
     {
         // Arrange
         var user = User.Create("John", "Doe", "test@example.com", "old-hash", UserRoles.Doctor);
-        _mockCurrentTenant.SetupGet(t => t.UserId).Returns(user.Id);
+        _mockCurrentUser.SetupGet(t => t.UserId).Returns(user.Id);
         SetupUsersDbSet([user]);
 
         _mockPasswordHasher.Setup(ph => ph.Verify("oldpassword", user.PasswordHash)).Returns(true);
@@ -123,7 +123,7 @@ public class ChangePasswordTests
     {
         // Arrange
         var user = User.Create("John", "Doe", "test@example.com", "old-hash", UserRoles.Doctor);
-        _mockCurrentTenant.SetupGet(t => t.UserId).Returns(user.Id);
+        _mockCurrentUser.SetupGet(t => t.UserId).Returns(user.Id);
         SetupUsersDbSet([user]);
 
         _mockPasswordHasher.Setup(ph => ph.Verify("oldpassword", user.PasswordHash)).Returns(true);

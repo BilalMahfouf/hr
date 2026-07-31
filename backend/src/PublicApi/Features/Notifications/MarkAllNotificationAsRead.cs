@@ -11,7 +11,7 @@ using PublicApi.Infrastructure.Persistence;
 namespace PublicApi.Features.Notifications;
 
 /// <summary>
-/// Vertical slice for bulk-marking all unread notifications as read for the current tenant.
+/// Vertical slice for bulk-marking all unread notifications as read for the current user.
 /// </summary>
 public static class MarkAllNotificationAsRead
 {
@@ -22,15 +22,15 @@ public static class MarkAllNotificationAsRead
     public sealed class MarkAllNotificationAsReadCommandHandler : ICommandHandler<Command>
     {
         private readonly IApplicationDbContext _db;
-        private readonly ICurrentTenant _currentTenant;
+        private readonly ICurrentUser _currentUser;
 
-        /// <summary>Initializes the handler with database and tenant context services.</summary>
+        /// <summary>Initializes the handler with database and current-user context services.</summary>
         public MarkAllNotificationAsReadCommandHandler(
             IApplicationDbContext db,
-            ICurrentTenant currentTenant)
+            ICurrentUser currentUser)
         {
             _db = db;
-            _currentTenant = currentTenant;
+            _currentUser = currentUser;
         }
 
         /// <summary>
@@ -42,7 +42,7 @@ public static class MarkAllNotificationAsRead
             CancellationToken cancellationToken)
         {
             var notifications = await _db.Notifications
-                .ForTenant(_currentTenant.UserId!.Value)
+                .Where(e => e.UserId == _currentUser.UserId!.Value)
                 .Where(n => n.IsRead == false)
                 .ToListAsync(cancellationToken);
             if (notifications is null || !notifications.Any())

@@ -46,12 +46,5 @@ public class UserSessionConfiguration : IEntityTypeConfiguration<UserSession>
             .WithMany(u => u.Sessions)
             .HasForeignKey(s => s.UserId)
             .OnDelete(DeleteBehavior.Cascade);
-
-        builder.Property(s => s.TenantId)
-            .HasColumnName("tenant_id")
-            .IsRequired();
-
-        builder.HasIndex(s => s.TenantId)
-            .HasDatabaseName("ix_user_sessions_tenant_id");
     }
 }

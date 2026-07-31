@@ -19,17 +19,17 @@ public static class ChangePassword
     public sealed class ChangePasswordCommandHandler : ICommandHandler<ChangePasswordCommand>
     {
         private readonly IIdentityApplicationDbContext _db;
-        private readonly ICurrentTenant _currentTenant;
+        private readonly ICurrentUser _currentUser;
         private readonly IPasswordHasher _passwordHasher;
 
         public ChangePasswordCommandHandler(
             IIdentityApplicationDbContext db,
-            ICurrentTenant currentTenant,
+            ICurrentUser currentUser,
             IPasswordHasher passwordHasher
         )
         {
             _db = db;
-            _currentTenant = currentTenant;
+            _currentUser = currentUser;
             _passwordHasher = passwordHasher;
         }
 
@@ -38,7 +38,7 @@ public static class ChangePassword
             CancellationToken cancellationToken = default
         )
         {
-            var userId = _currentTenant.UserId;
+            var userId = _currentUser.UserId;
             var user = await _db.Users.FirstOrDefaultAsync(e => e.Id == userId, cancellationToken);
             if (user is null)
             {

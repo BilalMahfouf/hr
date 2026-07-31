@@ -56,20 +56,13 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(u => u.CreatedOnUtc)
             .HasColumnName("created_on_utc");
 
-        builder.Property(u => u.TenantId)
-            .HasColumnName("tenant_id")
-            .IsRequired();
-
-        builder.HasIndex(u => u.TenantId)
-            .HasDatabaseName("ix_users_tenant_id");
-
-        builder.HasIndex(u => new { u.TenantId, u.Email })
+        builder.HasIndex(u => u.Email)
             .IsUnique()
-            .HasDatabaseName("ix_users_tenant_id_email");
+            .HasDatabaseName("ix_users_email");
 
-        builder.HasIndex(u => new { u.TenantId, u.UserName })
+        builder.HasIndex(u => u.UserName)
             .IsUnique()
-            .HasDatabaseName("ix_users_tenant_id_user_name");
+            .HasDatabaseName("ix_users_user_name");
 
         builder.Navigation(u => u.Sessions)
             .UsePropertyAccessMode(PropertyAccessMode.Field);

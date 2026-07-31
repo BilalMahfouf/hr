@@ -68,15 +68,8 @@ public class SubscriptionPlanConfiguration : IEntityTypeConfiguration<Subscripti
         builder.Property(p => p.DeletedOnUtc)
             .HasColumnName("deleted_on_utc");
 
-        builder.Property(p => p.TenantId)
-            .HasColumnName("tenant_id")
-            .IsRequired();
-
-        builder.HasIndex(p => p.TenantId)
-            .HasDatabaseName("ix_subscription_plans_tenant_id");
-
-        builder.HasIndex(p => new { p.TenantId, p.Slug })
+        builder.HasIndex(p => p.Slug)
             .IsUnique()
-            .HasDatabaseName("ix_subscription_plans_tenant_id_slug");
+            .HasDatabaseName("ix_subscription_plans_slug");
     }
 }

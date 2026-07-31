@@ -24,15 +24,15 @@ public static class MarkNotifcationAsRead
     public sealed class MarkNotificationAsReadCommandHandler : ICommandHandler<Command>
     {
         private readonly IApplicationDbContext _db;
-        private readonly ICurrentTenant _currentTenant;
+        private readonly ICurrentUser _currentUser;
 
-        /// <summary>Initializes the handler with database and tenant context services.</summary>
+        /// <summary>Initializes the handler with database and current-user context services.</summary>
         public MarkNotificationAsReadCommandHandler(
             IApplicationDbContext db,
-            ICurrentTenant currentTenant)
+            ICurrentUser currentUser)
         {
             _db = db;
-            _currentTenant = currentTenant;
+            _currentUser = currentUser;
         }
 
         /// <summary>Loads the notification, calls <c>Notification.MarkAsRead()</c>, and persists.</summary>
@@ -42,7 +42,7 @@ public static class MarkNotifcationAsRead
             CancellationToken cancellationToken = default)
         {
             var notification = await _db.Notifications
-                .ForTenant(_currentTenant.UserId!.Value)
+                .Where(e => e.UserId == _currentUser.UserId!.Value)
                 .FirstOrDefaultAsync(
                 e => e.Id == command.NotificationId
                 , cancellationToken);

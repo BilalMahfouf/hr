@@ -26,7 +26,7 @@ public sealed class RenewSubscriptionCommandHandlerTests : SubscriptionsTestBase
         var appDb = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         var identityDb = scope.ServiceProvider.GetRequiredService<IIdentityApplicationDbContext>();
         var doctor = await SeedDoctorAsync(identityDb);
-        SetCurrentTenant(doctor.Id);
+        SetCurrentUser(doctor.Id);
         var plan = await SeedPlanAsync(appDb);
         await SeedSubscriptionAsync(appDb, doctor.Id, plan, SubscriptionStatus.Active);
         var handler = CreateRenewSubscriptionHandler(scope.ServiceProvider);
@@ -46,7 +46,7 @@ public sealed class RenewSubscriptionCommandHandlerTests : SubscriptionsTestBase
         var appDb = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         var identityDb = scope.ServiceProvider.GetRequiredService<IIdentityApplicationDbContext>();
         var doctor = await SeedDoctorAsync(identityDb);
-        SetCurrentTenant(doctor.Id);
+        SetCurrentUser(doctor.Id);
         var plan = await SeedPlanAsync(appDb);
         var subscription = await SeedSubscriptionAsync(appDb, doctor.Id, plan, SubscriptionStatus.PastDue);
         var payment = await SeedPaymentAsync(
@@ -78,7 +78,7 @@ public sealed class RenewSubscriptionCommandHandlerTests : SubscriptionsTestBase
         var appDb = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         var identityDb = scope.ServiceProvider.GetRequiredService<IIdentityApplicationDbContext>();
         var doctor = await SeedDoctorAsync(identityDb);
-        SetCurrentTenant(doctor.Id);
+        SetCurrentUser(doctor.Id);
         var plan = await SeedPlanAsync(appDb);
         var subscription = await SeedSubscriptionAsync(appDb, doctor.Id, plan, SubscriptionStatus.PastDue);
         var payment = await SeedPaymentAsync(
@@ -108,7 +108,7 @@ public sealed class RenewSubscriptionCommandHandlerTests : SubscriptionsTestBase
         var appDb = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         var identityDb = scope.ServiceProvider.GetRequiredService<IIdentityApplicationDbContext>();
         var doctor = await SeedDoctorAsync(identityDb);
-        SetCurrentTenant(doctor.Id);
+        SetCurrentUser(doctor.Id);
         var handler = CreateRenewSubscriptionHandler(scope.ServiceProvider);
         var planId = Guid.NewGuid();
 
@@ -127,7 +127,7 @@ public sealed class RenewSubscriptionCommandHandlerTests : SubscriptionsTestBase
         var appDb = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         var identityDb = scope.ServiceProvider.GetRequiredService<IIdentityApplicationDbContext>();
         var doctor = await SeedDoctorAsync(identityDb);
-        SetCurrentTenant(doctor.Id);
+        SetCurrentUser(doctor.Id);
         var plan = await SeedPlanAsync(appDb);
         var handler = CreateRenewSubscriptionHandler(scope.ServiceProvider);
 
@@ -146,7 +146,7 @@ public sealed class RenewSubscriptionCommandHandlerTests : SubscriptionsTestBase
         var appDb = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         var identityDb = scope.ServiceProvider.GetRequiredService<IIdentityApplicationDbContext>();
         var doctor = await SeedDoctorAsync(identityDb);
-        SetCurrentTenant(doctor.Id);
+        SetCurrentUser(doctor.Id);
         var plan = await SeedPlanAsync(appDb);
         await SeedSubscriptionAsync(appDb, doctor.Id, plan, SubscriptionStatus.PastDue);
         var handler = CreateRenewSubscriptionHandler(scope.ServiceProvider);
@@ -166,7 +166,7 @@ public sealed class RenewSubscriptionCommandHandlerTests : SubscriptionsTestBase
         var appDb = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         var identityDb = scope.ServiceProvider.GetRequiredService<IIdentityApplicationDbContext>();
         var doctor = await SeedDoctorAsync(identityDb);
-        SetCurrentTenant(doctor.Id);
+        SetCurrentUser(doctor.Id);
         var plan = await SeedPlanAsync(appDb);
         var oldSubscription = await SeedSubscriptionAsync(appDb, doctor.Id, plan, SubscriptionStatus.PastDue);
 

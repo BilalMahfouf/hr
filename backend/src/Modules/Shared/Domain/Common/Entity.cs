@@ -2,7 +2,7 @@ using Modules.Shared.Errors;
 
 namespace Modules.Shared.Domain.Common;
 
-public class Entity : IEntity, ISoftDelete, ITenantOwned
+public class Entity : IEntity, ISoftDelete
 {
     public Guid Id { get; protected set; }
 
@@ -15,8 +15,6 @@ public class Entity : IEntity, ISoftDelete, ITenantOwned
     private List<IDomainEvent> _events = new();
 
     public IReadOnlyCollection<IDomainEvent> DomainEvents => _events.AsReadOnly();
-
-    public Guid TenantId { get; set; }
 
     protected void RaiseDomainEvent(IDomainEvent @event)
     {

@@ -1,6 +1,6 @@
 namespace Modules.Shared.Abstracions;
 
-public interface ICurrentTenant
+public interface ICurrentUser
 {
     public Guid? UserId { get; }
 }

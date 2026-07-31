@@ -29,14 +29,8 @@ namespace PublicApi.Migrations
                 table: "outbox_messages",
                 newName: "last_error");
 
-            migrationBuilder.AlterColumn<string>(
-                name: "content",
-                schema: "shared",
-                table: "outbox_messages",
-                type: "jsonb",
-                nullable: false,
-                oldClrType: typeof(string),
-                oldType: "text");
+            migrationBuilder.Sql(
+                "ALTER TABLE shared.outbox_messages ALTER COLUMN content TYPE jsonb USING content::jsonb;");
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "last_attempt_on_utc",

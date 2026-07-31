@@ -50,7 +50,7 @@ public sealed class HandleChargilyWebhookCommandHandlerTests : PaymentsTestBase
         var appDb = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         var identityDb = scope.ServiceProvider.GetRequiredService<IIdentityApplicationDbContext>();
         var doctor = await SeedDoctorAsync(identityDb);
-        SetCurrentTenant(doctor.Id);
+        SetCurrentUser(doctor.Id);
         var plan = await SeedPlanAsync(appDb);
         var subscription = await SeedSubscriptionAsync(appDb, doctor.Id, plan, SubscriptionStatus.Pending);
         var payment = await SeedPaymentAsync(appDb, subscription, doctor.Id, "key-1", status: PaymentStatus.Pending);
@@ -88,7 +88,7 @@ public sealed class HandleChargilyWebhookCommandHandlerTests : PaymentsTestBase
         var appDb = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         var identityDb = scope.ServiceProvider.GetRequiredService<IIdentityApplicationDbContext>();
         var doctor = await SeedDoctorAsync(identityDb);
-        SetCurrentTenant(doctor.Id);
+        SetCurrentUser(doctor.Id);
         var plan = await SeedPlanAsync(appDb);
         var subscription = await SeedSubscriptionAsync(appDb, doctor.Id, plan, SubscriptionStatus.Pending);
         var payment = await SeedPaymentAsync(appDb, subscription, doctor.Id, "key-1", status: PaymentStatus.Pending);

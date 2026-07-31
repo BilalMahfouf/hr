@@ -26,7 +26,7 @@ public sealed class CreateCheckoutHandlerTests : SubscriptionsTestBase
         var appDb = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         var identityDb = scope.ServiceProvider.GetRequiredService<IIdentityApplicationDbContext>();
         var doctor = await SeedDoctorAsync(identityDb);
-        SetCurrentTenant(doctor.Id);
+        SetCurrentUser(doctor.Id);
         var plan = await SeedPlanAsync(appDb);
         await SeedSubscriptionAsync(appDb, doctor.Id, plan, SubscriptionStatus.Active);
         var handler = CreateCreateCheckoutHandler(scope.ServiceProvider);
@@ -46,7 +46,7 @@ public sealed class CreateCheckoutHandlerTests : SubscriptionsTestBase
         var appDb = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         var identityDb = scope.ServiceProvider.GetRequiredService<IIdentityApplicationDbContext>();
         var doctor = await SeedDoctorAsync(identityDb);
-        SetCurrentTenant(doctor.Id);
+        SetCurrentUser(doctor.Id);
         var plan = await SeedPlanAsync(appDb);
         var subscription = await SeedSubscriptionAsync(appDb, doctor.Id, plan, SubscriptionStatus.Pending);
         var payment = await SeedPaymentAsync(
@@ -80,7 +80,7 @@ public sealed class CreateCheckoutHandlerTests : SubscriptionsTestBase
         var appDb = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         var identityDb = scope.ServiceProvider.GetRequiredService<IIdentityApplicationDbContext>();
         var doctor = await SeedDoctorAsync(identityDb);
-        SetCurrentTenant(doctor.Id);
+        SetCurrentUser(doctor.Id);
         var plan = await SeedPlanAsync(appDb);
         var subscription = await SeedSubscriptionAsync(appDb, doctor.Id, plan, SubscriptionStatus.Pending);
         var payment = await SeedPaymentAsync(
@@ -125,7 +125,7 @@ public sealed class CreateCheckoutHandlerTests : SubscriptionsTestBase
         var appDb = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         var identityDb = scope.ServiceProvider.GetRequiredService<IIdentityApplicationDbContext>();
         var doctor = await SeedDoctorAsync(identityDb);
-        SetCurrentTenant(doctor.Id);
+        SetCurrentUser(doctor.Id);
         var handler = CreateCreateCheckoutHandler(scope.ServiceProvider);
         var planId = Guid.NewGuid();
 
@@ -144,7 +144,7 @@ public sealed class CreateCheckoutHandlerTests : SubscriptionsTestBase
         var appDb = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         var identityDb = scope.ServiceProvider.GetRequiredService<IIdentityApplicationDbContext>();
         var doctor = await SeedDoctorAsync(identityDb);
-        SetCurrentTenant(doctor.Id);
+        SetCurrentUser(doctor.Id);
         var plan = await SeedPlanAsync(appDb, trialDays: 7);
         var handler = CreateCreateCheckoutHandler(scope.ServiceProvider);
 
@@ -168,7 +168,7 @@ public sealed class CreateCheckoutHandlerTests : SubscriptionsTestBase
         var appDb = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         var identityDb = scope.ServiceProvider.GetRequiredService<IIdentityApplicationDbContext>();
         var doctor = await SeedDoctorAsync(identityDb);
-        SetCurrentTenant(doctor.Id);
+        SetCurrentUser(doctor.Id);
         var plan = await SeedPlanAsync(appDb, trialDays: 0);
         ChargilyClientMock
             .Setup(c => c.CreateCheckout(It.IsAny<Checkout>()))
@@ -190,7 +190,7 @@ public sealed class CreateCheckoutHandlerTests : SubscriptionsTestBase
         var appDb = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         var identityDb = scope.ServiceProvider.GetRequiredService<IIdentityApplicationDbContext>();
         var doctor = await SeedDoctorAsync(identityDb);
-        SetCurrentTenant(doctor.Id);
+        SetCurrentUser(doctor.Id);
         var plan = await SeedPlanAsync(appDb, trialDays: 0);
         var checkout = BuildCheckoutResponse("provider-123", new Uri("https://checkout.test/new"));
         ChargilyClientMock

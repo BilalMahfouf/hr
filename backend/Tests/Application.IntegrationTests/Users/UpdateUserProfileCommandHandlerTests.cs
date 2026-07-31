@@ -17,7 +17,7 @@ public sealed class UpdateUserProfileCommandHandlerTests : UsersTestBase
     public async Task Handle_WhenUserNotFound_ReturnsFailure()
     {
         using var scope = CreateScope();
-        SetCurrentTenant(Guid.NewGuid());
+        SetCurrentUser(Guid.NewGuid());
         var handler = CreateUpdateUserProfileHandler(scope.ServiceProvider);
 
         var result = await handler.Handle(
@@ -34,7 +34,7 @@ public sealed class UpdateUserProfileCommandHandlerTests : UsersTestBase
         using var scope = CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<IIdentityApplicationDbContext>();
         var user = await SeedUserAsync(db, email: "user@test.local", userName: "olduser");
-        SetCurrentTenant(user.Id);
+        SetCurrentUser(user.Id);
         var handler = CreateUpdateUserProfileHandler(scope.ServiceProvider);
 
         var result = await handler.Handle(

@@ -13,10 +13,10 @@ using PublicApi.Infrastructure.Persistence;
 
 namespace PublicApi.Features.Notifications;
 
-/// <summary>
-/// Vertical slice for retrieving a tenant-scoped list of notifications with cursor-based pagination.
-/// Supports filtering by read/unread status and bidirectional navigation (next/prev).
-/// </summary>
+    /// <summary>
+    /// Vertical slice for retrieving a user-scoped list of notifications with cursor-based pagination.
+    /// Supports filtering by read/unread status and bidirectional navigation (next/prev).
+    /// </summary>
 public static class GetAllNotifications
 {
     /// <summary>Read-model DTO for a single notification row.</summary>
@@ -52,15 +52,15 @@ public static class GetAllNotifications
         : IQueryHandler<Query, CursorPagedList<Response>>
     {
         private readonly IApplicationDbContext _db;
-        private readonly ICurrentTenant _currentTenant;
+        private readonly ICurrentUser _currentUser;
 
-        /// <summary>Initializes the handler with database and tenant context services.</summary>
+        /// <summary>Initializes the handler with database and current-user context services.</summary>
         public GetAllNotificationQueryHandler(
             IApplicationDbContext db,
-            ICurrentTenant currentTenant)
+            ICurrentUser currentUser)
         {
             _db = db;
-            _currentTenant = currentTenant;
+            _currentUser = currentUser;
         }
 
         /// <summary>
@@ -83,7 +83,7 @@ public static class GetAllNotifications
 
 
             var baseQuery = _db.Notifications
-                .ForTenant(_currentTenant.UserId!.Value)
+                .Where(e => e.UserId == _currentUser.UserId!.Value)
                 .Where(e => e.IsRead == isAll);
 
             // Step 3: Apply cursor filter

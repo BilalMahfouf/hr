@@ -66,11 +66,11 @@ public static class Me
         public void AddRoutes(IEndpointRouteBuilder app)
         {
             app.MapGet("/subscriptions/me", async (
-                ICurrentTenant currentTenant,
+                ICurrentUser currentUser,
                 IQueryHandler<Query, Response> handler,
                 CancellationToken ct) =>
             {
-                var query = new Query(currentTenant.UserId!.Value);
+                var query = new Query(currentUser.UserId!.Value);
                 var result = await handler.Handle(query, ct);
                 return result.IsSuccess ? Results.Ok(result.Value)
                      : result.Problem();

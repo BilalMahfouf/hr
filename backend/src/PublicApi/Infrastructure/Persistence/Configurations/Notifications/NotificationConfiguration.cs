@@ -45,11 +45,11 @@ public class NotificationConfiguration : IEntityTypeConfiguration<Notification>
         builder.Property(n => n.DeletedOnUtc)
             .HasColumnName("deleted_at");
 
-        builder.Property(n => n.TenantId)
-            .HasColumnName("tenant_id")
+        builder.Property(n => n.UserId)
+            .HasColumnName("user_id")
             .IsRequired();
 
-        builder.HasIndex(n => n.TenantId)
-            .HasDatabaseName("ix_notifications_tenant_id");
+        builder.HasIndex(n => n.UserId)
+            .HasDatabaseName("ix_notifications_user_id");
     }
 }

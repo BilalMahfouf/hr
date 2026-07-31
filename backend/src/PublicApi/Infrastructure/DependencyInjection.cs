@@ -1,22 +1,22 @@
 ﻿using System.Diagnostics;
 using System.Text;
-using Modules.Identity.Abstracions;
-using Modules.Identity.Application.Users;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.IdentityModel.Tokens;
 using Quartz;
 using Resend;
+using Modules.Identity.Abstracions;
+using Modules.Identity.Infrastructure.Persistence;
 using Modules.Shared;
 using Modules.Shared.Abstracions;
 using Modules.Shared.Abstracions.Emails;
 using Modules.Shared.CQRS;
+using Modules.Shared.Infrastructure.Outbox;
 using PublicApi.Common.Abstracions;
 using PublicApi.Domain.Notifications;
 using PublicApi.Features.Subscriptions.BackgroundJobs;
-using Microsoft.EntityFrameworkCore.Migrations;
-using Modules.Identity.Infrastructure.Persistence;
 using PublicApi.Infrastructure.CQRS;
 using PublicApi.Infrastructure.Interceptors;
 using PublicApi.Infrastructure.Notifications;
@@ -26,7 +26,6 @@ using PublicApi.Infrastructure.Services.Hashers;
 using PublicApi.Infrastructure.Services.Notifications;
 using PublicApi.Infrastructure.Services.Subscriptions;
 using PublicApi.Infrastructure.Services.Users;
-using PublicApi.Infrastructure.Tenants;
 
 namespace PublicApi.Infrastructure;
 
@@ -41,9 +40,9 @@ public static class DependencyInjection
     /// <list type="bullet">
     ///   <item>Password hashing (<see cref="Argon2PasswordHasher"/>)</item>
     ///   <item>JWT authentication (HMAC-SHA256, read from environment variables)</item>
-    ///   <item>EF Core + Npgsql with <c>AuditInterceptor</c>, <c>InsertOutboxMessagesInterceptors</c>, and <c>TenantInterceptor</c></item>
+    ///   <item>EF Core + Npgsql with <c>AuditInterceptor</c> and <c>InsertOutboxMessagesInterceptors</c></item>
     ///   <item>Email service (<c>EmailService</c>)</item>
-    ///   <item>Tenant/current-user service (<c>CurrentUserService</c>)</item>
+    ///   <item>Current-user service (<c>CurrentUserService</c>)</item>
     ///   <item>CQRS dispatchers and handlers (auto-scanned)</item>
     ///   <item>Quartz.NET background job (outbox processor, every 10 seconds)</item>
     ///   <item>SignalR + <see cref="INotificatioService"/> (<c>NotificationService</c>)</item>
@@ -108,7 +107,6 @@ public static class DependencyInjection
 
         services.AddScoped<AuditInterceptor>();
         services.AddScoped<InsertOutboxMessagesInterceptors>();
-        services.AddScoped<TenantInterceptor>();
 
         // ef core config
 
@@ -118,8 +116,7 @@ public static class DependencyInjection
             {
                 options
                     .UseNpgsql(connectionString)
-                    .AddInterceptors(sp.GetRequiredService<InsertOutboxMessagesInterceptors>())
-                    .AddInterceptors(sp.GetRequiredService<TenantInterceptor>());
+                    .AddInterceptors(sp.GetRequiredService<InsertOutboxMessagesInterceptors>());
             },
             ServiceLifetime.Scoped
         );
@@ -129,8 +126,7 @@ public static class DependencyInjection
             {
                 options
                     .UseNpgsql(connectionString)
-                    .AddInterceptors(sp.GetRequiredService<InsertOutboxMessagesInterceptors>())
-                    .AddInterceptors(sp.GetRequiredService<TenantInterceptor>());
+                    .AddInterceptors(sp.GetRequiredService<InsertOutboxMessagesInterceptors>());
             },
             ServiceLifetime.Scoped
         );
@@ -139,12 +135,13 @@ public static class DependencyInjection
         services.AddDbContext<IdentityDbContext>(
             (sp, options) =>
             {
-                options.UseNpgsql(connectionString, o =>
-                    o.MigrationsHistoryTable(
-                        HistoryRepository.DefaultTableName,
-                        "identity"))
-                    .AddInterceptors(sp.GetRequiredService<InsertOutboxMessagesInterceptors>())
-                    .AddInterceptors(sp.GetRequiredService<TenantInterceptor>());
+                options
+                    .UseNpgsql(
+                        connectionString,
+                        o => o.MigrationsHistoryTable(
+                            HistoryRepository.DefaultTableName,
+                            "identity"))
+                    .AddInterceptors(sp.GetRequiredService<InsertOutboxMessagesInterceptors>());
             },
             ServiceLifetime.Scoped
         );
@@ -182,7 +179,7 @@ public static class DependencyInjection
                 );
         });
 
-        services.AddScoped<ICurrentTenant, CurrentUserService>();
+        services.AddScoped<ICurrentUser, CurrentUserService>();
 
         services.AddHttpContextAccessor();
 
@@ -256,18 +253,8 @@ public static class DependencyInjection
 
         services.AddSignalR();
         services.AddScoped<INotificatioService, NotificationService>();
-        var identityEventHandlerAssembly = typeof(Register).Assembly;
         services.Scan(scan =>
             scan.FromAssembliesOf(typeof(Program))
-                .AddClasses(
-                    classes => classes.AssignableTo(typeof(IDomainEventHandler<>)),
-                    publicOnly: false
-                )
-                .AsImplementedInterfaces()
-                .WithScopedLifetime()
-        );
-        services.Scan(scan =>
-            scan.FromAssemblies(identityEventHandlerAssembly)
                 .AddClasses(
                     classes => classes.AssignableTo(typeof(IDomainEventHandler<>)),
                     publicOnly: false

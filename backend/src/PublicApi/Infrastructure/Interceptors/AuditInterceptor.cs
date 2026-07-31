@@ -18,20 +18,20 @@ namespace PublicApi.Infrastructure.Interceptors;
 /// must be triggered or the entity must be modified further. Consider moving this logic to
 /// <c>SavingChangesAsync</c> (pre-save) to guarantee the field is included in the initial INSERT.
 ///
-/// The dependency on <see cref="ICurrentTenant"/> is named <c>_currentUser</c> to reflect its
-/// semantic role as "current user context", even though the interface is typed as the tenant accessor.
+/// The dependency on <see cref="ICurrentUser"/> is named <c>_currentUser</c> to reflect its
+/// semantic role as "current user context".
 /// </remarks>
 public class AuditInterceptor : SaveChangesInterceptor
 {
-    private readonly ICurrentTenant _currentUser;
+    private readonly ICurrentUser _currentUser;
 
     /// <summary>
-    /// Initializes the interceptor with the current-user/tenant accessor.
+    /// Initializes the interceptor with the current-user accessor.
     /// </summary>
     /// <param name="currentUser">
     /// The ambient user context used to retrieve the ID of the user performing the write.
     /// </param>
-    public AuditInterceptor(ICurrentTenant currentUser)
+    public AuditInterceptor(ICurrentUser currentUser)
     {
         _currentUser = currentUser;
     }
