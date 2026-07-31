@@ -50,7 +50,7 @@ public sealed class ForgetPasswordCommandHandlerTests : UsersTestBase
         Assert.NotNull(session!.ExpiresAt);
         Assert.InRange(session.ExpiresAt!.Value, before.AddMinutes(14), before.AddMinutes(16));
 
-        var outbox = await appDb.OutboxMessages.ToListAsync();
+        var outbox = await appDb.Set<Modules.Shared.Infrastructure.Outbox.OutboxMessage>().ToListAsync();
         Assert.Single(outbox);
         Assert.Contains("UserForgetPasswordDomainEvent", outbox[0].Name);
     }

@@ -23,6 +23,9 @@ public static class DependencyInjection
                 .AsImplementedInterfaces().WithScopedLifetime()
 
                 .AddClasses(c => c.AssignableTo(typeof(ICommandHandler<,>)), publicOnly: false)
+                .AsImplementedInterfaces().WithScopedLifetime()
+
+                .AddClasses(c => c.AssignableTo(typeof(IDomainEventHandler<>)), publicOnly: false)
                 .AsImplementedInterfaces().WithScopedLifetime());
         }
 

@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Modules.Shared.Infrastructure.Outbox;
 using PublicApi.Domain.Notifications;
 using PublicApi.Domain.Subscriptions;
 
@@ -7,8 +6,6 @@ namespace PublicApi.Common.Abstracions;
 
 public interface IApplicationDbContext
 {
-    public DbSet<OutboxMessage> OutboxMessages { get; }
-
     public DbSet<Notification> Notifications { get; }
 
     public DbSet<NotificationPushSubscription> NotificationPushSubscriptions { get; }

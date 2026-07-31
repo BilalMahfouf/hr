@@ -9,7 +9,6 @@ using PublicApi.Common.Abstracions;
 using Modules.Shared.Abstracions.Emails;
 using PublicApi.Common.Abstracions.Payments;
 using PublicApi.Features.Subscriptions.Endpoints;
-using PublicApi.Infrastructure.Interceptors;
 using PublicApi.Infrastructure.Persistence;
 using PublicApi.Infrastructure.Services.Hashers;
 

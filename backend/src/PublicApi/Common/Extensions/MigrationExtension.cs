@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Modules.Identity.Infrastructure.Persistence;
+using Modules.Shared.Infrastructure.Persistence;
 using PublicApi.Infrastructure.Persistence;
 
 namespace PublicApi.Common.Extensions;
@@ -9,6 +10,9 @@ public static class MigrationExtension
     public static void ApplyMigrations(this IApplicationBuilder app)
     {
         using IServiceScope scope = app.ApplicationServices.CreateScope();
+
+        var sharedDb = scope.ServiceProvider.GetRequiredService<SharedDbContext>();
+        sharedDb.Database.Migrate();
 
         var identityDb = scope.ServiceProvider.GetRequiredService<IdentityDbContext>();
         identityDb.Database.Migrate();

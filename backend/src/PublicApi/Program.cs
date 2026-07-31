@@ -2,10 +2,10 @@ using Carter;
 using PublicApi.Infrastructure;
 using DotNetEnv;
 using Scalar.AspNetCore;
-using PublicApi.Common.Exceptions;
 using PublicApi.Common.Extensions;
 using PublicApi.Infrastructure.Notifications;
 using Modules.Shared;
+using Modules.Shared.Infrastructure;
 using Modules.Identity;
 using PublicApi.Infrastructure.Payments;
 
@@ -26,9 +26,9 @@ builder.Services.AddSharedModule(
 
 builder.Services.AddProblemDetails();
 
-builder.Services.AddExceptionHandler<ValidationExceptionHandler>();
-builder.Services.AddExceptionHandler<DomainExceptionHandler>();
-builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+var connectionString = Environment.GetEnvironmentVariable("DefaultConnectionLocal");
+
+builder.Services.AddSharedInfrastructure(connectionString!);
 
 builder.Services.AddPayments();
 

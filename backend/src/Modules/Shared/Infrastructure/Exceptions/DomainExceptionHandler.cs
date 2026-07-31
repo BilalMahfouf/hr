@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Modules.Shared.Errors;
 using Modules.Shared.Domain.Common;
 
-namespace PublicApi.Common.Exceptions;
+namespace Modules.Shared.Infrastructure.Exceptions;
 
 public class DomainExceptionHandler(
     IProblemDetailsService problemDetailsService) : IExceptionHandler

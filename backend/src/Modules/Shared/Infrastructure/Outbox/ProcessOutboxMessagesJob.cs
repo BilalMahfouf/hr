@@ -1,17 +1,16 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Quartz;
 using Modules.Shared.CQRS;
 using Modules.Shared.Domain.Common;
-using Modules.Shared.Infrastructure.Outbox;
-using PublicApi.Infrastructure.Persistence;
+using Modules.Shared.Infrastructure.Persistence;
 
-namespace PublicApi.Infrastructure.OutboxMessages;
+namespace Modules.Shared.Infrastructure.Outbox;
 
 [DisallowConcurrentExecution]
 public class ProcessOutboxMessagesJob : IJob
 {
-    private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
+    private readonly IDbContextFactory<SharedDbContext> _contextFactory;
     private readonly IDomainEventPublisher _publisher;
     private readonly ILogger<ProcessOutboxMessagesJob> _logger;
 
@@ -23,7 +22,7 @@ public class ProcessOutboxMessagesJob : IJob
     private const int MaxRetries = 10;
 
     public ProcessOutboxMessagesJob(
-        IDbContextFactory<ApplicationDbContext> contextFactory,
+        IDbContextFactory<SharedDbContext> contextFactory,
         IDomainEventPublisher publisher,
         ILogger<ProcessOutboxMessagesJob> logger)
     {

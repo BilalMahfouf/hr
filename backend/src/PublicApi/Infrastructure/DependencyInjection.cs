@@ -1,52 +1,42 @@
-﻿using System.Diagnostics;
-using System.Text;
+﻿using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.IdentityModel.Tokens;
 using Quartz;
-using Resend;
 using Modules.Identity.Abstracions;
 using Modules.Identity.Infrastructure.Persistence;
-using Modules.Shared;
 using Modules.Shared.Abstracions;
-using Modules.Shared.Abstracions.Emails;
-using Modules.Shared.CQRS;
 using Modules.Shared.Infrastructure.Outbox;
 using PublicApi.Common.Abstracions;
 using PublicApi.Domain.Notifications;
 using PublicApi.Features.Subscriptions.BackgroundJobs;
-using PublicApi.Infrastructure.CQRS;
-using PublicApi.Infrastructure.Interceptors;
 using PublicApi.Infrastructure.Notifications;
-using PublicApi.Infrastructure.OutboxMessages;
 using PublicApi.Infrastructure.Persistence;
 using PublicApi.Infrastructure.Services.Hashers;
-using PublicApi.Infrastructure.Services.Notifications;
 using PublicApi.Infrastructure.Services.Subscriptions;
-using PublicApi.Infrastructure.Services.Users;
 
 namespace PublicApi.Infrastructure;
 
 /// <summary>
-/// Provides the <see cref="AddInfrastructure"/> extension method that wires up all
-/// infrastructure dependencies for the Veterinary API.
+/// Provides the <see cref="AddInfrastructure"/> extension method that wires up the
+/// application-specific infrastructure dependencies for the Veterinary API.
+/// Shared infrastructure (outbox, shared DbContext, CQRS event plumbing, exception
+/// handlers, email, current user) lives in <c>Modules.Shared</c> and is registered
+/// via <c>AddSharedInfrastructure</c>.
 /// </summary>
 public static class DependencyInjection
 {
     /// <summary>
-    /// Registers all infrastructure services including:
+    /// Registers the application infrastructure services including:
     /// <list type="bullet">
     ///   <item>Password hashing (<see cref="Argon2PasswordHasher"/>)</item>
     ///   <item>JWT authentication (HMAC-SHA256, read from environment variables)</item>
-    ///   <item>EF Core + Npgsql with <c>AuditInterceptor</c> and <c>InsertOutboxMessagesInterceptors</c></item>
-    ///   <item>Email service (<c>EmailService</c>)</item>
-    ///   <item>Current-user service (<c>CurrentUserService</c>)</item>
-    ///   <item>CQRS dispatchers and handlers (auto-scanned)</item>
-    ///   <item>Quartz.NET background job (outbox processor, every 10 seconds)</item>
+    ///   <item>EF Core + Npgsql for <see cref="ApplicationDbContext"/> and <c>IdentityDbContext</c>,
+    ///   both with <c>InsertOutboxMessagesInterceptors</c> (registered by the shared module)</item>
+    ///   <item>Subscription status query (<c>UserSubscriptionStatusQuery</c>)</item>
+    ///   <item>Quartz.NET subscription background jobs (daily)</item>
     ///   <item>SignalR + <see cref="INotificatioService"/> (<c>NotificationService</c>)</item>
-    ///   <item>Domain event handlers (scanned from the entry assembly)</item>
     /// </list>
     /// </summary>
     public static IServiceCollection AddInfrastructure(
@@ -55,9 +45,6 @@ public static class DependencyInjection
     )
     {
         services.AddSingleton<IPasswordHasher, Argon2PasswordHasher>();
-
-        var ValidAudience = Environment.GetEnvironmentVariable("JWT_AUDIENCE");
-        var ValidIssuer = Environment.GetEnvironmentVariable("JWT_ISSUER");
 
         // auth config
         services
@@ -103,25 +90,10 @@ public static class DependencyInjection
                 };
             });
 
-        // interceptors config
-
-        services.AddScoped<AuditInterceptor>();
-        services.AddScoped<InsertOutboxMessagesInterceptors>();
-
         // ef core config
 
         var connectionString = Environment.GetEnvironmentVariable("DefaultConnectionLocal");
         services.AddDbContext<IApplicationDbContext, ApplicationDbContext>(
-            (sp, options) =>
-            {
-                options
-                    .UseNpgsql(connectionString)
-                    .AddInterceptors(sp.GetRequiredService<InsertOutboxMessagesInterceptors>());
-            },
-            ServiceLifetime.Scoped
-        );
-
-        services.AddDbContextFactory<ApplicationDbContext>(
             (sp, options) =>
             {
                 options
@@ -152,61 +124,11 @@ public static class DependencyInjection
 
         services.AddScoped<IUserSubscriptionStatusQuery, UserSubscriptionStatusQuery>();
 
-        // Email Options config
-        services.Configure<EmailOptions>(options =>
-        {
-            Console.WriteLine("Configuring EmailOptions from environment variables...");
-            var portString =
-                Environment.GetEnvironmentVariable("EMAIL_CONFIGURATIONS_PORT")
-                ?? throw new InvalidOperationException();
-
-            int.TryParse(portString, out int port);
-            options.Port = port;
-            Console.WriteLine($"EMAIL_CONFIGURATIONS_PORT: {options.Port}");
-            options.Host =
-                Environment.GetEnvironmentVariable("EMAIL_CONFIGURATIONS_HOST")
-                ?? throw new InvalidOperationException("EMAIL_CONFIGURATIONS_HOST is not set");
-            Console.WriteLine($"EMAIL_CONFIGURATIONS_HOST: {options.Host}");
-            options.Password =
-                Environment.GetEnvironmentVariable("EMAIL_CONFIGURATIONS_PASSWORD")
-                ?? throw new InvalidOperationException(
-                    "EMAIL_CONFIGURATIONS_PASSWORD environment variable is not set"
-                );
-            options.Email =
-                Environment.GetEnvironmentVariable("EMAIL_CONFIGURATIONS_EMAIL")
-                ?? throw new InvalidOperationException(
-                    "EMAIL_CONFIGURATIONS_EMAIL environment variable is not set"
-                );
-        });
-
-        services.AddScoped<ICurrentUser, CurrentUserService>();
-
-        services.AddHttpContextAccessor();
-
-        // CQRS
-        services.AddTransient<IDomainEventDispatcher, DomainEventsDispatcher>();
-
-        // Quartz Background job
+        // Quartz Background jobs (subscription lifecycle — daily at 00:00 AM UTC).
+        // The outbox processor job is registered by the shared module.
         services.AddQuartz(configure =>
         {
-            // Outbox processor — runs every 10 seconds
-            var outboxJobKey = new JobKey(nameof(ProcessOutboxMessagesJob));
-            configure
-                .AddJob<ProcessOutboxMessagesJob>(
-                    (sp, opts) =>
-                    {
-                        opts.WithIdentity(outboxJobKey);
-                    }
-                )
-                .AddTrigger(trigger =>
-                    trigger
-                        .ForJob(outboxJobKey)
-                        .WithSimpleSchedule(schedule =>
-                            schedule.WithIntervalInSeconds(10).RepeatForever()
-                        )
-                );
-
-            // Mark past due subscriptions — runs every day at 00:00 AM UTC
+            // Mark past due subscriptions
             var markPastDueSubscriptionJobKey = new JobKey(nameof(MarkPastDueSubscriptionDailyJob));
             configure
                 .AddJob<MarkPastDueSubscriptionDailyJob>(
@@ -220,7 +142,7 @@ public static class DependencyInjection
                     trigger.ForJob(markPastDueSubscriptionJobKey).WithCronSchedule("0 0 0 * * ?");
                 });
 
-            // Mark expired subscriptions — runs every day at 00:00 AM UTC
+            // Mark expired subscriptions
             var markExpiredSubscriptionJobKey = new JobKey(nameof(MarkExpiredSubscriptionDailyJob));
             configure
                 .AddJob<MarkExpiredSubscriptionDailyJob>(
@@ -234,6 +156,7 @@ public static class DependencyInjection
                     trigger.ForJob(markExpiredSubscriptionJobKey).WithCronSchedule("0 0 0 * * ?");
                 });
 
+            // Clean pending subscriptions
             var cleanPendingSubscriptionsJobKey = new JobKey(
                 nameof(CleanPendingSubscriptionsDailyJob)
             );
@@ -253,26 +176,6 @@ public static class DependencyInjection
 
         services.AddSignalR();
         services.AddScoped<INotificatioService, NotificationService>();
-        services.Scan(scan =>
-            scan.FromAssembliesOf(typeof(Program))
-                .AddClasses(
-                    classes => classes.AssignableTo(typeof(IDomainEventHandler<>)),
-                    publicOnly: false
-                )
-                .AsImplementedInterfaces()
-                .WithScopedLifetime()
-        );
-        services.AddTransient<IDomainEventPublisher, DomainEventPublisher>();
-
-        // resend for sending emails :
-        services.AddOptions();
-        services.AddHttpClient<ResendClient>();
-        services.Configure<ResendClientOptions>(o =>
-        {
-            o.ApiToken = Environment.GetEnvironmentVariable("RESEND_APITOKEN")!;
-        });
-        services.AddTransient<IResend, ResendClient>();
-        services.AddTransient<IEmailService, ResendEmailService>();
 
         return services;
     }
