@@ -1,11 +1,11 @@
 using Application.IntegrationTests.Infrastructure;
 using Application.IntegrationTests.TestBases;
 using Microsoft.Extensions.DependencyInjection;
+using Modules.Identity.Abstracions;
 using Modules.Shared.Abstracions;
 using Modules.Shared.Domain.Common;
 using Modules.Identity.Domain.Users;
 using Modules.Identity.Application.Users;
-using PublicApi.Infrastructure.Persistence;
 
 namespace Application.IntegrationTests.Users;
 
@@ -33,7 +33,7 @@ public sealed class ResetPasswordCommandHandlerTests : UsersTestBase
     public async Task Handle_WhenTokenInvalid_ReturnsFailure()
     {
         using var scope = CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var db = scope.ServiceProvider.GetRequiredService<IIdentityApplicationDbContext>();
         var user = await SeedUserAsync(db, email: "user@test.local", password: "Pass1234!");
         var handler = CreateResetPasswordHandler(scope.ServiceProvider);
 
@@ -49,7 +49,7 @@ public sealed class ResetPasswordCommandHandlerTests : UsersTestBase
     public async Task Handle_WhenTokenExpired_ReturnsFailure()
     {
         using var scope = CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var db = scope.ServiceProvider.GetRequiredService<IIdentityApplicationDbContext>();
         var user = await SeedUserAsync(db, email: "user@test.local", password: "Pass1234!");
         var token = "expired-token";
         await SeedResetSessionAsync(db, user, token, DateTime.UtcNow.AddMinutes(-1));
@@ -67,7 +67,7 @@ public sealed class ResetPasswordCommandHandlerTests : UsersTestBase
     public async Task Handle_WhenPasswordTooShort_ThrowsDomainException()
     {
         using var scope = CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var db = scope.ServiceProvider.GetRequiredService<IIdentityApplicationDbContext>();
         var user = await SeedUserAsync(db, email: "user@test.local", password: "Pass1234!");
         var token = "short-token";
         await SeedResetSessionAsync(db, user, token, DateTime.UtcNow.AddMinutes(10));
@@ -84,7 +84,7 @@ public sealed class ResetPasswordCommandHandlerTests : UsersTestBase
     public async Task Handle_WhenTokenValid_UpdatesPassword()
     {
         using var scope = CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var db = scope.ServiceProvider.GetRequiredService<IIdentityApplicationDbContext>();
         var user = await SeedUserAsync(db, email: "user@test.local", password: "Pass1234!");
         var token = "valid-token";
         await SeedResetSessionAsync(db, user, token, DateTime.UtcNow.AddMinutes(10));

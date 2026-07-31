@@ -1,6 +1,7 @@
 using Application.IntegrationTests.Infrastructure;
 using Application.IntegrationTests.TestBases;
 using Microsoft.Extensions.DependencyInjection;
+using Modules.Identity.Abstracions;
 using Modules.Identity.Domain.Users;
 using Modules.Identity.Application.Users;
 using PublicApi.Infrastructure.Persistence;
@@ -31,8 +32,9 @@ public sealed class ForgetPasswordCommandHandlerTests : UsersTestBase
     public async Task Handle_WhenUserExists_CreatesResetSessionAndOutboxMessage()
     {
         using var scope = CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        var user = await SeedUserAsync(db, email: "doctor@test.local");
+        var identityDb = scope.ServiceProvider.GetRequiredService<IIdentityApplicationDbContext>();
+        var appDb = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var user = await SeedUserAsync(identityDb, email: "doctor@test.local");
         var handler = CreateForgetPasswordHandler(scope.ServiceProvider);
         var before = DateTime.UtcNow;
 
@@ -42,13 +44,13 @@ public sealed class ForgetPasswordCommandHandlerTests : UsersTestBase
 
         Assert.True(result.IsSuccess);
 
-        var session = await db.UserSessions.SingleOrDefaultAsync(s =>
+        var session = await identityDb.UserSessions.SingleOrDefaultAsync(s =>
             s.UserId == user.Id && s.TokenType == UserSessionTokenType.ResetPassword);
         Assert.NotNull(session);
         Assert.NotNull(session!.ExpiresAt);
         Assert.InRange(session.ExpiresAt!.Value, before.AddMinutes(14), before.AddMinutes(16));
 
-        var outbox = await db.OutboxMessages.ToListAsync();
+        var outbox = await appDb.OutboxMessages.ToListAsync();
         Assert.Single(outbox);
         Assert.Contains("UserForgetPasswordDomainEvent", outbox[0].Name);
     }

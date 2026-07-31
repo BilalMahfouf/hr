@@ -1,9 +1,9 @@
 using Application.IntegrationTests.Infrastructure;
 using Application.IntegrationTests.TestBases;
 using Microsoft.Extensions.DependencyInjection;
+using Modules.Identity.Abstracions;
 using Modules.Identity.Domain.Users;
 using Modules.Identity.Application.Users;
-using PublicApi.Infrastructure.Persistence;
 
 namespace Application.IntegrationTests.Users;
 
@@ -32,7 +32,7 @@ public sealed class UpdateUserProfileCommandHandlerTests : UsersTestBase
     public async Task Handle_WhenValid_UpdatesProfile()
     {
         using var scope = CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var db = scope.ServiceProvider.GetRequiredService<IIdentityApplicationDbContext>();
         var user = await SeedUserAsync(db, email: "user@test.local", userName: "olduser");
         SetCurrentTenant(user.Id);
         var handler = CreateUpdateUserProfileHandler(scope.ServiceProvider);

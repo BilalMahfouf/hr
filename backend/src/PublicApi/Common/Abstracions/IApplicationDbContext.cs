@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Modules.Shared.Infrastructure.Outbox;
 using PublicApi.Domain.Notifications;
 using PublicApi.Domain.Subscriptions;
-using PublicApi.Infrastructure.OutboxMessages;
 
 namespace PublicApi.Common.Abstracions;
 

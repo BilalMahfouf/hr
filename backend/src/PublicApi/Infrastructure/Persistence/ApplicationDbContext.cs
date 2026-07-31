@@ -1,18 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Modules.Shared.Abstracions;
+using Modules.Shared.Infrastructure.Outbox;
 using PublicApi.Common.Abstracions;
 using PublicApi.Domain.Notifications;
 using PublicApi.Domain.Subscriptions;
-using PublicApi.Infrastructure.OutboxMessages;
 
 namespace PublicApi.Infrastructure.Persistence;
 
-public class ApplicationDbContext : DbContext
-    , IApplicationDbContext
+public class ApplicationDbContext : DbContext, IApplicationDbContext
 {
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
-    {
-    }
+    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+        : base(options) { }
 
     public DbSet<OutboxMessage> OutboxMessages { get; set; } = null!;
 
@@ -27,7 +24,7 @@ public class ApplicationDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+        modelBuilder.ConfigureOutboxMessage();
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(Program).Assembly);
     }
-
 }

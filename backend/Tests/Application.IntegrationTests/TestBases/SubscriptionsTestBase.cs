@@ -3,6 +3,7 @@ using Chargily.Pay.Abstractions;
 using Chargily.Pay.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
+using Modules.Identity.Abstracions;
 using Modules.Shared.Abstracions;
 using PublicApi.Common.Abstracions;
 using PublicApi.Common.Abstracions.Payments;
@@ -50,6 +51,7 @@ public abstract class SubscriptionsTestBase : IntegrationTestBase
     {
         return new SubscriptionCheckoutEndpoint.Handler(
             services.GetRequiredService<IApplicationDbContext>(),
+            services.GetRequiredService<IIdentityApplicationDbContext>(),
             services.GetRequiredService<IChargilyPayClient>(),
             services.GetRequiredService<IOptions<ChargilyOptions>>());
     }
@@ -75,7 +77,7 @@ public abstract class SubscriptionsTestBase : IntegrationTestBase
     }
 
     protected async Task<User> SeedDoctorAsync(
-        ApplicationDbContext db,
+        IIdentityApplicationDbContext db,
         string email = "doctor@test.local",
         string password = "Pass1234!",
         string userName = "doctor",

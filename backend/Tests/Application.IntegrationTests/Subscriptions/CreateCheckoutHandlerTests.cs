@@ -4,6 +4,7 @@ using Chargily.Pay;
 using Chargily.Pay.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
+using Modules.Identity.Abstracions;
 using PublicApi.Domain.Subscriptions;
 using PublicApi.Domain.Subscriptions.Errors;
 using Modules.Identity.Domain.Users;
@@ -22,11 +23,12 @@ public sealed class CreateCheckoutHandlerTests : SubscriptionsTestBase
     public async Task Handle_WhenActiveSubscriptionExists_ReturnsFailure()
     {
         using var scope = CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        var doctor = await SeedDoctorAsync(db);
+        var appDb = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var identityDb = scope.ServiceProvider.GetRequiredService<IIdentityApplicationDbContext>();
+        var doctor = await SeedDoctorAsync(identityDb);
         SetCurrentTenant(doctor.Id);
-        var plan = await SeedPlanAsync(db);
-        await SeedSubscriptionAsync(db, doctor.Id, plan, SubscriptionStatus.Active);
+        var plan = await SeedPlanAsync(appDb);
+        await SeedSubscriptionAsync(appDb, doctor.Id, plan, SubscriptionStatus.Active);
         var handler = CreateCreateCheckoutHandler(scope.ServiceProvider);
 
         var result = await handler.Handle(
@@ -41,13 +43,14 @@ public sealed class CreateCheckoutHandlerTests : SubscriptionsTestBase
     public async Task Handle_WhenExistingPaymentHasCheckout_ReturnsExistingCheckout()
     {
         using var scope = CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        var doctor = await SeedDoctorAsync(db);
+        var appDb = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var identityDb = scope.ServiceProvider.GetRequiredService<IIdentityApplicationDbContext>();
+        var doctor = await SeedDoctorAsync(identityDb);
         SetCurrentTenant(doctor.Id);
-        var plan = await SeedPlanAsync(db);
-        var subscription = await SeedSubscriptionAsync(db, doctor.Id, plan, SubscriptionStatus.Pending);
+        var plan = await SeedPlanAsync(appDb);
+        var subscription = await SeedSubscriptionAsync(appDb, doctor.Id, plan, SubscriptionStatus.Pending);
         var payment = await SeedPaymentAsync(
-            db,
+            appDb,
             subscription,
             doctor.Id,
             "idempotency-1",
@@ -74,13 +77,14 @@ public sealed class CreateCheckoutHandlerTests : SubscriptionsTestBase
     public async Task Handle_WhenExistingPaymentCheckoutMissing_ReturnsFailure()
     {
         using var scope = CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        var doctor = await SeedDoctorAsync(db);
+        var appDb = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var identityDb = scope.ServiceProvider.GetRequiredService<IIdentityApplicationDbContext>();
+        var doctor = await SeedDoctorAsync(identityDb);
         SetCurrentTenant(doctor.Id);
-        var plan = await SeedPlanAsync(db);
-        var subscription = await SeedSubscriptionAsync(db, doctor.Id, plan, SubscriptionStatus.Pending);
+        var plan = await SeedPlanAsync(appDb);
+        var subscription = await SeedSubscriptionAsync(appDb, doctor.Id, plan, SubscriptionStatus.Pending);
         var payment = await SeedPaymentAsync(
-            db,
+            appDb,
             subscription,
             doctor.Id,
             "idempotency-1",
@@ -118,8 +122,9 @@ public sealed class CreateCheckoutHandlerTests : SubscriptionsTestBase
     public async Task Handle_WhenPlanMissing_ReturnsFailure()
     {
         using var scope = CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        var doctor = await SeedDoctorAsync(db);
+        var appDb = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var identityDb = scope.ServiceProvider.GetRequiredService<IIdentityApplicationDbContext>();
+        var doctor = await SeedDoctorAsync(identityDb);
         SetCurrentTenant(doctor.Id);
         var handler = CreateCreateCheckoutHandler(scope.ServiceProvider);
         var planId = Guid.NewGuid();
@@ -136,10 +141,11 @@ public sealed class CreateCheckoutHandlerTests : SubscriptionsTestBase
     public async Task Handle_WhenPlanHasTrial_ReturnsTrialingResponse()
     {
         using var scope = CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        var doctor = await SeedDoctorAsync(db);
+        var appDb = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var identityDb = scope.ServiceProvider.GetRequiredService<IIdentityApplicationDbContext>();
+        var doctor = await SeedDoctorAsync(identityDb);
         SetCurrentTenant(doctor.Id);
-        var plan = await SeedPlanAsync(db, trialDays: 7);
+        var plan = await SeedPlanAsync(appDb, trialDays: 7);
         var handler = CreateCreateCheckoutHandler(scope.ServiceProvider);
 
         var result = await handler.Handle(
@@ -150,19 +156,20 @@ public sealed class CreateCheckoutHandlerTests : SubscriptionsTestBase
         Assert.Null(result.Value.CheckoutUrl);
         Assert.Equal(SubscriptionStatus.Trialing.ToString(), result.Value.SubscriptionStatus);
 
-        var subscription = await db.Subscriptions.SingleAsync(s => s.DoctorId == doctor.Id);
+        var subscription = await appDb.Subscriptions.SingleAsync(s => s.DoctorId == doctor.Id);
         Assert.Equal(SubscriptionStatus.Trialing, subscription.Status);
-        Assert.Empty(db.SubscriptionPayments);
+        Assert.Empty(appDb.SubscriptionPayments);
     }
 
     [Fact]
     public async Task Handle_WhenCheckoutCreationFails_ReturnsFailure()
     {
         using var scope = CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        var doctor = await SeedDoctorAsync(db);
+        var appDb = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var identityDb = scope.ServiceProvider.GetRequiredService<IIdentityApplicationDbContext>();
+        var doctor = await SeedDoctorAsync(identityDb);
         SetCurrentTenant(doctor.Id);
-        var plan = await SeedPlanAsync(db, trialDays: 0);
+        var plan = await SeedPlanAsync(appDb, trialDays: 0);
         ChargilyClientMock
             .Setup(c => c.CreateCheckout(It.IsAny<Checkout>()))
             .ReturnsAsync((Response<CheckoutResponse>?)null);
@@ -180,10 +187,11 @@ public sealed class CreateCheckoutHandlerTests : SubscriptionsTestBase
     public async Task Handle_WhenCheckoutCreated_ReturnsCheckoutUrl()
     {
         using var scope = CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        var doctor = await SeedDoctorAsync(db);
+        var appDb = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var identityDb = scope.ServiceProvider.GetRequiredService<IIdentityApplicationDbContext>();
+        var doctor = await SeedDoctorAsync(identityDb);
         SetCurrentTenant(doctor.Id);
-        var plan = await SeedPlanAsync(db, trialDays: 0);
+        var plan = await SeedPlanAsync(appDb, trialDays: 0);
         var checkout = BuildCheckoutResponse("provider-123", new Uri("https://checkout.test/new"));
         ChargilyClientMock
             .Setup(c => c.CreateCheckout(It.IsAny<Checkout>()))
@@ -198,7 +206,7 @@ public sealed class CreateCheckoutHandlerTests : SubscriptionsTestBase
         Assert.Equal(checkout.Value.CheckoutUrl.ToString(), result.Value.CheckoutUrl);
         Assert.Equal(SubscriptionStatus.Pending.ToString(), result.Value.SubscriptionStatus);
 
-        var payment = await db.SubscriptionPayments.SingleAsync();
+        var payment = await appDb.SubscriptionPayments.SingleAsync();
         Assert.Equal("provider-123", payment.ProviderPaymentId);
     }
 }

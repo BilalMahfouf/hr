@@ -1,11 +1,11 @@
 using Application.IntegrationTests.Infrastructure;
 using Application.IntegrationTests.TestBases;
 using Microsoft.Extensions.DependencyInjection;
+using Modules.Identity.Abstracions;
 using Modules.Shared.Abstracions;
 using Modules.Shared.Domain.Common;
 using Modules.Identity.Domain.Users;
 using Modules.Identity.Application.Users;
-using PublicApi.Infrastructure.Persistence;
 
 namespace Application.IntegrationTests.Users;
 
@@ -34,7 +34,7 @@ public sealed class ChangePasswordCommandHandlerTests : UsersTestBase
     public async Task Handle_WhenCurrentPasswordInvalid_ReturnsFailure()
     {
         using var scope = CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var db = scope.ServiceProvider.GetRequiredService<IIdentityApplicationDbContext>();
         var user = await SeedUserAsync(db, email: "user@test.local", password: "Pass1234!");
         SetCurrentTenant(user.Id);
         var handler = CreateChangePasswordHandler(scope.ServiceProvider);
@@ -51,7 +51,7 @@ public sealed class ChangePasswordCommandHandlerTests : UsersTestBase
     public async Task Handle_WhenNewPasswordTooShort_ThrowsDomainException()
     {
         using var scope = CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var db = scope.ServiceProvider.GetRequiredService<IIdentityApplicationDbContext>();
         var user = await SeedUserAsync(db, email: "user@test.local", password: "Pass1234!");
         SetCurrentTenant(user.Id);
         var handler = CreateChangePasswordHandler(scope.ServiceProvider);
@@ -67,7 +67,7 @@ public sealed class ChangePasswordCommandHandlerTests : UsersTestBase
     public async Task Handle_WhenValid_UpdatesPassword()
     {
         using var scope = CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var db = scope.ServiceProvider.GetRequiredService<IIdentityApplicationDbContext>();
         var user = await SeedUserAsync(db, email: "user@test.local", password: "Pass1234!");
         SetCurrentTenant(user.Id);
         var handler = CreateChangePasswordHandler(scope.ServiceProvider);

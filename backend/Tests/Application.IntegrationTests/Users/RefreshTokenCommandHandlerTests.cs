@@ -1,9 +1,9 @@
 using Application.IntegrationTests.Infrastructure;
 using Application.IntegrationTests.TestBases;
 using Microsoft.Extensions.DependencyInjection;
+using Modules.Identity.Abstracions;
 using Modules.Identity.Domain.Users;
 using Modules.Identity.Application.Users;
-using PublicApi.Infrastructure.Persistence;
 
 namespace Application.IntegrationTests.Users;
 
@@ -32,7 +32,7 @@ public sealed class RefreshTokenCommandHandlerTests : UsersTestBase
     {
         ResetHttpContext();
         using var scope = CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var db = scope.ServiceProvider.GetRequiredService<IIdentityApplicationDbContext>();
         var user = await SeedUserAsync(db, email: "expired@test.local", password: "Pass1234!");
         var session = await SeedRefreshSessionAsync(
             db,
@@ -54,7 +54,7 @@ public sealed class RefreshTokenCommandHandlerTests : UsersTestBase
     {
         ResetHttpContext();
         using var scope = CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var db = scope.ServiceProvider.GetRequiredService<IIdentityApplicationDbContext>();
         var user = await SeedUserAsync(db, email: "valid@test.local", password: "Pass1234!");
         var session = await SeedRefreshSessionAsync(
             db,

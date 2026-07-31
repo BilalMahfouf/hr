@@ -1,6 +1,7 @@
 using Application.IntegrationTests.Infrastructure;
 using Application.IntegrationTests.TestBases;
 using Microsoft.Extensions.DependencyInjection;
+using Modules.Identity.Abstracions;
 using Modules.Identity.Domain.Users;
 using Modules.Identity.Application.Users;
 
@@ -17,7 +18,7 @@ public sealed class RegisterCommandHandlerTests : UsersTestBase
     {
         ResetHttpContext();
         using var scope = CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<PublicApi.Infrastructure.Persistence.ApplicationDbContext>();
+        var db = scope.ServiceProvider.GetRequiredService<IIdentityApplicationDbContext>();
         var handler = CreateRegisterHandler(scope.ServiceProvider);
 
         var command = new Register.RegisterCommand(
@@ -47,7 +48,7 @@ public sealed class RegisterCommandHandlerTests : UsersTestBase
     public async Task Handle_WhenEmailAlreadyExists_ReturnsFailure()
     {
         using var scope = CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<PublicApi.Infrastructure.Persistence.ApplicationDbContext>();
+        var db = scope.ServiceProvider.GetRequiredService<IIdentityApplicationDbContext>();
         var existing = await SeedUserAsync(db, email: "doctor@test.local");
         var handler = CreateRegisterHandler(scope.ServiceProvider);
 

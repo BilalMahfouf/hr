@@ -2,6 +2,7 @@ using System.Text.Json;
 using Application.IntegrationTests.Infrastructure;
 using Application.IntegrationTests.TestBases;
 using Microsoft.Extensions.DependencyInjection;
+using Modules.Identity.Abstracions;
 using PublicApi.Domain.Subscriptions;
 using PublicApi.Features.Subscriptions.Webhooks;
 using PublicApi.Infrastructure.Persistence;
@@ -46,12 +47,13 @@ public sealed class HandleChargilyWebhookCommandHandlerTests : PaymentsTestBase
     public async Task Handle_WhenPaid_UpdatesPaymentAndSubscription()
     {
         using var scope = CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        var doctor = await SeedDoctorAsync(db);
+        var appDb = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var identityDb = scope.ServiceProvider.GetRequiredService<IIdentityApplicationDbContext>();
+        var doctor = await SeedDoctorAsync(identityDb);
         SetCurrentTenant(doctor.Id);
-        var plan = await SeedPlanAsync(db);
-        var subscription = await SeedSubscriptionAsync(db, doctor.Id, plan, SubscriptionStatus.Pending);
-        var payment = await SeedPaymentAsync(db, subscription, doctor.Id, "key-1", status: PaymentStatus.Pending);
+        var plan = await SeedPlanAsync(appDb);
+        var subscription = await SeedSubscriptionAsync(appDb, doctor.Id, plan, SubscriptionStatus.Pending);
+        var payment = await SeedPaymentAsync(appDb, subscription, doctor.Id, "key-1", status: PaymentStatus.Pending);
 
         var payload = new HandleChargilyWebhook.ChargilyWebhookPayload
         {
@@ -72,10 +74,10 @@ public sealed class HandleChargilyWebhookCommandHandlerTests : PaymentsTestBase
 
         Assert.True(result.IsSuccess);
 
-        var updatedPayment = await db.SubscriptionPayments.SingleAsync(p => p.Id == payment.Id);
+        var updatedPayment = await appDb.SubscriptionPayments.SingleAsync(p => p.Id == payment.Id);
         Assert.Equal(PaymentStatus.Paid, updatedPayment.Status);
 
-        var updatedSubscription = await db.Subscriptions.SingleAsync(s => s.Id == subscription.Id);
+        var updatedSubscription = await appDb.Subscriptions.SingleAsync(s => s.Id == subscription.Id);
         Assert.Equal(SubscriptionStatus.Active, updatedSubscription.Status);
     }
 
@@ -83,12 +85,13 @@ public sealed class HandleChargilyWebhookCommandHandlerTests : PaymentsTestBase
     public async Task Handle_WhenFailed_UpdatesPaymentAndSubscription()
     {
         using var scope = CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        var doctor = await SeedDoctorAsync(db);
+        var appDb = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var identityDb = scope.ServiceProvider.GetRequiredService<IIdentityApplicationDbContext>();
+        var doctor = await SeedDoctorAsync(identityDb);
         SetCurrentTenant(doctor.Id);
-        var plan = await SeedPlanAsync(db);
-        var subscription = await SeedSubscriptionAsync(db, doctor.Id, plan, SubscriptionStatus.Pending);
-        var payment = await SeedPaymentAsync(db, subscription, doctor.Id, "key-1", status: PaymentStatus.Pending);
+        var plan = await SeedPlanAsync(appDb);
+        var subscription = await SeedSubscriptionAsync(appDb, doctor.Id, plan, SubscriptionStatus.Pending);
+        var payment = await SeedPaymentAsync(appDb, subscription, doctor.Id, "key-1", status: PaymentStatus.Pending);
 
         var payload = new HandleChargilyWebhook.ChargilyWebhookPayload
         {
@@ -110,11 +113,11 @@ public sealed class HandleChargilyWebhookCommandHandlerTests : PaymentsTestBase
 
         Assert.True(result.IsSuccess);
 
-        var updatedPayment = await db.SubscriptionPayments.SingleAsync(p => p.Id == payment.Id);
+        var updatedPayment = await appDb.SubscriptionPayments.SingleAsync(p => p.Id == payment.Id);
         Assert.Equal(PaymentStatus.Failed, updatedPayment.Status);
         Assert.Equal("failed", updatedPayment.FailureReason);
 
-        var updatedSubscription = await db.Subscriptions.SingleAsync(s => s.Id == subscription.Id);
+        var updatedSubscription = await appDb.Subscriptions.SingleAsync(s => s.Id == subscription.Id);
         Assert.Equal(SubscriptionStatus.PaymentFailed, updatedSubscription.Status);
     }
 

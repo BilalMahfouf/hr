@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Modules.Shared.Abstracions;
 using Modules.Shared.Abstracions.Emails;
-using PublicApi.Infrastructure.Persistence;
 
 namespace Application.IntegrationTests.TestBases;
 
@@ -101,7 +100,7 @@ public abstract class UsersTestBase : IntegrationTestBase
     }
 
     protected async Task<User> SeedUserAsync(
-        ApplicationDbContext db,
+        IIdentityApplicationDbContext db,
         string email = "user@test.local",
         string password = "Pass1234!",
         string userName = "user",
@@ -116,7 +115,7 @@ public abstract class UsersTestBase : IntegrationTestBase
     }
 
     protected async Task<UserSession> SeedRefreshSessionAsync(
-        ApplicationDbContext db,
+        IIdentityApplicationDbContext db,
         User user,
         string? token = null,
         DateTime? expiresAt = null)
@@ -134,7 +133,7 @@ public abstract class UsersTestBase : IntegrationTestBase
     }
 
     protected async Task<UserSession> SeedResetSessionAsync(
-        ApplicationDbContext db,
+        IIdentityApplicationDbContext db,
         User user,
         string token,
         DateTime expiresAt)

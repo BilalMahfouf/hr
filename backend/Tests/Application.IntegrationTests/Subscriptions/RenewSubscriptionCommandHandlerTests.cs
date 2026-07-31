@@ -1,6 +1,7 @@
 using Application.IntegrationTests.Infrastructure;
 using Application.IntegrationTests.TestBases;
 using Microsoft.Extensions.DependencyInjection;
+using Modules.Identity.Abstracions;
 using PublicApi.Common.Abstracions.Payments;
 using Modules.Shared.Errors;
 using Modules.Shared.Results;
@@ -22,11 +23,12 @@ public sealed class RenewSubscriptionCommandHandlerTests : SubscriptionsTestBase
     public async Task Handle_WhenActiveSubscriptionExists_ReturnsFailure()
     {
         using var scope = CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        var doctor = await SeedDoctorAsync(db);
+        var appDb = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var identityDb = scope.ServiceProvider.GetRequiredService<IIdentityApplicationDbContext>();
+        var doctor = await SeedDoctorAsync(identityDb);
         SetCurrentTenant(doctor.Id);
-        var plan = await SeedPlanAsync(db);
-        await SeedSubscriptionAsync(db, doctor.Id, plan, SubscriptionStatus.Active);
+        var plan = await SeedPlanAsync(appDb);
+        await SeedSubscriptionAsync(appDb, doctor.Id, plan, SubscriptionStatus.Active);
         var handler = CreateRenewSubscriptionHandler(scope.ServiceProvider);
 
         var result = await handler.Handle(
@@ -41,13 +43,14 @@ public sealed class RenewSubscriptionCommandHandlerTests : SubscriptionsTestBase
     public async Task Handle_WhenExistingPaymentHasCheckout_ReturnsExistingCheckout()
     {
         using var scope = CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        var doctor = await SeedDoctorAsync(db);
+        var appDb = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var identityDb = scope.ServiceProvider.GetRequiredService<IIdentityApplicationDbContext>();
+        var doctor = await SeedDoctorAsync(identityDb);
         SetCurrentTenant(doctor.Id);
-        var plan = await SeedPlanAsync(db);
-        var subscription = await SeedSubscriptionAsync(db, doctor.Id, plan, SubscriptionStatus.PastDue);
+        var plan = await SeedPlanAsync(appDb);
+        var subscription = await SeedSubscriptionAsync(appDb, doctor.Id, plan, SubscriptionStatus.PastDue);
         var payment = await SeedPaymentAsync(
-            db,
+            appDb,
             subscription,
             doctor.Id,
             "idempotency-1",
@@ -72,13 +75,14 @@ public sealed class RenewSubscriptionCommandHandlerTests : SubscriptionsTestBase
     public async Task Handle_WhenExistingPaymentCheckoutFails_ReturnsFailure()
     {
         using var scope = CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        var doctor = await SeedDoctorAsync(db);
+        var appDb = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var identityDb = scope.ServiceProvider.GetRequiredService<IIdentityApplicationDbContext>();
+        var doctor = await SeedDoctorAsync(identityDb);
         SetCurrentTenant(doctor.Id);
-        var plan = await SeedPlanAsync(db);
-        var subscription = await SeedSubscriptionAsync(db, doctor.Id, plan, SubscriptionStatus.PastDue);
+        var plan = await SeedPlanAsync(appDb);
+        var subscription = await SeedSubscriptionAsync(appDb, doctor.Id, plan, SubscriptionStatus.PastDue);
         var payment = await SeedPaymentAsync(
-            db,
+            appDb,
             subscription,
             doctor.Id,
             "idempotency-1",
@@ -101,8 +105,9 @@ public sealed class RenewSubscriptionCommandHandlerTests : SubscriptionsTestBase
     public async Task Handle_WhenPlanMissing_ReturnsFailure()
     {
         using var scope = CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        var doctor = await SeedDoctorAsync(db);
+        var appDb = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var identityDb = scope.ServiceProvider.GetRequiredService<IIdentityApplicationDbContext>();
+        var doctor = await SeedDoctorAsync(identityDb);
         SetCurrentTenant(doctor.Id);
         var handler = CreateRenewSubscriptionHandler(scope.ServiceProvider);
         var planId = Guid.NewGuid();
@@ -119,10 +124,11 @@ public sealed class RenewSubscriptionCommandHandlerTests : SubscriptionsTestBase
     public async Task Handle_WhenOldSubscriptionMissing_ReturnsFailure()
     {
         using var scope = CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        var doctor = await SeedDoctorAsync(db);
+        var appDb = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var identityDb = scope.ServiceProvider.GetRequiredService<IIdentityApplicationDbContext>();
+        var doctor = await SeedDoctorAsync(identityDb);
         SetCurrentTenant(doctor.Id);
-        var plan = await SeedPlanAsync(db);
+        var plan = await SeedPlanAsync(appDb);
         var handler = CreateRenewSubscriptionHandler(scope.ServiceProvider);
 
         var result = await handler.Handle(
@@ -137,11 +143,12 @@ public sealed class RenewSubscriptionCommandHandlerTests : SubscriptionsTestBase
     public async Task Handle_WhenCheckoutCreationFails_ReturnsFailure()
     {
         using var scope = CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        var doctor = await SeedDoctorAsync(db);
+        var appDb = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var identityDb = scope.ServiceProvider.GetRequiredService<IIdentityApplicationDbContext>();
+        var doctor = await SeedDoctorAsync(identityDb);
         SetCurrentTenant(doctor.Id);
-        var plan = await SeedPlanAsync(db);
-        await SeedSubscriptionAsync(db, doctor.Id, plan, SubscriptionStatus.PastDue);
+        var plan = await SeedPlanAsync(appDb);
+        await SeedSubscriptionAsync(appDb, doctor.Id, plan, SubscriptionStatus.PastDue);
         var handler = CreateRenewSubscriptionHandler(scope.ServiceProvider);
 
         var result = await handler.Handle(
@@ -156,11 +163,12 @@ public sealed class RenewSubscriptionCommandHandlerTests : SubscriptionsTestBase
     public async Task Handle_WhenCheckoutCreated_ReturnsCheckoutUrl()
     {
         using var scope = CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        var doctor = await SeedDoctorAsync(db);
+        var appDb = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var identityDb = scope.ServiceProvider.GetRequiredService<IIdentityApplicationDbContext>();
+        var doctor = await SeedDoctorAsync(identityDb);
         SetCurrentTenant(doctor.Id);
-        var plan = await SeedPlanAsync(db);
-        var oldSubscription = await SeedSubscriptionAsync(db, doctor.Id, plan, SubscriptionStatus.PastDue);
+        var plan = await SeedPlanAsync(appDb);
+        var oldSubscription = await SeedSubscriptionAsync(appDb, doctor.Id, plan, SubscriptionStatus.PastDue);
 
         PaymentService.CreateCheckoutResult = Result<PaymentCreateCheckout>.Success(
             new PaymentCreateCheckout(new Uri("https://checkout.test/new"), "provider-123"));
@@ -173,12 +181,12 @@ public sealed class RenewSubscriptionCommandHandlerTests : SubscriptionsTestBase
         Assert.True(result.IsSuccess);
         Assert.Equal("https://checkout.test/new", result.Value.CheckoutUrl);
 
-        var renewed = await db.Subscriptions
+        var renewed = await appDb.Subscriptions
             .OrderByDescending(s => s.CreatedOnUtc)
             .FirstAsync(s => s.DoctorId == doctor.Id);
         Assert.Equal(oldSubscription.Id, renewed.PreviousSubscriptionId);
 
-        var payment = await db.SubscriptionPayments.SingleAsync(p => p.SubscriptionId == renewed.Id);
+        var payment = await appDb.SubscriptionPayments.SingleAsync(p => p.SubscriptionId == renewed.Id);
         Assert.Equal("provider-123", payment.ProviderPaymentId);
     }
 }

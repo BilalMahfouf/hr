@@ -2,9 +2,9 @@ using Application.IntegrationTests.Infrastructure;
 using Application.IntegrationTests.TestBases;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
+using Modules.Identity.Abstracions;
 using Modules.Identity.Domain.Users;
 using Modules.Identity.Application.Users;
-using PublicApi.Infrastructure.Persistence;
 
 namespace Application.IntegrationTests.Users;
 
@@ -29,7 +29,7 @@ public sealed class ChangeEmailCommandHandlerTests : UsersTestBase
     public async Task Handle_WhenEmailInUse_ReturnsFailure()
     {
         using var scope = CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var db = scope.ServiceProvider.GetRequiredService<IIdentityApplicationDbContext>();
         var user = await SeedUserAsync(db, email: "user1@test.local");
         var other = await SeedUserAsync(db, email: "user2@test.local");
         SetCurrentTenant(user.Id);
@@ -62,7 +62,7 @@ public sealed class ChangeEmailCommandHandlerTests : UsersTestBase
     public async Task Handle_WhenValid_UpdatesEmail()
     {
         using var scope = CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var db = scope.ServiceProvider.GetRequiredService<IIdentityApplicationDbContext>();
         var user = await SeedUserAsync(db, email: "user@test.local");
         SetCurrentTenant(user.Id);
         var handler = CreateChangeEmailHandler(scope.ServiceProvider);

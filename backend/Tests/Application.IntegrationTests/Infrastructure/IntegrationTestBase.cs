@@ -1,5 +1,6 @@
 using Modules.Identity.Abstracions;
 using Modules.Identity.Application.Users;
+using Modules.Identity.Infrastructure.Persistence;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Http;
 using Modules.Shared.Abstracions;
@@ -100,7 +101,14 @@ public abstract class IntegrationTestBase : IAsyncLifetime
                 .AddInterceptors(sp.GetRequiredService<TenantInterceptor>());
         });
         services.AddScoped<IApplicationDbContext>(sp => sp.GetRequiredService<ApplicationDbContext>());
-        services.AddScoped<IIdentityApplicationDbContext>(sp => sp.GetRequiredService<ApplicationDbContext>());
+
+        services.AddDbContext<IdentityDbContext>((sp, options) =>
+        {
+            options.UseNpgsql(ConnectionString)
+                .AddInterceptors(sp.GetRequiredService<InsertOutboxMessagesInterceptors>())
+                .AddInterceptors(sp.GetRequiredService<TenantInterceptor>());
+        });
+        services.AddScoped<IIdentityApplicationDbContext>(sp => sp.GetRequiredService<IdentityDbContext>());
 
         services.AddSingleton<IPasswordHasher, Argon2PasswordHasher>();
         services.AddSingleton<IJwtProvider, TestJwtProvider>();

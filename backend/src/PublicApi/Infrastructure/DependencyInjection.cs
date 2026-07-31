@@ -124,7 +124,18 @@ public static class DependencyInjection
             ServiceLifetime.Scoped
         );
 
-        // Identity EF Core DbContext (separate schema, gets same TenantInterceptor)
+        services.AddDbContextFactory<ApplicationDbContext>(
+            (sp, options) =>
+            {
+                options
+                    .UseNpgsql(connectionString)
+                    .AddInterceptors(sp.GetRequiredService<InsertOutboxMessagesInterceptors>())
+                    .AddInterceptors(sp.GetRequiredService<TenantInterceptor>());
+            },
+            ServiceLifetime.Scoped
+        );
+
+        // Identity EF Core DbContext (separate schema, gets same interceptors)
         services.AddDbContext<IdentityDbContext>(
             (sp, options) =>
             {
@@ -132,6 +143,7 @@ public static class DependencyInjection
                     o.MigrationsHistoryTable(
                         HistoryRepository.DefaultTableName,
                         "identity"))
+                    .AddInterceptors(sp.GetRequiredService<InsertOutboxMessagesInterceptors>())
                     .AddInterceptors(sp.GetRequiredService<TenantInterceptor>());
             },
             ServiceLifetime.Scoped

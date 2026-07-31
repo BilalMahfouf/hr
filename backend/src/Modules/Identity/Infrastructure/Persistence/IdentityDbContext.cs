@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Modules.Identity.Abstracions;
 using Modules.Identity.Domain.Users;
 using Modules.Identity.Infrastructure.Persistence.Configurations;
+using Modules.Shared.Infrastructure.Outbox;
 
 namespace Modules.Identity.Infrastructure.Persistence;
 
@@ -19,6 +20,7 @@ public class IdentityDbContext : DbContext, IIdentityApplicationDbContext
     {
         base.OnModelCreating(modelBuilder);
         modelBuilder.HasDefaultSchema("identity");
+        modelBuilder.ConfigureOutboxMessage(excludeFromMigrations: true);
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(UserConfiguration).Assembly);
     }
 }

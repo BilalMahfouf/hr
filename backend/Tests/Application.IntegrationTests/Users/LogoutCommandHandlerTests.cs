@@ -1,9 +1,9 @@
 using Application.IntegrationTests.Infrastructure;
 using Application.IntegrationTests.TestBases;
 using Microsoft.Extensions.DependencyInjection;
+using Modules.Identity.Abstracions;
 using Modules.Identity.Domain.Users;
 using Modules.Identity.Application.Users;
-using PublicApi.Infrastructure.Persistence;
 
 namespace Application.IntegrationTests.Users;
 
@@ -32,7 +32,7 @@ public sealed class LogoutCommandHandlerTests : UsersTestBase
     {
         ResetHttpContext();
         using var scope = CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var db = scope.ServiceProvider.GetRequiredService<IIdentityApplicationDbContext>();
         var user = await SeedUserAsync(db);
         var session = await SeedRefreshSessionAsync(db, user, "refresh-token");
         var handler = CreateLogoutHandler(scope.ServiceProvider);

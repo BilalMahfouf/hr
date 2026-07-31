@@ -2,6 +2,7 @@ using Application.IntegrationTests.Infrastructure;
 using Application.IntegrationTests.TestBases;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
+using Modules.Identity.Abstracions;
 using PublicApi.Domain.Subscriptions;
 using PublicApi.Domain.Subscriptions.Errors;
 using PublicApi.Features.Subscriptions.Endpoints;
@@ -30,11 +31,12 @@ public sealed class CreateSubscriptionCommandHandlerTests : SubscriptionsTestBas
     public async Task Handle_WhenActiveSubscriptionExists_ReturnsFailure()
     {
         using var scope = CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        var doctor = await SeedDoctorAsync(db);
+        var appDb = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var identityDb = scope.ServiceProvider.GetRequiredService<IIdentityApplicationDbContext>();
+        var doctor = await SeedDoctorAsync(identityDb);
         SetCurrentTenant(doctor.Id);
-        var plan = await SeedPlanAsync(db);
-        await SeedSubscriptionAsync(db, doctor.Id, plan, SubscriptionStatus.Active);
+        var plan = await SeedPlanAsync(appDb);
+        await SeedSubscriptionAsync(appDb, doctor.Id, plan, SubscriptionStatus.Active);
         var handler = CreateCreateSubscriptionHandler(scope.ServiceProvider);
 
         var result = await handler.Handle(
@@ -49,8 +51,9 @@ public sealed class CreateSubscriptionCommandHandlerTests : SubscriptionsTestBas
     public async Task Handle_WhenPlanMissing_ReturnsFailure()
     {
         using var scope = CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        var doctor = await SeedDoctorAsync(db);
+        var appDb = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var identityDb = scope.ServiceProvider.GetRequiredService<IIdentityApplicationDbContext>();
+        var doctor = await SeedDoctorAsync(identityDb);
         SetCurrentTenant(doctor.Id);
         var handler = CreateCreateSubscriptionHandler(scope.ServiceProvider);
         var planId = Guid.NewGuid();
@@ -67,10 +70,11 @@ public sealed class CreateSubscriptionCommandHandlerTests : SubscriptionsTestBas
     public async Task Handle_WhenValid_CreatesSubscription()
     {
         using var scope = CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        var doctor = await SeedDoctorAsync(db);
+        var appDb = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var identityDb = scope.ServiceProvider.GetRequiredService<IIdentityApplicationDbContext>();
+        var doctor = await SeedDoctorAsync(identityDb);
         SetCurrentTenant(doctor.Id);
-        var plan = await SeedPlanAsync(db, trialDays: 0);
+        var plan = await SeedPlanAsync(appDb, trialDays: 0);
         var handler = CreateCreateSubscriptionHandler(scope.ServiceProvider);
 
         var result = await handler.Handle(
@@ -79,7 +83,7 @@ public sealed class CreateSubscriptionCommandHandlerTests : SubscriptionsTestBas
 
         Assert.True(result.IsSuccess);
 
-        var subscription = await db.Subscriptions.SingleAsync(s => s.DoctorId == doctor.Id);
+        var subscription = await appDb.Subscriptions.SingleAsync(s => s.DoctorId == doctor.Id);
         Assert.Equal(SubscriptionStatus.Pending, subscription.Status);
         Assert.Equal(plan.Id, subscription.PlanId);
     }

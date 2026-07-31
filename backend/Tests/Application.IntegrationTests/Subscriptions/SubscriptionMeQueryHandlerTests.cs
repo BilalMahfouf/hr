@@ -1,6 +1,7 @@
 using Application.IntegrationTests.Infrastructure;
 using Application.IntegrationTests.TestBases;
 using Microsoft.Extensions.DependencyInjection;
+using Modules.Identity.Abstracions;
 using PublicApi.Domain.Subscriptions;
 using PublicApi.Domain.Subscriptions.Errors;
 using MeEndpoint = PublicApi.Features.Subscriptions.Endpoints.Me;
@@ -33,17 +34,18 @@ public sealed class SubscriptionMeQueryHandlerTests : SubscriptionsTestBase
     public async Task Handle_WhenSubscriptionsExist_ReturnsLatest()
     {
         using var scope = CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        var doctor = await SeedDoctorAsync(db);
+        var appDb = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var identityDb = scope.ServiceProvider.GetRequiredService<IIdentityApplicationDbContext>();
+        var doctor = await SeedDoctorAsync(identityDb);
         SetCurrentTenant(doctor.Id);
-        var plan = await SeedPlanAsync(db);
+        var plan = await SeedPlanAsync(appDb);
 
-        var oldSubscription = await SeedSubscriptionAsync(db, doctor.Id, plan, SubscriptionStatus.PastDue);
+        var oldSubscription = await SeedSubscriptionAsync(appDb, doctor.Id, plan, SubscriptionStatus.PastDue);
         oldSubscription.CreatedOnUtc = DateTime.UtcNow.AddMinutes(-10);
-        db.Subscriptions.Update(oldSubscription);
-        await db.SaveChangesAsync();
+        appDb.Subscriptions.Update(oldSubscription);
+        await appDb.SaveChangesAsync();
 
-        var latestSubscription = await SeedSubscriptionAsync(db, doctor.Id, plan, SubscriptionStatus.Active);
+        var latestSubscription = await SeedSubscriptionAsync(appDb, doctor.Id, plan, SubscriptionStatus.Active);
 
         var handler = CreateSubscriptionMeHandler(scope.ServiceProvider);
         var result = await handler.Handle(

@@ -1,10 +1,10 @@
 using Application.IntegrationTests.Infrastructure;
 using Application.IntegrationTests.TestBases;
 using Microsoft.Extensions.DependencyInjection;
+using Modules.Identity.Abstracions;
 using Modules.Shared.Paginations.OffSet;
 using Modules.Identity.Domain.Users;
 using Modules.Identity.Application.Users;
-using PublicApi.Infrastructure.Persistence;
 
 namespace Application.IntegrationTests.Users;
 
@@ -31,7 +31,7 @@ public sealed class GetAllUsersQueryHandlerTests : UsersTestBase
     public async Task Handle_WhenSearching_ReturnsMatchingDoctors()
     {
         using var scope = CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var db = scope.ServiceProvider.GetRequiredService<IIdentityApplicationDbContext>();
         await SeedUserAsync(db, email: "alpha@test.local", userName: "alpha");
         await SeedUserAsync(db, email: "beta@test.local", userName: "beta");
         var handler = CreateGetAllUsersHandler(scope.ServiceProvider);
@@ -49,7 +49,7 @@ public sealed class GetAllUsersQueryHandlerTests : UsersTestBase
     public async Task Handle_WhenSortingDescending_ReturnsOrderedResults()
     {
         using var scope = CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var db = scope.ServiceProvider.GetRequiredService<IIdentityApplicationDbContext>();
         await SeedUserAsync(db, email: "alpha@test.local", userName: "alpha");
         await SeedUserAsync(db, email: "beta@test.local", userName: "beta");
         var handler = CreateGetAllUsersHandler(scope.ServiceProvider);

@@ -1,6 +1,7 @@
 using Application.IntegrationTests.Infrastructure;
 using Application.IntegrationTests.TestBases;
 using Microsoft.Extensions.DependencyInjection;
+using Modules.Identity.Abstracions;
 using Modules.Shared.Domain.Common;
 using PublicApi.Domain.Common;
 using PublicApi.Domain.Subscriptions;
@@ -35,7 +36,7 @@ public sealed class GetUserByIdQueryHandlerTests : UsersTestBase
     public async Task Handle_WhenUserHasNoSubscription_ReturnsUserWithEmptySubscriptionFields()
     {
         using var scope = CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var db = scope.ServiceProvider.GetRequiredService<IIdentityApplicationDbContext>();
         var user = await SeedUserAsync(db, email: "user@test.local", userName: "user");
         var handler = CreateGetUserByIdHandler(scope.ServiceProvider);
 
@@ -52,8 +53,9 @@ public sealed class GetUserByIdQueryHandlerTests : UsersTestBase
     public async Task Handle_WhenUserHasSubscription_ReturnsSubscriptionStatus()
     {
         using var scope = CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        var user = await SeedUserAsync(db, email: "user@test.local", userName: "user");
+        var identityDb = scope.ServiceProvider.GetRequiredService<IIdentityApplicationDbContext>();
+        var appDb = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var user = await SeedUserAsync(identityDb, email: "user@test.local", userName: "user");
         SetCurrentTenant(user.Id);
         var plan = SubscriptionPlan.Create(
             "Basic",
@@ -62,11 +64,11 @@ public sealed class GetUserByIdQueryHandlerTests : UsersTestBase
             "month",
             1,
             0);
-        db.SubscriptionPlans.Add(plan);
+        appDb.SubscriptionPlans.Add(plan);
         var subscription = Subscription.Create(user.Id, plan);
         subscription.Activate();
-        db.Subscriptions.Add(subscription);
-        await db.SaveChangesAsync();
+        appDb.Subscriptions.Add(subscription);
+        await appDb.SaveChangesAsync();
 
         var handler = CreateGetUserByIdHandler(scope.ServiceProvider);
 
