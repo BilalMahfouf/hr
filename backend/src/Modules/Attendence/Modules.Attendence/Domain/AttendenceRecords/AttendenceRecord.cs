@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Modules.Attendence.Domain.AttendenceRecords;
 
@@ -19,15 +17,15 @@ public sealed class AttendanceRecord
 
     public DateTime? CheckOutAt { get; private set; }
 
-    public decimal WorkedMinutes { get; private set; }
+    public TimeSpan WorkedTime { get; private set; } = TimeSpan.Zero;
 
-    public decimal OvertimeMinutes { get; private set; }
+    public TimeSpan Overtime { get; private set; } = TimeSpan.Zero;
 
-    public decimal LateMinutes { get; private set; }
+    public TimeSpan LateTime { get; private set; } = TimeSpan.Zero;
 
-    public decimal EarlyLeaveMinutes { get; private set; }
+    public TimeSpan EarlyLeaveTime { get; private set; } = TimeSpan.Zero;
 
-    public bool IsAbsent { get; private set; }
+    public bool IsAbsent { get; private set; } = false;
 
     private AttendanceRecord() { }
 
@@ -42,10 +40,10 @@ public sealed class AttendanceRecord
         EmployeeId = employeeId;
         PunchDate = punchDate;
 
-        WorkedMinutes = 0;
-        OvertimeMinutes = 0;
-        LateMinutes = 0;
-        EarlyLeaveMinutes = 0;
+        WorkedTime = TimeSpan.Zero;
+        Overtime = TimeSpan.Zero;
+        LateTime = TimeSpan.Zero;
+        EarlyLeaveTime = TimeSpan.Zero;
         IsAbsent = false;
     }
 
@@ -61,27 +59,69 @@ public sealed class AttendanceRecord
             punchDate);
     }
 
-    public void RegisterCheckIn(DateTime checkInAt)
+    public void RegisterCheckIn(DateTime checkInAt,DateTime ExpectedCheckInTime)
     {
         CheckInAt = checkInAt;
+        CalculateLateTime(ExpectedCheckInTime);
     }
 
-    public void RegisterCheckOut(DateTime checkOutAt)
+    public void RegisterCheckOut(DateTime checkOutAt, WorkSchedule workSchedule)
     {
         CheckOutAt = checkOutAt;
+        CalculateWorkedTime();
+        CalculateOvertime(workSchedule.StandardWorkTime);
+        CalculateEarlyLeave(workSchedule.ExpectedCheckOutTime);
+
     }
 
-    public void SetAttendanceSummary(
-        decimal workedMinutes,
-        decimal overtimeMinutes,
-        decimal lateMinutes,
-        decimal earlyLeaveMinutes,
-        bool isAbsent)
+    private void CalculateWorkedTime()
     {
-        WorkedMinutes = workedMinutes;
-        OvertimeMinutes = overtimeMinutes;
-        LateMinutes = lateMinutes;
-        EarlyLeaveMinutes = earlyLeaveMinutes;
-        IsAbsent = isAbsent;
+        if (CheckInAt is null || CheckOutAt is null)
+            return;
+
+        var duration = CheckOutAt.Value - CheckInAt.Value;
+
+        WorkedTime = duration;
+    }
+
+    private void CalculateOvertime(TimeSpan standardWorkTime)
+    {
+        if (WorkedTime > standardWorkTime)
+        {
+            Overtime = WorkedTime - standardWorkTime;
+        }
+        else
+        {
+            Overtime = TimeSpan.Zero;
+        }
+    }
+
+    private void CalculateLateTime(DateTime expectedCheckInAt)
+    {
+        if (CheckInAt is null)
+            return;
+
+        var lateTime = CheckInAt.Value - expectedCheckInAt;
+
+        LateTime = lateTime > TimeSpan.Zero
+            ? lateTime
+            : TimeSpan.Zero;
+    }
+
+    private void CalculateEarlyLeave(DateTime expectedCheckOutAt)
+    {
+        if (CheckOutAt is null)
+            return;
+
+        var earlyLeave = expectedCheckOutAt - CheckOutAt.Value;
+
+        EarlyLeaveTime = earlyLeave > TimeSpan.Zero
+            ? earlyLeave
+            : TimeSpan.Zero;
+    }
+
+    public void MarkAsAbsent()
+    {
+        IsAbsent = true;
     }
 }
