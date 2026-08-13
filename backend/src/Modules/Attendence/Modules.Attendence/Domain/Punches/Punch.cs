@@ -1,10 +1,11 @@
-﻿using System;
+﻿using Modules.Shared.Domain.Common;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Modules.Attendence.Domain.Punches;
 
-public sealed class Punch
+public sealed class Punch : Entity
 {
     private Punch()
     {
@@ -15,15 +16,14 @@ public sealed class Punch
         MachineId machineId,
         int employeeBadge,
         DateTime punchOccurredAt,
-        DateTime createdOnUtc,
-        Guid? createdByUserId)
+        DateTime createdOnUtc
+        )
     {
         Id = id;
         MachineId = machineId;
         EmployeeBadge = employeeBadge;
         PunchOccurredAt = punchOccurredAt;
         CreatedOnUtc = createdOnUtc;
-        CreatedByUserId = createdByUserId;
     }
 
     public PunchId Id { get; private set; }
@@ -37,29 +37,27 @@ public sealed class Punch
     /// </summary>
     public DateTime PunchOccurredAt { get; private set; }
 
-    /// <summary>
-    /// Time the punch was persisted in the system.
-    /// </summary>
-    public DateTime CreatedOnUtc { get; private set; }
-
-    public Guid? CreatedByUserId { get; private set; }
-
     public static Punch Create(
         MachineId machineId,
         int employeeBadge,
         DateTime punchOccurredAt,
-        DateTime createdOnUtc,
-        Guid? createdByUserId = null)
+        DateTime createdOnUtc)
     {
         if (employeeBadge <= 0)
             throw new ArgumentOutOfRangeException(nameof(employeeBadge));
 
-        return new Punch(
+
+        var punch =  new Punch(
             PunchId.New(),
             machineId,
             employeeBadge,
             punchOccurredAt,
-            createdOnUtc,
-            createdByUserId);
+            createdOnUtc
+            );
+        punch.RaiseDomainEvent(new PunchCreatedDomainEvent(
+            punch.MachineId,
+            employeeBadge,
+            punch.PunchOccurredAt));
+        return punch;
     }
 }
