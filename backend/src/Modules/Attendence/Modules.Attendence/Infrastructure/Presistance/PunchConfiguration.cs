@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Modules.Attendence.Domain.Punches;
+using Modules.Shared.Infrastructure.Persistence;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -12,6 +13,9 @@ namespace Modules.Attendence.Infrastructure.Presistance
         public void Configure(EntityTypeBuilder<Punch> builder)
         {
             builder.ToTable("punches");
+
+             
+            builder.IgnoreSoftDelete<Punch>();
 
             builder.HasKey(x => x.Id);
 
@@ -43,6 +47,7 @@ namespace Modules.Attendence.Infrastructure.Presistance
                 x.EmployeeBadge,
                 x.PunchOccurredAt
             });
+
         }
     }
 

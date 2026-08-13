@@ -43,6 +43,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\Modules\Attendence\Modules.Attendence\Modules.Attendence.csproj" />
 		<ProjectReference Include="..\Modules\Shared\Shared.csproj" />
 		<ProjectReference Include="..\Modules\Identity\Identity.csproj" />
 	</ItemGroup>

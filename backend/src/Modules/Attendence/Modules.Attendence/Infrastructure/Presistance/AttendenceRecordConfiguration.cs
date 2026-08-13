@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Modules.Attendence.Domain.AttendenceRecords;
+using Modules.Shared.Infrastructure.Persistence;
 
 
 namespace Modules.Attendence.Infrastructure.Presistance; 
@@ -16,6 +17,8 @@ public sealed class AttendanceRecordConfiguration
     public void Configure(EntityTypeBuilder<AttendanceRecord> builder)
     {
         builder.ToTable("attendance_records");
+
+        builder.IgnoreSoftDelete<AttendanceRecord>();
 
         builder.HasKey(x => x.Id);
 

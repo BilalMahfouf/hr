@@ -1,10 +1,12 @@
-﻿using System;
+﻿using Modules.Shared.Domain.Common;
+using System;
 
 namespace Modules.Attendence.Domain.AttendenceRecords;
 
-public sealed class AttendanceRecord
+public sealed class AttendanceRecord : Entity
 {
-    public AttendanceRecordId Id { get; private set; }
+    public new  AttendanceRecordId Id { get; private set; }
+
 
     public MachineId MachineId { get; private set; }
 

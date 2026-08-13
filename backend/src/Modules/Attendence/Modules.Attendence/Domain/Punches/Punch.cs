@@ -26,7 +26,7 @@ public sealed class Punch : Entity
         CreatedOnUtc = createdOnUtc;
     }
 
-    public PunchId Id { get; private set; }
+    public new PunchId Id { get; private set; }
 
     public MachineId MachineId { get; private set; }
 

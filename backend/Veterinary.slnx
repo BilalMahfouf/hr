@@ -7,6 +7,9 @@
   <Folder Name="/src/Attendence/">
     <Project Path="src/Modules/Attendence/Modules.Attendence/Modules.Attendence.csproj" Id="2ce3db98-0544-4ea4-9d91-b2c3eb6b9fa2" />
   </Folder>
+  <Folder Name="/src/Employees/">
+    <Project Path="src/Modules/Employees/Modules.Employees.Contracts/Modules.Employees.Contracts.csproj" Id="5ae84e4b-134c-440e-898a-64bf0a35e859" />
+  </Folder>
   <Folder Name="/Tests/">
     <Project Path="Tests/Application.Tests/Application.Tests.csproj" Id="ec1a7528-ff40-4743-aa91-cbac898d34f0" />
   </Folder>
