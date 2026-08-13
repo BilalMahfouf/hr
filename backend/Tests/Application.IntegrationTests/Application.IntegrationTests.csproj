@@ -20,6 +20,8 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\PublicApi\PublicApi.csproj" />
     <ProjectReference Include="..\..\src\Modules\Identity\Identity.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Attendence\Modules.Attendence\Modules.Attendence.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Employees\Modules.Employees.Contracts\Modules.Employees.Contracts.csproj" />
   </ItemGroup>
 
   <ItemGroup>
