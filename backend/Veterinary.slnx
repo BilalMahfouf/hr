@@ -9,9 +9,11 @@
   </Folder>
   <Folder Name="/src/Employees/">
     <Project Path="src/Modules/Employees/Modules.Employees.Contracts/Modules.Employees.Contracts.csproj" Id="5ae84e4b-134c-440e-898a-64bf0a35e859" />
+    <Project Path="src/Modules/Employees/Modules.Employees/Modules.Employees.csproj" Id="0f3c7f2e-8b4a-4d1c-9e5a-b6d7c8e9f0a1" />
   </Folder>
   <Folder Name="/Tests/">
     <Project Path="Tests/Application.Tests/Application.Tests.csproj" Id="ec1a7528-ff40-4743-aa91-cbac898d34f0" />
+    <Project Path="Tests/Domain.Tests/Domain.Tests.csproj" Id="3d64f3b7-6b1d-4a44-9f01-cd8e7b6a9f01" />
   </Folder>
   <Project Path="docker-compose.dcproj">
     <Build />

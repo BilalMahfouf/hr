@@ -24,7 +24,7 @@ public static class CreateAttendenceRecord
         {
             var employee = await employeeApi.GetEmployeeByBadgeAsync(command.EmployeeBadge, cancellationToken);
             if (!employee.IsSuccess)
-        {
+            {
                 return Result.Failure(EmployeeErrors.NotFound);
             }
             // if there is record for today with checkout null set punch as checkout.
@@ -44,6 +44,7 @@ public static class CreateAttendenceRecord
             {
                 var newRecord = AttendanceRecord.Create(command.MachineId, employee.Value.EmployeeId, command.PunchOccurredAt);
                 newRecord.RegisterCheckIn(command.PunchOccurredAt, employee.Value.Schedule.ExpectedCheckInTime);
+                db.AttendanceRecords.Add(newRecord);
                 await db.SaveChangesAsync(cancellationToken);
                 return Result.Success;
             }
@@ -53,6 +54,7 @@ public static class CreateAttendenceRecord
 
             attendenceRecord.RegisterCheckOut(command.PunchOccurredAt, schedule);
 
+            db.AttendanceRecords.Update(attendenceRecord);
             await db.SaveChangesAsync(cancellationToken);
             return Result.Success;
         }

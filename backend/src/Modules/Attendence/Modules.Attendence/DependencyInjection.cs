@@ -1,18 +1,39 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.Extensions.DependencyInjection;
 using Modules.Attendence.Application.Shared;
 using Modules.Attendence.Infrastructure.Presistance;
+using Modules.Shared;
 using Modules.Shared.Infrastructure.Outbox;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Modules.Attendence;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddAttendenceModule(this IServiceCollection services)
+    public static IServiceCollection AddAttendenceModule(
+        this IServiceCollection services,
+        string connectionString)
     {
-        return services;
+        services.AddDbContext<AttendanceDbContext>(
+            (sp, options) =>
+            {
+                options
+                    .UseNpgsql(
+                        connectionString,
+                        o => o.MigrationsHistoryTable(
+                            HistoryRepository.DefaultTableName,
+                            "attendance"))
+                    .AddInterceptors(sp.GetRequiredService<InsertOutboxMessagesInterceptors>());
+            },
+            ServiceLifetime.Scoped
+        );
 
+        services.AddScoped<IAttendanceDbContext>(sp =>
+            sp.GetRequiredService<AttendanceDbContext>()
+        );
+
+        services.AddSharedModule(typeof(DependencyInjection).Assembly);
+
+        return services;
     }
 }

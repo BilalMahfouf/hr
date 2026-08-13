@@ -7,6 +7,8 @@ using PublicApi.Infrastructure.Notifications;
 using Modules.Shared;
 using Modules.Shared.Infrastructure;
 using Modules.Identity;
+using Modules.Attendence;
+using Modules.Employees;
 using PublicApi.Infrastructure.Payments;
 
 
@@ -36,6 +38,10 @@ builder.Services.AddPayments();
 builder.Services.AddInfrastructure(builder.Configuration);
 
 builder.Services.AddIdentityModule();
+
+builder.Services.AddEmployeeModule();
+
+builder.Services.AddAttendenceModule(connectionString!);
 
 builder.Services.AddCarter();
 

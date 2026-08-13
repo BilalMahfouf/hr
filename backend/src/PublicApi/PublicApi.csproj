@@ -46,6 +46,7 @@
 		<ProjectReference Include="..\Modules\Attendence\Modules.Attendence\Modules.Attendence.csproj" />
 		<ProjectReference Include="..\Modules\Shared\Shared.csproj" />
 		<ProjectReference Include="..\Modules\Identity\Identity.csproj" />
+		<ProjectReference Include="..\Modules\Employees\Modules.Employees\Modules.Employees.csproj" />
 	</ItemGroup>
 
 </Project>

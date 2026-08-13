@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Modules.Attendence.Infrastructure.Presistance;
 using Modules.Identity.Infrastructure.Persistence;
 using Modules.Shared.Infrastructure.Persistence;
 using PublicApi.Infrastructure.Persistence;
@@ -16,6 +17,9 @@ public static class MigrationExtension
 
         var identityDb = scope.ServiceProvider.GetRequiredService<IdentityDbContext>();
         identityDb.Database.Migrate();
+
+        var attendanceDb = scope.ServiceProvider.GetRequiredService<AttendanceDbContext>();
+        attendanceDb.Database.Migrate();
 
         using ApplicationDbContext dbContext =
             scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
