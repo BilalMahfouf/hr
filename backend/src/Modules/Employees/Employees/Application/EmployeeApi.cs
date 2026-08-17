@@ -9,25 +9,29 @@ namespace Modules.Employees.Application;
 
 public sealed class EmployeeApi(IEmployeeRepository employeeRepo) : IEmployeeApi
 {
-    private WorkSchedule GetEmployeeWorkSchedule(int employeeGroup)
+    private WorkSchedule GetEmployeeWorkSchedule(string employeeGroup)
     {
         return employeeGroup switch
         {
-            1 => new WorkSchedule(TimeSpan.FromHours(8), DateTime.Today.AddHours(16), DateTime.Today.AddHours(8)),
-            2 => new WorkSchedule(TimeSpan.FromHours(7), DateTime.Today.AddHours(16), DateTime.Today.AddHours(9)),
-            3 => new WorkSchedule(TimeSpan.FromHours(6), DateTime.Today.AddHours(15), DateTime.Today.AddHours(9)),
+            "1" => new WorkSchedule(TimeSpan.FromHours(8), DateTime.Today.AddHours(16), DateTime.Today.AddHours(8)),
+            "2" => new WorkSchedule(TimeSpan.FromHours(7), DateTime.Today.AddHours(16), DateTime.Today.AddHours(9)),
+            "3" => new WorkSchedule(TimeSpan.FromHours(6), DateTime.Today.AddHours(15), DateTime.Today.AddHours(9)),
             _ => new WorkSchedule(TimeSpan.FromHours(6), DateTime.Today.AddHours(15), DateTime.Today.AddHours(9))
         };
     }
     public async Task<Result<EmployeeResponse>> GetEmployeeByBadgeAsync(int badge, CancellationToken ct = default)
     {
-        var employee = await employeeRepo.GetEmployeeByBgdeAsync(badge, ct);
+        var employee = await employeeRepo.GetEmployeeByBgdeAsync(badge.ToString(), ct);
         if (employee is null)
         {
             return Result<EmployeeResponse>.Failure(EmployeeErrors.NotFound);
         }
         var workSchedule = GetEmployeeWorkSchedule(employee.EmployeeGroup);
-        var response = new EmployeeResponse(employee.EmployeeId, employee.Bdge, workSchedule);
+        if(int.TryParse(employee.Bdge, out int bdg))
+        {
+
+        }
+        var response = new EmployeeResponse(employee.EmployeeId, bdg , workSchedule);
         return Result<EmployeeResponse>.Success(response);
     }
 
@@ -39,7 +43,12 @@ public sealed class EmployeeApi(IEmployeeRepository employeeRepo) : IEmployeeApi
             return Result<EmployeeResponse>.Failure(EmployeeErrors.NotFound);
         }
         var workSchedule = GetEmployeeWorkSchedule(employee.EmployeeGroup);
-        var response = new EmployeeResponse(employee.EmployeeId, employee.Bdge, workSchedule);
+                if(int.TryParse(employee.Bdge, out int bdg))
+        {
+
+        }
+ 
+        var response = new EmployeeResponse(employee.EmployeeId, bdg, workSchedule);
         return Result<EmployeeResponse>.Success(response);
 
     }
