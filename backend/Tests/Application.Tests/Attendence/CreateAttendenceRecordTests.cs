@@ -16,6 +16,7 @@ public sealed class CreateAttendenceRecordTests
 
     private static readonly EmployeeResponse Employee = new(
         "emp-1",
+        100,
         new ContractSchedule(
             StandardWorkTime: TimeSpan.FromHours(8),
             ExpectedCheckOutTime: new DateTime(2026, 8, 13, 17, 0, 0, DateTimeKind.Utc),

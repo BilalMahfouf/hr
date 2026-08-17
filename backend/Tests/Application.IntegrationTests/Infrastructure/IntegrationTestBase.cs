@@ -45,6 +45,8 @@ public abstract class IntegrationTestBase : IAsyncLifetime
         await using var scope = RootProvider.CreateAsyncScope();
         var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         await db.Database.MigrateAsync();
+        var identityDb = scope.ServiceProvider.GetRequiredService<IdentityDbContext>();
+        await identityDb.Database.MigrateAsync();
     }
 
     public virtual async Task DisposeAsync()

@@ -14,4 +14,11 @@ public sealed class TestEmployeeApi : IEmployeeApi
     {
         return Task.FromResult(Response);
     }
+
+    public Task<Result<EmployeeResponse>> GetEmployeeByIdAsync(
+        string id,
+        CancellationToken ct = default)
+    {
+        return Task.FromResult(Response);
+    }
 }

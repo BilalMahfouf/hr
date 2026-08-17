@@ -34,6 +34,7 @@ public sealed class CreateAttendenceRecordCommandHandlerTests : AttendenceTestBa
         var (_, expectedCheckIn, expectedCheckOut) = Schedule;
         EmployeeApi.Response = Result<EmployeeResponse>.Success(new EmployeeResponse(
             EmployeeId,
+            EmployeeBadge,
             new ContractSchedule(
                 StandardWorkTime: TimeSpan.FromHours(8),
                 ExpectedCheckOutTime: expectedCheckOut,
