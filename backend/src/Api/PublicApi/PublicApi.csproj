@@ -6,9 +6,11 @@
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<UserSecretsId>31d67937-9abc-4b2f-a201-33f9933ebeb4</UserSecretsId>
+		<RootNamespace>PublicApi</RootNamespace>
+		<AssemblyName>PublicApi</AssemblyName>
 		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-		<DockerfileContext>..\..</DockerfileContext>
-		<DockerComposeProjectPath>..\docker-compose.dcproj</DockerComposeProjectPath>
+		<DockerfileContext>..\..\..</DockerfileContext>
+		<DockerComposeProjectPath>..\..\..\docker-compose.dcproj</DockerComposeProjectPath>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -43,10 +45,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\Modules\Attendence\Modules.Attendence\Modules.Attendence.csproj" />
-		<ProjectReference Include="..\Modules\Shared\Shared.csproj" />
-		<ProjectReference Include="..\Modules\Identity\Identity.csproj" />
-		<ProjectReference Include="..\Modules\Employees\Modules.Employees\Modules.Employees.csproj" />
+		<ProjectReference Include="..\..\Modules\Attendence\Attendence.csproj" />
+		<ProjectReference Include="..\..\Modules\Shared\Shared.csproj" />
+		<ProjectReference Include="..\..\Modules\Identity\Identity.csproj" />
+		<ProjectReference Include="..\..\Modules\Employees\Employees\Employees.csproj" />
 	</ItemGroup>
 
 </Project>

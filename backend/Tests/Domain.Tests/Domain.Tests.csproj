@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Modules\Attendence\Modules.Attendence\Modules.Attendence.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Attendence\Attendence.csproj" />
   </ItemGroup>
 
   <ItemGroup>

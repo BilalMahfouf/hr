@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\PublicApi\PublicApi.csproj" />
+    <ProjectReference Include="..\..\src\Api\PublicApi\PublicApi.csproj" />
     <ProjectReference Include="..\..\src\Modules\Identity\Identity.csproj" />
   </ItemGroup>
 

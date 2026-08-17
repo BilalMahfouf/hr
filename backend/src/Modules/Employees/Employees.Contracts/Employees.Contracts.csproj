@@ -4,6 +4,8 @@
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <RootNamespace>Modules.Employees.Contracts</RootNamespace>
+    <AssemblyName>Modules.Employees.Contracts</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
