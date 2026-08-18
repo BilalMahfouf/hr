@@ -5,7 +5,7 @@ namespace Modules.Attendence.Domain.AttendenceRecords;
 
 public sealed class AttendanceRecord : Entity
 {
-    public new  AttendanceRecordId Id { get; private set; }
+    public new AttendanceRecordId Id { get; private set; }
 
 
     public MachineId MachineId { get; private set; }
@@ -61,7 +61,7 @@ public sealed class AttendanceRecord : Entity
             punchDate);
     }
 
-    public void RegisterCheckIn(DateTime checkInAt,DateTime ExpectedCheckInTime)
+    public void RegisterCheckIn(DateTime checkInAt, DateTime ExpectedCheckInTime)
     {
         CheckInAt = checkInAt;
         CalculateLateTime(ExpectedCheckInTime);
@@ -69,6 +69,10 @@ public sealed class AttendanceRecord : Entity
 
     public void RegisterCheckOut(DateTime checkOutAt, WorkSchedule workSchedule)
     {
+        if (this.CheckInAt >= checkOutAt)
+        {
+            throw new DomainException(AttendanceRecordErrors.InvalidAttendanceTimeRange);
+        }
         CheckOutAt = checkOutAt;
         CalculateWorkedTime();
         CalculateOvertime(workSchedule.StandardWorkTime);

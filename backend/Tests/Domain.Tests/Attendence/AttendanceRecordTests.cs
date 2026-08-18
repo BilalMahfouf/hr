@@ -1,4 +1,5 @@
 using Modules.Attendence.Domain.AttendenceRecords;
+using Modules.Shared.Domain.Common;
 
 namespace Domain.Tests.Attendence;
 
@@ -127,17 +128,20 @@ public sealed class AttendanceRecordTests
     }
 
     [Fact]
-    public void RegisterCheckOut_WhenCheckOutEarlierThanCheckIn_WorkedTimeIsNotNegative()
+    public void RegisterCheckOut_WhenCheckOutEarlierThanCheckIn_ThrowsDomainException()
     {
         var record = CreateRecord();
         record.RegisterCheckIn(new DateTime(2026, 8, 13, 10, 0, 0), new DateTime(2026, 8, 13, 9, 0, 0));
 
-        record.RegisterCheckOut(
-            new DateTime(2026, 8, 13, 8, 0, 0),
-            new WorkSchedule(
-                StandardWorkTime: TimeSpan.FromHours(8),
-                ExpectedCheckOutTime: new DateTime(2026, 8, 13, 17, 0, 0)));
+        var exception = Assert.Throws<DomainException>(() =>
+            record.RegisterCheckOut(
+                new DateTime(2026, 8, 13, 8, 0, 0),
+                new WorkSchedule(
+                    StandardWorkTime: TimeSpan.FromHours(8),
+                    ExpectedCheckOutTime: new DateTime(2026, 8, 13, 17, 0, 0))));
 
-        Assert.True(record.WorkedTime >= TimeSpan.Zero);
+        Assert.Equal(AttendanceRecordErrors.InvalidAttendanceTimeRange.Code, exception.Error.Code);
+        Assert.Null(record.CheckOutAt);
+        Assert.Equal(TimeSpan.Zero, record.WorkedTime);
     }
 }
