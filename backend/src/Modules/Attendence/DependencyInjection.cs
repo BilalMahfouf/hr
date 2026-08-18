@@ -1,8 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.DependencyInjection;
+using Modules.Attendence.Application.Abstractions;
 using Modules.Attendence.Application.Shared;
 using Modules.Attendence.Infrastructure.Presistance;
+using Modules.Attendence.Infrastructure.ZKTeco;
 using Modules.Shared;
 using Modules.Shared.Infrastructure.Outbox;
 
@@ -30,6 +32,12 @@ public static class DependencyInjection
 
         services.AddScoped<IAttendanceDbContext>(sp =>
             sp.GetRequiredService<AttendanceDbContext>()
+        );
+
+        services.AddScoped<IZKemSessionFactory, ZkemSessionFactory>();
+        services.AddScoped<IAttendanceMachineReader>(sp =>
+            new ZKTecoAttendanceMachineReader(
+                sp.GetRequiredService<IZKemSessionFactory>())
         );
 
         services.AddSharedModule(typeof(DependencyInjection).Assembly);

@@ -9,6 +9,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Reference Include="Interop.zkemkeeper">
+      <HintPath>lib\Interop.zkemkeeper.dll</HintPath>
+      <Private>true</Private>
+      <EmbedInteropTypes>true</EmbedInteropTypes>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.1">
       <PrivateAssets>all</PrivateAssets>
