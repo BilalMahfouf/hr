@@ -9,10 +9,8 @@ public sealed class AttendanceRecordTests
 
     private const string EmployeeId = "emp-1";
 
-    private static readonly DateTime PunchDate = new(2026, 8, 13, 8, 0, 0);
-
     private static AttendanceRecord CreateRecord() =>
-        AttendanceRecord.Create(MachineId, EmployeeId, PunchDate);
+        AttendanceRecord.Create(MachineId, EmployeeId);
 
     [Fact]
     public void Create_SetsExpectedInitialState()
@@ -22,7 +20,6 @@ public sealed class AttendanceRecordTests
         Assert.NotEqual(AttendanceRecordId.Empty, record.Id);
         Assert.Equal(MachineId, record.MachineId);
         Assert.Equal(EmployeeId, record.EmployeeId);
-        Assert.Equal(PunchDate, record.PunchDate);
         Assert.Null(record.CheckInAt);
         Assert.Null(record.CheckOutAt);
         Assert.Equal(TimeSpan.Zero, record.WorkedTime);

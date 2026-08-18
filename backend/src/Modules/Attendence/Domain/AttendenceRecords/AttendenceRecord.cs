@@ -13,8 +13,6 @@ public sealed class AttendanceRecord : Entity
     // Reference to Employee module
     public string EmployeeId { get; private set; } = null!;
 
-    public DateTime PunchDate { get; private set; }
-
     public DateTime? CheckInAt { get; private set; }
 
     public DateTime? CheckOutAt { get; private set; }
@@ -34,13 +32,11 @@ public sealed class AttendanceRecord : Entity
     private AttendanceRecord(
         AttendanceRecordId id,
         MachineId machineId,
-        string employeeId,
-        DateTime punchDate)
+        string employeeId)
     {
         Id = id;
         MachineId = machineId;
         EmployeeId = employeeId;
-        PunchDate = punchDate;
 
         WorkedTime = TimeSpan.Zero;
         Overtime = TimeSpan.Zero;
@@ -51,14 +47,12 @@ public sealed class AttendanceRecord : Entity
 
     public static AttendanceRecord Create(
         MachineId machineId,
-        string employeeId,
-        DateTime punchDate)
+        string employeeId)
     {
         return new AttendanceRecord(
             AttendanceRecordId.New(),
             machineId,
-            employeeId,
-            punchDate);
+            employeeId);
     }
 
     public void RegisterCheckIn(DateTime checkInAt, DateTime ExpectedCheckInTime)

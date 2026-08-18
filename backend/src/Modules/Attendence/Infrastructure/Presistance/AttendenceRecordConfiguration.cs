@@ -39,9 +39,6 @@ public sealed class AttendanceRecordConfiguration
         builder.Property(x => x.EmployeeId)
             .IsRequired();
 
-        builder.Property(x => x.PunchDate)
-            .IsRequired();
-
         builder.Property(x => x.CheckInAt);
 
         builder.Property(x => x.CheckOutAt);
@@ -64,7 +61,8 @@ public sealed class AttendanceRecordConfiguration
         builder.HasIndex(x => new
         {
             x.EmployeeId,
-            x.PunchDate
-        });
+            x.CheckInAt
+        })
+        .IsUnique();
     }
 }

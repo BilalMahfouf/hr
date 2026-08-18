@@ -46,7 +46,7 @@ public sealed class CreateAttendenceRecordCommandHandlerTests : AttendenceTestBa
         DateTime checkInAt)
     {
         var (_, expectedCheckIn, _) = Schedule;
-        var record = AttendanceRecord.Create(MachineId, EmployeeId, DateTime.UtcNow);
+        var record = AttendanceRecord.Create(MachineId, EmployeeId);
         record.RegisterCheckIn(checkInAt, expectedCheckIn);
         db.AttendanceRecords.Add(record);
         await db.SaveChangesAsync();

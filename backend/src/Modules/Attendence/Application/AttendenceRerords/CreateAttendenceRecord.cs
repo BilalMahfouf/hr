@@ -27,22 +27,22 @@ public static class CreateAttendenceRecord
             {
                 return Result.Failure(EmployeeErrors.NotFound);
             }
-            // if there is record for today with checkout null set punch as checkout.
-            // if now create new record .
-            var today = DateTime.UtcNow.Date;
-            var tomorrow = today.AddDays(1);
+            // if there is record for the punch's day with checkout null set punch as checkout.
+            // if not, create new record .
+            var punchDate = command.PunchOccurredAt.Date;
+            var nextDay = punchDate.AddDays(1);
 
             var attendenceRecord = await db.AttendanceRecords
                 .Where(e =>
                 e.EmployeeId == employee.Value.EmployeeId &&
-                e.CreatedOnUtc >= today &&
-                e.CreatedOnUtc < tomorrow)
+                e.CheckInAt >= punchDate &&
+                e.CheckInAt < nextDay)
                 .OrderByDescending(e => e.CreatedOnUtc)
                 .FirstOrDefaultAsync(cancellationToken);
 
             if (attendenceRecord is null || attendenceRecord.CheckOutAt.HasValue)
             {
-                var newRecord = AttendanceRecord.Create(command.MachineId, employee.Value.EmployeeId, command.PunchOccurredAt);
+                var newRecord = AttendanceRecord.Create(command.MachineId, employee.Value.EmployeeId);
                 newRecord.RegisterCheckIn(command.PunchOccurredAt, employee.Value.Schedule.ExpectedCheckInTime);
                 db.AttendanceRecords.Add(newRecord);
                 await db.SaveChangesAsync(cancellationToken);

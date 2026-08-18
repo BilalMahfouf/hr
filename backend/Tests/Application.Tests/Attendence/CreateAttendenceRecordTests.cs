@@ -42,8 +42,7 @@ public sealed class CreateAttendenceRecordTests
     {
         var record = AttendanceRecord.Create(
             MachineId,
-            Employee.EmployeeId,
-            new DateTime(2026, 8, 13, 8, 0, 0, DateTimeKind.Utc));
+            Employee.EmployeeId);
         record.RegisterCheckIn(
             new DateTime(2026, 8, 13, 8, 0, 0, DateTimeKind.Utc),
             Employee.Schedule.ExpectedCheckInTime);
@@ -144,6 +143,26 @@ public sealed class CreateAttendenceRecordTests
         var newest = db.AttendanceRecords
             .OrderByDescending(x => x.CreatedOnUtc)
             .First();
+        Assert.Null(newest.CheckOutAt);
+    }
+
+    [Fact]
+    public async Task Handle_WhenOpenRecordCheckInAtIsPreviousDay_CreatesNewCheckInRecord()
+    {
+        var (handler, db, _) = Arrange();
+        SeedOpenRecord(db);
+
+        var punch = new DateTime(2026, 8, 14, 9, 0, 0, DateTimeKind.Utc);
+
+        var result = await handler.Handle(
+            new CreateAttendenceRecord.Command(100, MachineId, punch));
+
+        Assert.True(result.IsSuccess);
+        Assert.Equal(2, db.AttendanceRecords.Count());
+        var newest = db.AttendanceRecords
+            .OrderByDescending(x => x.CreatedOnUtc)
+            .First();
+        Assert.Equal(punch, newest.CheckInAt);
         Assert.Null(newest.CheckOutAt);
     }
 }
