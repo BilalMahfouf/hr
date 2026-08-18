@@ -414,7 +414,7 @@ Below is the complete end-to-end flow for a **command** (e.g., `POST /api/v1/app
 ── Background: ProcessOutboxMessagesJob (every 10 seconds) ──────────────
 13. Quartz job polls OutboxMessages WHERE ProcessedOnUtc IS NULL (batch 20)
 14. Deserializes each domain event (Newtonsoft.Json TypeNameHandling.All)
-15. DomainEventPublisher.PublishAsync() calls all IDomainEventHandler<T> in parallel
+15. DomainEventPublisher.PublishAsync() calls all IDomainEventHandler<T> sequentially
    └── e.g., AppointmentCancelledDomainEventHandler:
        ├── Queries appointment details
        ├── Creates Notification entity
@@ -647,8 +647,8 @@ ProcessOutboxMessagesJob (Quartz, every 10 seconds)
    → SELECT top 20 WHERE ProcessedOnUtc IS NULL ORDER BY Id
    → Deserializes each message back to the correct IDomainEvent type
    → DomainEventPublisher.PublishAsync(event)
-       → Resolves all IDomainEventHandler<TEvent> from DI
-       → Executes all handlers in parallel via Task.WhenAll
+        → Resolves all IDomainEventHandler<TEvent> from DI
+        → Executes handlers sequentially, awaiting each in turn
    → Stamps ProcessedOnUtc = UtcNow
    → SaveChangesAsync
 ```
