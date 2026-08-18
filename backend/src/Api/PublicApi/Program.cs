@@ -24,7 +24,8 @@ builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSharedModule(
     typeof(Program).Assembly,
-    typeof(Modules.Identity.Application.Users.Register).Assembly);
+    typeof(Modules.Identity.Application.Users.Register).Assembly,
+    typeof(Modules.Attendence.Application.Importer.ImportAttendanceLogs).Assembly);
 
 builder.Services.AddProblemDetails();
 
@@ -43,7 +44,11 @@ builder.Services.AddEmployeeModule();
 
 builder.Services.AddAttendenceModule(connectionString!);
 
-builder.Services.AddCarter();
+builder.Services.AddCarter(new DependencyContextAssemblyCatalog(
+    typeof(Program).Assembly,
+    typeof(Modules.Attendence.DependencyInjection).Assembly,
+    typeof(Modules.Identity.DependencyInjection).Assembly,
+    typeof(Modules.Employees.DependencyInjection).Assembly));
 
 builder.Services.AddCors(options =>
 {

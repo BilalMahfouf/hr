@@ -11,13 +11,13 @@ using System.Text;
 
 namespace Modules.Attendence.Application.Punches;
 
-internal class PunchCreatedDomainEventHandler(
+public class PunchCreatedDomainEventHandler(
     ICommandHandler<CreateAttendenceRecord.Command> commandHandler) : IDomainEventHandler<PunchCreatedDomainEvent>
 {
 
     public async Task Handle(PunchCreatedDomainEvent domainEvent, CancellationToken cancellationToken)
     {
-        var command  = new CreateAttendenceRecord.Command(
+        var command = new CreateAttendenceRecord.Command(
             domainEvent.EmployeeBadge,
             domainEvent.MachineId,
             domainEvent.PunchOccurredAt
