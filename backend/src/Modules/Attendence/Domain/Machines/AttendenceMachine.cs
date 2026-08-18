@@ -1,0 +1,45 @@
+﻿using Modules.Shared.Domain.Common;
+
+namespace Modules.Attendence.Domain.Machines;
+
+public sealed class AttendenceMachine : Entity
+{
+    public new MachineId Id { get; private set; }
+
+    public int MachineNumber { get; private set; }
+    public string IpAddress { get; private set; } = null!;
+    public int Port { get; private set; }
+
+    public bool IsActive { get; private set; }
+
+    private AttendenceMachine()
+    {
+    }
+
+    public static AttendenceMachine Create(
+        MachineId id,
+        string ipAddress,
+        int machineNumber,
+        int? port = null)
+    {
+        var machine = new AttendenceMachine
+        {
+            Id = id,
+            IpAddress = ipAddress,
+            MachineNumber = machineNumber,
+            Port = port ?? 4370,
+            IsActive = true
+        };
+        return machine;
+    }
+
+    public void UpdateIpAddress(string ipAddress)
+    {
+        IpAddress = ipAddress;
+    }
+
+    public void Deactivate()
+    {
+        IsActive = false;
+    }
+}
