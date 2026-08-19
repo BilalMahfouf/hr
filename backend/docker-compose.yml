@@ -3,9 +3,9 @@ services:
     image: public-api:latest
     build:
       context: .
-      dockerfile: src/PublicApi/Dockerfile
+      dockerfile: src/Api/PublicApi/Dockerfile
     env_file:
-       - ./src/PublicApi/.env
+       - ./src/Api/PublicApi/.env
     
     ports:
       - "8080:8080"
@@ -16,8 +16,8 @@ services:
       ASPNETCORE_Kestrel__Certificates__Default__Path: /https/localhost.pfx
       ASPNETCORE_Kestrel__Certificates__Default__Password: "devpassword"
     volumes:
-      - ./src/PublicApi/certificates:/https/:ro
-      - ./src/PublicApi/.env:/app/.env:ro
+      - ./src/Api/PublicApi/certificates:/https/:ro
+      - ./src/Api/PublicApi/.env:/app/.env:ro
 
   veterinary.database:
     image: postgres:17 

@@ -7,7 +7,7 @@ AGENTS.md
 backend/
 ├── Veterinary.slnx              # .NET solution file
 ├── docker-compose.yml           # Postgres + pgAdmin + API
-├── src/PublicApi/               # ASP.NET Core 10 minimal API
+├── src/Api/PublicApi/           # ASP.NET Core 10 minimal API
 │   ├── Program.cs               # Entry point, DI composition
 │   ├── Domain/                  # Pure domain, no infra deps
 │   ├── Features/                # Vertical slices (one folder per feature)
@@ -15,32 +15,39 @@ backend/
 │   ├── Common/                  # App-level abstractions + extensions
 │   └── Migrations/              # EF Core migrations (ApplicationDbContext)
 ├── src/Modules/
-│   ├── Modules.Shared/          # CQRS interfaces, Result pattern, pagination, domain base types
+│   ├── Shared/                  # CQRS interfaces, Result pattern, pagination, domain base types
 │   │   ├── Infrastructure/      # Outbox (entity, interceptor, processor job), SharedDbContext,
 │   │   │                        # domain event dispatcher/publisher, exception handlers,
 │   │   │                        # email services, CurrentUserService, AddSharedInfrastructure DI
 │   │   └── Migrations/          # EF Core migrations (SharedDbContext — owns shared schema)
-│   └── Modules.Identity/        # User management, auth, JWT abstractions + IdentityDbContext
+│   ├── Identity/                # User management, auth, JWT abstractions + IdentityDbContext
+│   ├── Employees/               # Employee module (multiple class libs)
+│   │   ├── Employees/           # Main project (module DI, EmployeeApi)
+│   │   └── Employees.Contracts/ # Employee contracts (IEmployeeApi, EmployeeErrors)
+│   └── Attendence/              # Attendance records, punches, machines + AttendanceDbContext
 ├── Tests/
 │   ├── Application.Tests/       # Unit tests (xUnit + Moq)
-│   └── Application.IntegrationTests/  # Integration tests (Testcontainers.PostgreSql)
+│   ├── Application.IntegrationTests/  # Integration tests (Testcontainers.PostgreSql)
+│   └── Domain.Tests/            # Domain unit tests
 └── .github/
     └── copilot-instructions.md  # Response DTOs must be flat (no nested records)
 ```
+
+**Module folder convention:** every module lives in its own folder under `src/Modules/`. A module can contain **multiple class libraries** — one project per subfolder inside the module folder (e.g. `Employees/` holds the `Employees/` and `Employees.Contracts/` class libraries). Single-project modules keep their `.csproj` directly in the module folder (e.g. `Attendence/Attendence.csproj`).
 
 ## Key commands (run from `backend`)
 
 | Action | Command |
 |---|---|
-| Build | `dotnet build src/PublicApi/PublicApi.csproj` |
-| Run API | `dotnet run --project src/PublicApi/PublicApi.csproj` |
+| Build | `dotnet build src/Api/PublicApi/PublicApi.csproj` |
+| Run API | `dotnet run --project src/Api/PublicApi/PublicApi.csproj` |
 | Unit tests | `dotnet test Tests/Application.Tests` |
 | Integration tests | `dotnet test Tests/Application.IntegrationTests` |
 | All tests | `dotnet test Veterinary.slnx` |
-| New migration (app) | `dotnet ef migrations add <Name> --project src/PublicApi --startup-project src/PublicApi --context ApplicationDbContext` |
-| New migration (shared) | `dotnet ef migrations add <Name> --project src/Modules/Shared --startup-project src/PublicApi --context SharedDbContext` |
-| New migration (identity) | `dotnet ef migrations add <Name> --project src/Modules/Identity --startup-project src/PublicApi --context IdentityDbContext` |
-| Apply migration | `dotnet ef database update --project src/PublicApi --startup-project src/PublicApi --context <DbContext>` (migrations also auto-applied at startup via `app.ApplyMigrations()`) |
+| New migration (app) | `dotnet ef migrations add <Name> --project src/Api/PublicApi --startup-project src/Api/PublicApi --context ApplicationDbContext` |
+| New migration (shared) | `dotnet ef migrations add <Name> --project src/Modules/Shared --startup-project src/Api/PublicApi --context SharedDbContext` |
+| New migration (identity) | `dotnet ef migrations add <Name> --project src/Modules/Identity --startup-project src/Api/PublicApi --context IdentityDbContext` |
+| Apply migration | `dotnet ef database update --project src/Api/PublicApi --startup-project src/Api/PublicApi --context <DbContext>` (migrations also auto-applied at startup via `app.ApplyMigrations()`) |
 | Scalar API UI | `https://localhost:<port>/scalar` (dev only) |
 | Docker Compose | `docker compose up --build` (starts API + Postgres 16 + pgAdmin) |
 

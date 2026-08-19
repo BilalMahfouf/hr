@@ -120,7 +120,7 @@ The system is designed to be **deployed via Docker Compose** with a PostgreSQL d
 ## 4. Folder Structure
 
 ```
-src/PublicApi/
+src/Api/PublicApi/
 ├── Program.cs                      # Application entry point, DI composition root
 ├── appsettings.json                # Non-sensitive configuration
 ├── appsettings.Development.json    # Development overrides
@@ -191,6 +191,22 @@ src/PublicApi/
 └── Properties/
     └── launchSettings.json         # Local development launch profiles
 ```
+
+### 4.1 Modules
+
+Feature modules live under `src/Modules/`. **Every module has its own folder**, and a module may contain **multiple class libraries** — one project per subfolder inside the module folder:
+
+```
+src/Modules/
+├── Shared/                         # CQRS interfaces, Result pattern, pagination, domain base types
+├── Identity/                       # User management, auth, JWT abstractions + IdentityDbContext
+├── Employees/                      # Employee module (multiple class libs)
+│   ├── Employees/                  # Main project (module DI, EmployeeApi)
+│   └── Employees.Contracts/        # Employee contracts (IEmployeeApi, EmployeeErrors)
+└── Attendence/                     # Attendance records, punches, machines + AttendanceDbContext
+```
+
+Single-project modules keep their `.csproj` directly in the module folder (e.g. `Attendence/Attendence.csproj`).
 
 ---
 
@@ -398,7 +414,7 @@ Below is the complete end-to-end flow for a **command** (e.g., `POST /api/v1/app
 ── Background: ProcessOutboxMessagesJob (every 10 seconds) ──────────────
 13. Quartz job polls OutboxMessages WHERE ProcessedOnUtc IS NULL (batch 20)
 14. Deserializes each domain event (Newtonsoft.Json TypeNameHandling.All)
-15. DomainEventPublisher.PublishAsync() calls all IDomainEventHandler<T> in parallel
+15. DomainEventPublisher.PublishAsync() calls all IDomainEventHandler<T> sequentially
    └── e.g., AppointmentCancelledDomainEventHandler:
        ├── Queries appointment details
        ├── Creates Notification entity
@@ -473,16 +489,16 @@ app.ApplyMigrations(); // Calls dbContext.Database.Migrate() on startup
 
 ```bash
 dotnet ef migrations add <MigrationName> \
-  --project src/PublicApi \
-  --startup-project src/PublicApi
+  --project src/Api/PublicApi \
+  --startup-project src/Api/PublicApi
 ```
 
 **Applying migrations manually:**
 
 ```bash
 dotnet ef database update \
-  --project src/PublicApi \
-  --startup-project src/PublicApi
+  --project src/Api/PublicApi \
+  --startup-project src/Api/PublicApi
 ```
 
 ---
@@ -631,8 +647,8 @@ ProcessOutboxMessagesJob (Quartz, every 10 seconds)
    → SELECT top 20 WHERE ProcessedOnUtc IS NULL ORDER BY Id
    → Deserializes each message back to the correct IDomainEvent type
    → DomainEventPublisher.PublishAsync(event)
-       → Resolves all IDomainEventHandler<TEvent> from DI
-       → Executes all handlers in parallel via Task.WhenAll
+        → Resolves all IDomainEventHandler<TEvent> from DI
+        → Executes handlers sequentially, awaiting each in turn
    → Stamps ProcessedOnUtc = UtcNow
    → SaveChangesAsync
 ```
@@ -785,8 +801,8 @@ cd VeterinaryApplication
 2. **Create `.env` file**
 
 ```bash
-cp backend/src/PublicApi/.env.example \
-   backend/src/PublicApi/.env
+cp backend/src/Api/PublicApi/.env.example \
+   backend/src/Api/PublicApi/.env
 # Edit .env and fill in all required values
 ```
 
@@ -811,7 +827,7 @@ ConnectionStrings__Default="Host=localhost;Port=5432;Database=veterinary_db;User
 5. **Run the API**
 
 ```bash
-cd backend/src/PublicApi
+cd backend/src/Api/PublicApi
 dotnet run
 ```
 
@@ -839,7 +855,7 @@ This starts:
 ### Build for Production
 
 ```bash
-cd backend/src/PublicApi
+cd backend/src/Api/PublicApi
 dotnet publish -c Release -o ./publish
 ```
 
@@ -847,7 +863,7 @@ dotnet publish -c Release -o ./publish
 
 ```bash
 docker build \
-  -f src/PublicApi/Dockerfile \
+  -f src/Api/PublicApi/Dockerfile \
   -t veterinaryapi:latest \
   .
 ```

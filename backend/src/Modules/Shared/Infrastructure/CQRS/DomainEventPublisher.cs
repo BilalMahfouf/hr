@@ -6,8 +6,8 @@ using Modules.Shared.Domain.Common;
 namespace Modules.Shared.Infrastructure.CQRS;
 
 /// <summary>
-/// Parallel implementation of <see cref="IDomainEventPublisher"/> that resolves all registered
-/// handlers for a given domain event and invokes them concurrently via <c>Task.WhenAll</c>.
+/// Sequential implementation of <see cref="IDomainEventPublisher"/> that resolves all registered
+/// handlers for a given domain event and invokes them one at a time on the calling thread.
 /// </summary>
 /// <remarks>
 /// Unlike <see cref="DomainEventsDispatcher"/>, this publisher does <b>not</b> create a child
@@ -40,7 +40,9 @@ public class DomainEventPublisher : IDomainEventPublisher
 
     /// <summary>
     /// Resolves all registered handlers for <paramref name="domainEvent"/>'s concrete type
-    /// and invokes them in parallel. Returns only after all handlers complete.
+    /// and invokes them sequentially, awaiting each handler in turn. Returns only after all
+    /// handlers complete. Sequential execution keeps handlers on one thread so a shared
+    /// scoped <c>DbContext</c> is never accessed concurrently.
     /// </summary>
     /// <param name="domainEvent">The domain event to publish.</param>
     /// <param name="ct">A token to observe for cooperative cancellation.</param>
@@ -58,11 +60,11 @@ public class DomainEventPublisher : IDomainEventPublisher
 
         if (!handlers.Any()) return;
 
-        // Execute all handlers in parallel and await all completions.
-        var tasks = handlers.Select(handler =>
-            InvokeHandlerAsync(handler!, domainEvent, ct));
-
-        await Task.WhenAll(tasks);
+        // Execute all handlers sequentially so each awaits the previous one.
+        foreach (var handler in handlers)
+        {
+            await InvokeHandlerAsync(handler!, domainEvent, ct);
+        }
     }
 
     /// <summary>

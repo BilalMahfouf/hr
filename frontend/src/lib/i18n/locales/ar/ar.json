@@ -1,0 +1,432 @@
+{
+    "welcomMessage": "مرحبا بك في تطبيق إدارة الموارد البشرية",
+    "signIn": "تسجيل الدخول",
+    "signInDescription": "سجل دخولك لإدارة شركتك وفريقك.",
+    "login": "دخول",
+    "loginDescription": "سجل دخولك لإدارة شركتك وفريقك.",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "forgotPassword": "نسيت كلمة المرور؟",
+    "noAccount": "ليس لديك حساب؟",
+    "signUp": "إنشاء حساب",
+    "app": {
+        "name": "HREnap",
+        "logoAlt": "شعار HREnap"
+    },
+    "dashboard": "لوحة التحكم",
+    "subscriptionPlansNav": "خطط الاشتراك",
+    "notifications": "الإشعارات",
+    "settings": "الإعدادات",
+    "sessionExpired": "انتهت الجلسة",
+    "sessionExpiredMessage": "لقد انتهت جلستك. يرجى تسجيل الدخول مرة أخرى للمتابعة.",
+    "register": {
+        "title": "إنشاء حساب",
+        "description": "أدخل معلوماتك لإنشاء حسابك.",
+        "firstName": "الاسم الأول",
+        "lastName": "اسم العائلة",
+        "userName": "اسم المستخدم",
+        "email": "البريد الإلكتروني",
+        "password": "كلمة المرور",
+        "confirmPassword": "تأكيد كلمة المرور",
+        "submit": "تسجيل",
+        "alreadyHaveAccount": "لديك حساب بالفعل؟",
+        "loginLink": "تسجيل الدخول",
+        "successMessage": "تم التسجيل بنجاح! مرحباً بك في HREnap."
+    },
+    "onboarding": {
+        "subscribe": {
+            "title": "تفعيل اشتراكك",
+            "subtitle": "خطة واحدة بسيطة. كل ما يحتاجه مساحة عملك.",
+            "planLabel": "الخطة الاحترافية",
+            "planName": "وصول كامل لمساحة العمل",
+            "currency": "دج",
+            "period": "/ شهر",
+            "feature1": "إدارة الاشتراكات والدفع",
+            "feature2": "إدارة الموظفين والأدوار",
+            "feature3": "إشعارات فورية",
+            "feature4": "معالجة الدفع عبر Chargily",
+            "feature5": "إدارة حسابات المستخدمين ومساحة العمل",
+            "trialNote": "تجربة مجانية لمدة {{days}} يومًا — لا يلزم الدفع للبدء",
+            "cta": "ابدأ التجربة المجانية",
+            "ctaLoading": "جارٍ التحويل...",
+            "signinPrompt": "هل لديك حساب بالفعل؟",
+            "signinLink": "تسجيل الدخول",
+            "errorGeneric": "حدث خطأ ما. يرجى المحاولة مرة أخرى."
+        },
+        "renew": {
+            "title": "تجديد اشتراكك",
+            "subtitle": "واصل استخدام مساحة عملك دون انقطاع.",
+            "notice": "اشتراكك يحتاج إلى تجديد. اختر خطة للمتابعة.",
+            "cta": "جدد الآن",
+            "ctaLoading": "جارٍ التحويل...",
+            "signinPrompt": "تحتاج إلى حساب مختلف؟",
+            "signinLink": "تسجيل الدخول",
+            "errorGeneric": "حدث خطأ ما. يرجى المحاولة مرة أخرى."
+        },
+        "payment": {
+            "success": {
+                "title": "تم الدفع بنجاح!",
+                "subtitle": "شكراً لاشتراكك.",
+                "verifying": "جارٍ التحقق من الدفع...",
+                "verified": "تم التحقق من الدفع بنجاح!",
+                "redirecting": "جارٍ التحويل إلى لوحة التحكم خلال {{seconds}} ثوانٍ...",
+                "timeout": "التحقق يستغرق وقتاً أطول من المتوقع",
+                "timeoutDesc": "قد يكون الدفع لا يزال قيد المعالجة. يمكنك محاولة الذهاب إلى لوحة التحكم يدوياً.",
+                "goToDashboard": "الذهاب إلى لوحة التحكم"
+            },
+            "failed": {
+                "title": "فشل الدفع",
+                "subtitle": "لم نتمكن من معالجة الدفع. يرجى المحاولة مرة أخرى.",
+                "tryAgain": "المحاولة مرة أخرى"
+            }
+        }
+    },
+    "common": {
+        "cancel": "إلغاء",
+        "confirm": "تأكيد",
+        "confirmDelete": "حذف",
+        "deleting": "جاري الحذف...",
+        "close": "إغلاق",
+        "save": "حفظ",
+        "saving": "جاري الحفظ..."
+    },
+    "deleteDialog": {},
+    "table": {
+        "search": "بحث...",
+        "noResults": "لا توجد نتائج.",
+        "previous": "السابق",
+        "next": "التالي",
+        "viewDetails": "عرض التفاصيل",
+        "edit": "تعديل",
+        "delete": "حذف",
+        "openMenu": "فتح القائمة"
+    },
+    "subscriptionPlans": {
+        "title": "خطط الاشتراك",
+        "description": "إدارة جميع خطط الاشتراك المتاحة لحسابات مؤسستك.",
+        "addPlan": "إضافة خطة",
+        "viewTitle": "تفاصيل خطة الاشتراك",
+        "viewDescription": "عرض المعلومات الكاملة لخطة الاشتراك.",
+        "loadError": "فشل تحميل خطط الاشتراك.",
+        "empty": "لم يتم العثور على خطط اشتراك.",
+        "genericError": "حدث خطأ أثناء معالجة هذه الخطة.",
+        "table": {
+            "name": "الاسم",
+            "slug": "المعرف",
+            "price": "السعر",
+            "interval": "فترة الفوترة",
+            "trialDays": "أيام التجربة",
+            "status": "الحالة",
+            "createdOn": "تاريخ الإنشاء"
+        },
+        "form": {
+            "id": "معرف الخطة",
+            "addTitle": "إضافة خطة اشتراك",
+            "addDescription": "أنشئ خطة اشتراك جديدة متاحة لمستخدميك.",
+            "updateTitle": "تحديث خطة الاشتراك",
+            "updateDescription": "قم بتعديل خطة الاشتراك المحددة.",
+            "name": "اسم الخطة",
+            "namePlaceholder": "مثال: الخطة الاحترافية",
+            "amount": "المبلغ",
+            "amountMinError": "مبلغ غير صالح",
+            "amountMinErrorDesc": "يجب أن يكون المبلغ أكبر من 50 دج.",
+            "invalidError": "نموذج غير صالح",
+            "invalidErrorDesc": "يرجى ملء جميع الحقول المطلوبة بقيم صحيحة.",
+            "currency": "العملة",
+            "billingInterval": "فترة الفوترة",
+            "selectInterval": "اختر الفترة",
+            "intervalCount": "عدد الفترات",
+            "trialDays": "أيام التجربة",
+            "addAction": "إضافة الخطة",
+            "updateAction": "تحديث الخطة"
+        },
+        "actions": {
+            "activate": "تفعيل",
+            "deactivate": "تعطيل"
+        },
+        "status": {
+            "active": "نشط",
+            "inactive": "غير نشط"
+        },
+        "intervals": {
+            "day": "يوم",
+            "week": "أسبوع",
+            "month": "شهر",
+            "year": "سنة"
+        },
+        "intervalSingle": "كل {{interval}}",
+        "intervalMultiple": "كل {{count}} {{interval}}"
+    },
+    "staff": {
+        "title": "الموظفون",
+        "description": "إدارة أعضاء فريقك وأدوارهم",
+        "addStaff": "إضافة موظف",
+        "noStaff": "لا يوجد موظفون",
+        "role": "الدور",
+        "status": "الحالة"
+    },
+    "user": {
+        "userId": "معرف المستخدم",
+        "fullName": "الاسم الكامل",
+        "registeredOn": "تاريخ التسجيل",
+        "tableRegistered": "تاريخ التسجيل"
+    },
+    "toast": {
+        "subscriptionPlan": {
+            "added": "تمت إضافة الخطة",
+            "addedDesc": "تم إنشاء خطة الاشتراك بنجاح.",
+            "updated": "تم تحديث الخطة",
+            "updatedDesc": "تم تحديث خطة الاشتراك بنجاح.",
+            "activated": "تم تفعيل الخطة",
+            "activatedDesc": "خطة الاشتراك أصبحت نشطة الآن.",
+            "deactivated": "تم تعطيل الخطة",
+            "deactivatedDesc": "خطة الاشتراك أصبحت غير نشطة الآن."
+        },
+        "notification": {
+            "markedAsRead": "تم قراءة الإشعار",
+            "markedAsReadDesc": "تم تحديد الإشعار كمقروء.",
+            "markedAllAsRead": "تم قراءة جميع الإشعارات",
+            "markedAllAsReadDesc": "تم تحديد جميع الإشعارات كمقروءة.",
+            "pushEnabled": "تم تفعيل إشعارات سطح المكتب.",
+            "pushDisabled": "تم تعطيل إشعارات سطح المكتب."
+        },
+        "auth": {
+            "resetLinkSent": "تم جدولة إرسال البريد",
+            "resetLinkSentDesc": "إذا كان هناك حساب بهذا البريد، سيتم إرسال رابط إعادة التعيين خلال 1-2 دقيقة.",
+            "passwordReset": "تم إعادة تعيين كلمة المرور!",
+            "passwordResetDesc": "تم تحديث كلمة المرور بنجاح. يمكنك تسجيل الدخول الآن.",
+            "resendSuccess": "تم إعادة إرسال البريد",
+            "resendSuccessDesc": "إذا كان هناك حساب، سيتم إرسال رابط إعادة تعيين آخر قريباً."
+        },
+        "errorOccurred": "حدث خطأ",
+        "genericErrorDesc": "حدث خطأ ما. يرجى المحاولة مرة أخرى لاحقاً.",
+        "success": "نجاح",
+        "warning": "تحذير",
+        "info": "معلومات"
+    },
+    "errors": {
+        "user": {
+            "notFound": "المستخدم غير موجود",
+            "notFoundDesc": "لم يتم العثور على حساب المستخدم.",
+            "invalidCredentials": "بيانات اعتماد غير صالحة",
+            "invalidCredentialsDesc": "البريد الإلكتروني أو كلمة المرور التي أدخلتها غير صحيحة.",
+            "expiredToken": "انتهت الجلسة",
+            "expiredTokenDesc": "انتهت صلاحية جلستك. يرجى تسجيل الدخول مرة أخرى.",
+            "invalidPassword": "كلمة مرور غير صالحة",
+            "invalidPasswordDesc": "كلمة المرور التي أدخلتها غير صالحة.",
+            "invalidPasswordLength": "كلمة المرور قصيرة جداً",
+            "invalidPasswordLengthDesc": "يجب أن تتكون كلمة المرور من 6 أحرف على الأقل.",
+            "emailAlreadyInUse": "البريد الإلكتروني مستخدم بالفعل",
+            "emailAlreadyInUseDesc": "هذا البريد الإلكتروني مرتبط بحساب آخر بالفعل.",
+            "invalidResetToken": "رابط إعادة التعيين غير صالح",
+            "invalidResetTokenDesc": "رابط إعادة تعيين كلمة المرور غير صالح أو منتهي الصلاحية. يرجى طلب رابط جديد.",
+            "fetchUsers": "فشل تحميل المستخدمين",
+            "fetchUser": "فشل تحميل المستخدم",
+            "fetchCurrentUser": "فشل تحميل المستخدم الحالي"
+        },
+        "subscription": {
+            "notFound": "الاشتراك غير موجود",
+            "notFoundDesc": "لم يتم العثور على الاشتراك.",
+            "alreadyActive": "الاشتراك نشط بالفعل",
+            "alreadyActiveDesc": "لديك اشتراك نشط بالفعل.",
+            "alreadyCancelled": "الاشتراك ملغى بالفعل",
+            "alreadyCancelledDesc": "تم إلغاء هذا الاشتراك بالفعل.",
+            "notActive": "الاشتراك غير نشط",
+            "notActiveDesc": "اشتراكك غير نشط حالياً.",
+            "checkoutFailed": "فشل الدفع",
+            "checkoutFailedDesc": "لم نتمكن من معالجة الدفع. يرجى المحاولة مرة أخرى.",
+            "planNotFound": "الخطة غير موجودة",
+            "planNotFoundDesc": "لم يتم العثور على خطة الاشتراك المحددة."
+        },
+        "subscriptionPlan": {
+            "alreadyExists": "خطة الاشتراك موجودة بالفعل",
+            "alreadyExistsDesc": "توجد خطة اشتراك بنفس الاسم أو المعرف بالفعل.",
+            "alreadyActive": "خطة الاشتراك نشطة بالفعل",
+            "alreadyActiveDesc": "خطة الاشتراك هذه نشطة بالفعل.",
+            "alreadyNotActive": "خطة الاشتراك غير نشطة بالفعل",
+            "alreadyNotActiveDesc": "خطة الاشتراك هذه غير نشطة بالفعل."
+        },
+        "validation": "خطأ في التحقق",
+        "validationDesc": "يرجى التحقق من المدخلات والمحاولة مرة أخرى.",
+        "network": "خطأ في الاتصال",
+        "networkDesc": "تعذر الاتصال بالخادم. يرجى التحقق من اتصالك بالإنترنت.",
+        "server": "خطأ في الخادم",
+        "serverDesc": "حدث خطأ غير متوقع في الخادم. يرجى المحاولة مرة أخرى لاحقاً.",
+        "unknown": "خطأ غير معروف",
+        "unknownDesc": "حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.",
+        "notification": {
+            "fetchFailed": "فشل التحميل",
+            "fetchFailedDesc": "تعذر تحميل الإشعارات. يرجى المحاولة مرة أخرى.",
+            "markReadFailed": "فشل الإجراء",
+            "markReadFailedDesc": "تعذر تحديد الإشعار كمقروء. يرجى المحاولة مرة أخرى.",
+            "pushFailed": "فشل الإشعار",
+            "pushFailedDesc": "تعذر تفعيل إشعارات سطح المكتب. يرجى المحاولة مرة أخرى.",
+            "pushBlocked": "الإشعارات محظورة"
+        }
+    },
+    "dashboardPage": {
+        "title": "لوحة التحكم",
+        "subtitle": "أهلاً وسهلاً في مساحة العمل الخاصة بك"
+    },
+    "notification": {
+        "title": "الإشعارات",
+        "description": "ابق على اطلاع بأنشطة مساحة عملك",
+        "all": "الكل",
+        "unread": "غير مقروء",
+        "markAsRead": "تحديد كمقروء",
+        "markAllAsRead": "تحديد الكل كمقروء",
+        "noNotifications": "لا توجد إشعارات متاحة",
+        "noNotificationsDesc": "لا توجد إشعارات في الوقت الحالي.",
+        "noUnreadNotifications": "لا توجد إشعارات غير مقروءة",
+        "noUnreadNotificationsDesc": "تم قراءة جميع الإشعارات.",
+        "loadingMore": "جاري التحميل...",
+        "justNow": "الآن",
+        "minutesAgo": "منذ {{count}} دقيقة",
+        "hoursAgo": "منذ {{count}} ساعة",
+        "daysAgo": "منذ {{count}} يوم",
+        "pushTitle": "إشعارات سطح المكتب",
+        "pushEnable": "تفعيل",
+        "pushDisable": "تعطيل",
+        "pushEnabled": "مفعل",
+        "pushDisabled": "معطل",
+        "pushBlocked": "محظور",
+        "pushBlockedDesc": "الإشعارات محظورة في إعدادات المتصفح.",
+        "pushUnsupported": "غير مدعوم",
+        "pushUnsupportedDesc": "متصفحك لا يدعم إشعارات سطح المكتب."
+    },
+    "settingsPage": {
+        "title": "الإعدادات",
+        "description": "إدارة إعدادات حسابك",
+        "openMenu": "فتح قائمة الإعدادات",
+        "tabs": {
+            "profile": "الملف الشخصي",
+            "notifications": "الإشعارات",
+            "subscriptions": "الاشتراك"
+        },
+        "profile": {
+            "header": "المعلومات الشخصية",
+            "description": "إدارة معلوماتك الشخصية وتفضيلاتك",
+            "personalInfo": {
+                "title": "المعلومات الشخصية",
+                "description": "تفاصيل حسابك الأساسية"
+            },
+            "firstName": "الاسم الأول",
+            "firstNamePlaceholder": "أدخل اسمك الأول",
+            "lastName": "اسم العائلة",
+            "lastNamePlaceholder": "أدخل اسم عائلتك",
+            "username": "اسم المستخدم",
+            "usernamePlaceholder": "أدخل اسم المستخدم",
+            "email": "البريد الإلكتروني",
+            "emailPlaceholder": "أدخل بريدك الإلكتروني",
+            "emailNote": "تغيير بريدك الإلكتروني سيتطلب التحقق.",
+            "preferences": {
+                "title": "التفضيلات",
+                "description": "اللغة والإعدادات الإقليمية"
+            },
+            "language": "اللغة",
+            "saveChanges": "حفظ التغييرات",
+            "saved": "تم الحفظ",
+            "saving": "جاري الحفظ...",
+            "updateSuccess": "تم تحديث الملف الشخصي",
+            "updateSuccessDesc": "تم تحديث ملفك الشخصي بنجاح.",
+            "emailUpdateSuccess": "بدء تحديث البريد الإلكتروني",
+            "emailUpdateSuccessDesc": "تم تحديث بريدك الإلكتروني بنجاح.",
+            "updateError": "فشل التحديث",
+            "updateErrorDesc": "فشل تحديث ملفك الشخصي. يرجى المحاولة مرة أخرى."
+        },
+        "validation": {
+            "required": "هذا الحقل مطلوب",
+            "invalidEmail": "يرجى إدخال عنوان بريد إلكتروني صالح"
+        },
+        "loading": "جاري التحميل...",
+        "loadError": "فشل تحميل الإعدادات. يرجى المحاولة مرة أخرى.",
+        "notifications": {
+            "header": "تفضيلات الإشعارات",
+            "description": "إدارة كيفية تلقي الإشعارات",
+            "pushDesc": "استقبل إشعارات سطح المكتب حتى عندما يكون التطبيق في الخلفية."
+        },
+        "subscriptions": {
+            "header": "الاشتراك",
+            "description": "راجع خطتك الحالية وفترة الفوترة",
+            "loadError": "تعذر تحميل تفاصيل الاشتراك.",
+            "retry": "إعادة المحاولة",
+            "emptyTitle": "لا يوجد اشتراك نشط",
+            "emptyDescription": "ستظهر تفاصيل الاشتراك هنا عند تفعيل خطة.",
+            "planName": "الخطة",
+            "price": "السعر",
+            "interval": "الفترة",
+            "status": "الحالة",
+            "currentPeriodStart": "بداية الفترة الحالية",
+            "currentPeriodEnd": "نهاية الفترة الحالية",
+            "trialEndsAt": "نهاية التجربة",
+            "cancelledAt": "تاريخ الإلغاء",
+            "updatedAt": "آخر تحديث",
+            "subscriptionId": "معرف الاشتراك",
+            "previousSubscriptionId": "معرف الاشتراك السابق",
+            "notAvailable": "غير متوفر",
+            "overview": {
+                "title": "نظرة عامة على الخطة",
+                "description": "خطتك الحالية وحالة الاشتراك"
+            },
+            "billingCycle": {
+                "title": "دورة الفوترة",
+                "description": "التواريخ المتعلقة بفترة اشتراكك الحالية"
+            },
+            "identifiers": {
+                "title": "المعرفات",
+                "description": "مراجع تقنية للدعم والمتابعة"
+            },
+            "actions": {
+                "title": "الإجراءات",
+                "description": "سيتم تفعيل تعديل الخطة عند توفر نقاط النهاية في الخلفية",
+                "upgrade": "ترقية",
+                "downgrade": "تخفيض",
+                "cancel": "إلغاء",
+                "renew": "تجديد",
+                "comingSoon": "هذه الإجراءات ستكون متاحة قريبًا."
+            },
+            "statusValues": {
+                "active": "نشط",
+                "trialing": "فترة تجريبية",
+                "pending": "قيد الانتظار",
+                "paymentFailed": "فشل الدفع",
+                "pastDue": "متأخر السداد",
+                "cancelled": "ملغي",
+                "expired": "منتهي",
+                "unknown": "غير معروف"
+            }
+        }
+    },
+    "auth": {
+        "forgotPassword": {
+            "title": "نسيت كلمة المرور؟",
+            "description": "أدخل بريدك الإلكتروني لإعادة تعيين كلمة المرور",
+            "instructions": "سنرسل لك رابط إعادة التعيين على بريدك الإلكتروني.",
+            "sendLink": "إرسال الرابط",
+            "sending": "جاري الإرسال...",
+            "emailSent": "تفقد بريدك الإلكتروني",
+            "emailSentMessage": "إذا كان هناك حساب بهذا البريد، فقد أرسلنا رابط إعادة التعيين.",
+            "backToLogin": "العودة لتسجيل الدخول",
+            "successTitle": "تفقد بريدك الإلكتروني",
+            "successMessage": "إذا كان هناك حساب بهذا البريد، سيتم إرسال رابط إعادة التعيين خلال 1-2 دقيقة. يرجى التحقق من صندوق الوارد ومجلد البريد المزعج.",
+            "resendEmail": "إعادة إرسال البريد",
+            "resending": "جاري إعادة الإرسال...",
+            "resendIn": "إعادة الإرسال خلال {{seconds}} ث"
+        },
+        "resetPassword": {
+            "title": "إعادة تعيين كلمة المرور",
+            "description": "أدخل كلمة المرور الجديدة أدناه",
+            "newPassword": "كلمة المرور الجديدة",
+            "confirmPassword": "تأكيد كلمة المرور",
+            "submit": "إعادة التعيين",
+            "submitting": "جاري إعادة التعيين...",
+            "success": "تم بنجاح!",
+            "successMessage": "تم تحديث كلمة المرور. يمكنك تسجيل الدخول الآن.",
+            "invalidLink": "الرابط غير صالح أو منتهي الصلاحية.",
+            "passwordsDoNotMatch": "كلمات المرور غير متطابقة",
+            "minLength": "يجب أن تتكون كلمة المرور من 6 أحرف على الأقل",
+            "error": "فشلت العملية",
+            "errorMessage": "تعذر إعادة تعيين كلمة المرور. ربما انتهت صلاحية الرابط."
+        }
+    }
+}

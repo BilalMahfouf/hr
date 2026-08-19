@@ -36,7 +36,7 @@ public abstract class IntegrationTestBase : IAsyncLifetime
     protected IServiceProvider RootProvider { get; private set; } = null!;
     protected string ConnectionString { get; private set; } = string.Empty;
 
-    public async Task InitializeAsync()
+    public virtual async Task InitializeAsync()
     {
         _databaseName = $"test_{Guid.NewGuid():N}";
         ConnectionString = await _fixture.CreateDatabaseAsync(_databaseName);
@@ -45,9 +45,11 @@ public abstract class IntegrationTestBase : IAsyncLifetime
         await using var scope = RootProvider.CreateAsyncScope();
         var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         await db.Database.MigrateAsync();
+        var identityDb = scope.ServiceProvider.GetRequiredService<IdentityDbContext>();
+        await identityDb.Database.MigrateAsync();
     }
 
-    public async Task DisposeAsync()
+    public virtual async Task DisposeAsync()
     {
         if (RootProvider is IAsyncDisposable asyncDisposable)
         {
