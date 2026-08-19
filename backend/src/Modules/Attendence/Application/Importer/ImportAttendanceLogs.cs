@@ -31,7 +31,6 @@ public static class ImportAttendanceLogs
                 .LessThanOrEqualTo(x => x.To);
         }
     }
-
     public sealed class CommandHandler(
         IAttendanceDbContext db,
         IAttendanceMachineReader reader,
@@ -66,6 +65,8 @@ public static class ImportAttendanceLogs
                 .ToHashSet();
 
             var punchCount = 0;
+
+            List<Punch> punches = new();
 
             foreach (var machine in machines)
             {
@@ -108,16 +109,25 @@ public static class ImportAttendanceLogs
                     if (!seen.Add((log.MachineId, badge, timestamp)))
                         continue;
 
-                    db.Punches.Add(Punch.Create(
+
+                    var punch = Punch.Create(
                         log.MachineId,
                         badge,
                         timestamp,
-                        DateTime.UtcNow));
+                        DateTime.UtcNow);
+                    punches.Add(punch);
 
                     punchCount++;
                 }
             }
+            var uniquePunches = punches.DistinctBy(e => new
+            {
+                e.MachineId,
+                e.EmployeeBadge,
+                e.PunchOccurredAt
+            }).ToList();
 
+            db.Punches.AddRange(uniquePunches);
             await db.SaveChangesAsync(cancellationToken);
 
             return Result<Response>.Success(new Response(
