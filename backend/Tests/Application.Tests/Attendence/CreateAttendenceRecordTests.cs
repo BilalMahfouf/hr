@@ -1,12 +1,12 @@
 using Microsoft.EntityFrameworkCore;
 using Modules.Attendence.Application.AttendenceRerords;
 using Modules.Attendence.Domain.AttendenceRecords;
+using Modules.Attendence.Domain.Punches;
 using Modules.Attendence.Infrastructure.Presistance;
 using Modules.Employees.Contracts;
 using Modules.Shared.Results;
 using Moq;
 using ContractSchedule = Modules.Employees.Contracts.WorkSchedule;
-using DomainSchedule = Modules.Attendence.Domain.AttendenceRecords.WorkSchedule;
 
 namespace Application.Tests.Attendence;
 
@@ -38,6 +38,12 @@ public sealed class CreateAttendenceRecordTests
         return (new CreateAttendenceRecord.CommandHandler(employeeApi.Object, db), db, employeeApi);
     }
 
+    private static void SeedPunch(AttendanceDbContext db, DateTime punchAt)
+    {
+        db.Punches.Add(Punch.Create(MachineId, Employee.Bgd, punchAt, DateTime.UtcNow));
+        db.SaveChanges();
+    }
+
     private static AttendanceRecord SeedOpenRecord(AttendanceDbContext db)
     {
         var record = AttendanceRecord.Create(
@@ -45,7 +51,8 @@ public sealed class CreateAttendenceRecordTests
             Employee.EmployeeId);
         record.RegisterCheckIn(
             new DateTime(2026, 8, 13, 8, 0, 0, DateTimeKind.Utc),
-            Employee.Schedule.ExpectedCheckInTime);
+            Employee.Schedule.ExpectedCheckInTime,
+            null);
 
         db.AttendanceRecords.Add(record);
         db.SaveChanges();
@@ -73,6 +80,7 @@ public sealed class CreateAttendenceRecordTests
     {
         var (handler, db, _) = Arrange();
         var punch = new DateTime(2026, 8, 13, 9, 15, 0, DateTimeKind.Utc);
+        SeedPunch(db, punch);
 
         var result = await handler.Handle(
             new CreateAttendenceRecord.Command(100, MachineId, punch));
@@ -90,9 +98,9 @@ public sealed class CreateAttendenceRecordTests
     public async Task Handle_WhenOpenRecordExists_RegistersCheckOutAndComputesTimes()
     {
         var (handler, db, _) = Arrange();
-        SeedOpenRecord(db);
-
+        SeedPunch(db, new DateTime(2026, 8, 13, 8, 0, 0, DateTimeKind.Utc));
         var punch = new DateTime(2026, 8, 13, 18, 0, 0, DateTimeKind.Utc);
+        SeedPunch(db, punch);
 
         var result = await handler.Handle(
             new CreateAttendenceRecord.Command(100, MachineId, punch));
@@ -109,9 +117,9 @@ public sealed class CreateAttendenceRecordTests
     public async Task Handle_WhenOpenRecordExists_ComputesEarlyLeave()
     {
         var (handler, db, _) = Arrange();
-        SeedOpenRecord(db);
-
+        SeedPunch(db, new DateTime(2026, 8, 13, 8, 0, 0, DateTimeKind.Utc));
         var punch = new DateTime(2026, 8, 13, 16, 0, 0, DateTimeKind.Utc);
+        SeedPunch(db, punch);
 
         var result = await handler.Handle(
             new CreateAttendenceRecord.Command(100, MachineId, punch));
@@ -127,13 +135,10 @@ public sealed class CreateAttendenceRecordTests
     public async Task Handle_WhenLastRecordAlreadyCheckedOut_CreatesNewCheckInRecord()
     {
         var (handler, db, _) = Arrange();
-        var completed = SeedOpenRecord(db);
-        completed.RegisterCheckOut(
-            new DateTime(2026, 8, 13, 17, 0, 0, DateTimeKind.Utc),
-            new DomainSchedule(TimeSpan.FromHours(8), new DateTime(2026, 8, 13, 17, 0, 0, DateTimeKind.Utc)));
-        db.SaveChanges();
-
-        var punch = new DateTime(2026, 8, 14, 9, 0, 0, DateTimeKind.Utc);
+        SeedPunch(db, new DateTime(2026, 8, 13, 8, 0, 0, DateTimeKind.Utc));
+        SeedPunch(db, new DateTime(2026, 8, 13, 17, 0, 0, DateTimeKind.Utc));
+        var punch = new DateTime(2026, 8, 13, 20, 0, 0, DateTimeKind.Utc);
+        SeedPunch(db, punch);
 
         var result = await handler.Handle(
             new CreateAttendenceRecord.Command(100, MachineId, punch));
@@ -143,6 +148,7 @@ public sealed class CreateAttendenceRecordTests
         var newest = db.AttendanceRecords
             .OrderByDescending(x => x.CreatedOnUtc)
             .First();
+        Assert.Equal(punch, newest.CheckInAt);
         Assert.Null(newest.CheckOutAt);
     }
 
@@ -153,6 +159,7 @@ public sealed class CreateAttendenceRecordTests
         SeedOpenRecord(db);
 
         var punch = new DateTime(2026, 8, 14, 9, 0, 0, DateTimeKind.Utc);
+        SeedPunch(db, punch);
 
         var result = await handler.Handle(
             new CreateAttendenceRecord.Command(100, MachineId, punch));

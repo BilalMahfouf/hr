@@ -20,7 +20,7 @@ public sealed class AttendanceRecordTests
         Assert.NotEqual(AttendanceRecordId.Empty, record.Id);
         Assert.Equal(MachineId, record.MachineId);
         Assert.Equal(EmployeeId, record.EmployeeId);
-        Assert.Null(record.CheckInAt);
+        Assert.Equal(default, record.CheckInAt);
         Assert.Null(record.CheckOutAt);
         Assert.Equal(TimeSpan.Zero, record.WorkedTime);
         Assert.Equal(TimeSpan.Zero, record.Overtime);
@@ -35,7 +35,7 @@ public sealed class AttendanceRecordTests
         var record = CreateRecord();
         var checkIn = new DateTime(2026, 8, 13, 9, 0, 0);
 
-        record.RegisterCheckIn(checkIn, checkIn);
+        record.RegisterCheckIn(checkIn, checkIn, null);
 
         Assert.Equal(checkIn, record.CheckInAt);
     }
@@ -47,7 +47,7 @@ public sealed class AttendanceRecordTests
         var expected = new DateTime(2026, 8, 13, 9, 0, 0);
         var actual = new DateTime(2026, 8, 13, 9, 15, 0);
 
-        record.RegisterCheckIn(actual, expected);
+        record.RegisterCheckIn(actual, expected, null);
 
         Assert.Equal(TimeSpan.FromMinutes(15), record.LateTime);
     }
@@ -59,7 +59,7 @@ public sealed class AttendanceRecordTests
         var expected = new DateTime(2026, 8, 13, 9, 0, 0);
         var actual = new DateTime(2026, 8, 13, 8, 30, 0);
 
-        record.RegisterCheckIn(actual, expected);
+        record.RegisterCheckIn(actual, expected, null);
 
         Assert.Equal(TimeSpan.Zero, record.LateTime);
     }
@@ -68,7 +68,7 @@ public sealed class AttendanceRecordTests
     public void RegisterCheckOut_ComputesWorkedTimeAndOvertime()
     {
         var record = CreateRecord();
-        record.RegisterCheckIn(new DateTime(2026, 8, 13, 8, 0, 0), new DateTime(2026, 8, 13, 9, 0, 0));
+        record.RegisterCheckIn(new DateTime(2026, 8, 13, 8, 0, 0), new DateTime(2026, 8, 13, 9, 0, 0), null);
 
         record.RegisterCheckOut(
             new DateTime(2026, 8, 13, 18, 0, 0),
@@ -85,7 +85,7 @@ public sealed class AttendanceRecordTests
     public void RegisterCheckOut_WhenWorkedWithinStandard_OvertimeIsZero()
     {
         var record = CreateRecord();
-        record.RegisterCheckIn(new DateTime(2026, 8, 13, 8, 0, 0), new DateTime(2026, 8, 13, 9, 0, 0));
+        record.RegisterCheckIn(new DateTime(2026, 8, 13, 8, 0, 0), new DateTime(2026, 8, 13, 9, 0, 0), null);
 
         record.RegisterCheckOut(
             new DateTime(2026, 8, 13, 16, 0, 0),
@@ -101,7 +101,7 @@ public sealed class AttendanceRecordTests
     public void RegisterCheckOut_WhenLeavesEarly_SetsEarlyLeaveTime()
     {
         var record = CreateRecord();
-        record.RegisterCheckIn(new DateTime(2026, 8, 13, 8, 0, 0), new DateTime(2026, 8, 13, 9, 0, 0));
+        record.RegisterCheckIn(new DateTime(2026, 8, 13, 8, 0, 0), new DateTime(2026, 8, 13, 9, 0, 0), null);
 
         record.RegisterCheckOut(
             new DateTime(2026, 8, 13, 15, 0, 0),
@@ -128,7 +128,7 @@ public sealed class AttendanceRecordTests
     public void RegisterCheckOut_WhenCheckOutEarlierThanCheckIn_ThrowsDomainException()
     {
         var record = CreateRecord();
-        record.RegisterCheckIn(new DateTime(2026, 8, 13, 10, 0, 0), new DateTime(2026, 8, 13, 9, 0, 0));
+        record.RegisterCheckIn(new DateTime(2026, 8, 13, 10, 0, 0), new DateTime(2026, 8, 13, 9, 0, 0), null);
 
         var exception = Assert.Throws<DomainException>(() =>
             record.RegisterCheckOut(

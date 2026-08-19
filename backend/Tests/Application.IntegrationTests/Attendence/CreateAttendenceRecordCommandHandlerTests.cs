@@ -4,10 +4,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Modules.Attendence.Application.AttendenceRerords;
 using Modules.Attendence.Application.Shared;
 using Modules.Attendence.Domain.AttendenceRecords;
+using Modules.Attendence.Domain.Punches;
 using Modules.Employees.Contracts;
 using Modules.Shared.Results;
 using ContractSchedule = Modules.Employees.Contracts.WorkSchedule;
-using DomainSchedule = Modules.Attendence.Domain.AttendenceRecords.WorkSchedule;
 
 namespace Application.IntegrationTests.Attendence;
 
@@ -41,16 +41,12 @@ public sealed class CreateAttendenceRecordCommandHandlerTests : AttendenceTestBa
                 ExpectedCheckInTime: expectedCheckIn)));
     }
 
-    private async Task<AttendanceRecord> SeedOpenRecordAsync(
+    private async Task SeedPunchAsync(
         IAttendanceDbContext db,
-        DateTime checkInAt)
+        DateTime punchAt)
     {
-        var (_, expectedCheckIn, _) = Schedule;
-        var record = AttendanceRecord.Create(MachineId, EmployeeId);
-        record.RegisterCheckIn(checkInAt, expectedCheckIn);
-        db.AttendanceRecords.Add(record);
+        db.Punches.Add(Punch.Create(MachineId, EmployeeBadge, punchAt, DateTime.UtcNow));
         await db.SaveChangesAsync();
-        return record;
     }
 
     [Fact]
@@ -77,6 +73,7 @@ public sealed class CreateAttendenceRecordCommandHandlerTests : AttendenceTestBa
 
         var (today, _, _) = Schedule;
         var punch = today.AddHours(9).AddMinutes(15);
+        await SeedPunchAsync(db, punch);
 
         var result = await handler.Handle(
             new CreateAttendenceRecord.Command(EmployeeBadge, MachineId, punch),
@@ -100,9 +97,10 @@ public sealed class CreateAttendenceRecordCommandHandlerTests : AttendenceTestBa
         var handler = CreateCreateAttendenceRecordHandler(scope.ServiceProvider);
 
         var (today, _, _) = Schedule;
-        await SeedOpenRecordAsync(db, today.AddHours(8));
-
+        await SeedPunchAsync(db, today.AddHours(8));
         var punch = today.AddHours(18);
+        await SeedPunchAsync(db, punch);
+
         var result = await handler.Handle(
             new CreateAttendenceRecord.Command(EmployeeBadge, MachineId, punch),
             CancellationToken.None);
@@ -124,9 +122,10 @@ public sealed class CreateAttendenceRecordCommandHandlerTests : AttendenceTestBa
         var handler = CreateCreateAttendenceRecordHandler(scope.ServiceProvider);
 
         var (today, _, _) = Schedule;
-        await SeedOpenRecordAsync(db, today.AddHours(8));
-
+        await SeedPunchAsync(db, today.AddHours(8));
         var punch = today.AddHours(16);
+        await SeedPunchAsync(db, punch);
+
         var result = await handler.Handle(
             new CreateAttendenceRecord.Command(EmployeeBadge, MachineId, punch),
             CancellationToken.None);
@@ -146,14 +145,12 @@ public sealed class CreateAttendenceRecordCommandHandlerTests : AttendenceTestBa
         var db = scope.ServiceProvider.GetRequiredService<IAttendanceDbContext>();
         var handler = CreateCreateAttendenceRecordHandler(scope.ServiceProvider);
 
-        var (today, _, expectedCheckOut) = Schedule;
-        var completed = await SeedOpenRecordAsync(db, today.AddHours(8));
-        completed.RegisterCheckOut(
-            today.AddHours(17),
-            new DomainSchedule(TimeSpan.FromHours(8), expectedCheckOut));
-        await db.SaveChangesAsync();
-
+        var (today, _, _) = Schedule;
+        await SeedPunchAsync(db, today.AddHours(8));
+        await SeedPunchAsync(db, today.AddHours(17));
         var punch = today.AddHours(20);
+        await SeedPunchAsync(db, punch);
+
         var result = await handler.Handle(
             new CreateAttendenceRecord.Command(EmployeeBadge, MachineId, punch),
             CancellationToken.None);

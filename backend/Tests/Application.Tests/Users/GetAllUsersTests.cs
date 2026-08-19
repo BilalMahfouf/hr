@@ -52,7 +52,7 @@ public class GetAllUsersTests
     }
 
     [Fact]
-    public async Task Handle_WhenUsersExist_ShouldReturnOnlyDoctorsSortedByUserNameDesc()
+    public async Task Handle_WhenUsersExist_ShouldReturnAllUsersSortedByUserNameDesc()
     {
         // Arrange
         var doctor1 = User.Register("alpha", "Anna", "Zeal", "alpha@example.com", "hash");
@@ -71,10 +71,10 @@ public class GetAllUsersTests
         // Assert
         Assert.True(result.IsSuccess);
         var items = result.Value.Item.ToList();
-        Assert.Equal(2, items.Count);
-        Assert.Equal("beta", items[0].UserName);
-        Assert.Equal("alpha", items[1].UserName);
-        Assert.DoesNotContain(items, i => i.Role == UserRoles.Admin.ToString());
+        Assert.Equal(3, items.Count);
+        Assert.Equal("gamma", items[0].UserName);
+        Assert.Equal("beta", items[1].UserName);
+        Assert.Equal("alpha", items[2].UserName);
     }
 
     [Fact]

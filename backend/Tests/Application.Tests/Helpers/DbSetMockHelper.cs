@@ -8,7 +8,6 @@ public static class DbSetMockHelper
     public static Mock<DbSet<T>> CreateMockDbSet<T>(List<T> data) where T : class
     {
         var queryable = data.AsQueryable();
-        var asyncEnumerable = new TestAsyncEnumerable<T>(data);
 
         var mockSet = new Mock<DbSet<T>>();
 
@@ -31,6 +30,9 @@ public static class DbSetMockHelper
         mockSet.As<IQueryable<T>>()
             .Setup(m => m.GetEnumerator())
             .Returns(() => queryable.GetEnumerator());
+
+        mockSet.Setup(m => m.AsQueryable())
+            .Returns(mockSet.Object);
 
         return mockSet;
     }
