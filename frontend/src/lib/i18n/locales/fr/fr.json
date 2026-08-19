@@ -1,0 +1,432 @@
+{
+    "welcomeMessage": "Bienvenue à React et react-i18next",
+    "signIn": "Se connecter",
+    "signInDescription": "Connectez-vous pour gérer votre entreprise et votre équipe.",
+    "login": "Connexion",
+    "loginDescription": "Connectez-vous pour gérer votre entreprise et votre équipe.",
+    "email": "E-mail",
+    "password": "Mot de passe",
+    "forgotPassword": "Mot de passe oublié?",
+    "noAccount": "Vous n'avez pas de compte ?",
+    "signUp": "S'inscrire",
+    "app": {
+        "name": "HREnap",
+        "logoAlt": "Logo HREnap"
+    },
+    "dashboard": "Tableau de bord",
+    "subscriptionPlansNav": "Plans d'abonnement",
+    "notifications": "Notifications",
+    "settings": "Paramètres",
+    "sessionExpired": "Session expirée",
+    "sessionExpiredMessage": "Votre session a expiré. Veuillez vous reconnecter pour continuer.",
+    "register": {
+        "title": "Créer un compte",
+        "description": "Entrez vos informations pour créer votre compte.",
+        "firstName": "Prénom",
+        "lastName": "Nom",
+        "userName": "Nom d'utilisateur",
+        "email": "E-mail",
+        "password": "Mot de passe",
+        "confirmPassword": "Confirmer le mot de passe",
+        "submit": "S'inscrire",
+        "alreadyHaveAccount": "Vous avez déjà un compte ?",
+        "loginLink": "Connexion",
+        "successMessage": "Inscription réussie ! Bienvenue sur HREnap."
+    },
+    "onboarding": {
+        "subscribe": {
+            "title": "Activez votre abonnement",
+            "subtitle": "Un seul forfait. Tout ce dont votre espace de travail a besoin.",
+            "planLabel": "Forfait Professionnel",
+            "planName": "Accès complet à l'espace de travail",
+            "currency": "DZD",
+            "period": "/ mois",
+            "feature1": "Gestion des abonnements et des paiements",
+            "feature2": "Gestion du personnel et des rôles",
+            "feature3": "Notifications en temps réel",
+            "feature4": "Paiement via Chargily",
+            "feature5": "Administration des comptes utilisateurs et de l'espace de travail",
+            "trialNote": "Essai gratuit de {{days}} jours — aucun paiement requis",
+            "cta": "Commencer l'essai gratuit",
+            "ctaLoading": "Redirection...",
+            "signinPrompt": "Vous avez déjà un compte ?",
+            "signinLink": "Se connecter",
+            "errorGeneric": "Une erreur s'est produite. Veuillez réessayer."
+        },
+        "renew": {
+            "title": "Renouvelez votre abonnement",
+            "subtitle": "Continuez à utiliser votre espace de travail sans interruption.",
+            "notice": "Votre abonnement doit être renouvelé. Sélectionnez un forfait pour continuer.",
+            "cta": "Renouveler maintenant",
+            "ctaLoading": "Redirection...",
+            "signinPrompt": "Besoin d'un autre compte ?",
+            "signinLink": "Se connecter",
+            "errorGeneric": "Une erreur s'est produite. Veuillez réessayer."
+        },
+        "payment": {
+            "success": {
+                "title": "Paiement réussi !",
+                "subtitle": "Merci pour votre abonnement.",
+                "verifying": "Vérification de votre paiement...",
+                "verified": "Paiement vérifié avec succès !",
+                "redirecting": "Redirection vers le tableau de bord dans {{seconds}} secondes...",
+                "timeout": "La vérification prend plus de temps que prévu",
+                "timeoutDesc": "Votre paiement est peut-être encore en cours de traitement. Vous pouvez essayer d'accéder au tableau de bord manuellement.",
+                "goToDashboard": "Aller au tableau de bord"
+            },
+            "failed": {
+                "title": "Échec du paiement",
+                "subtitle": "Nous n'avons pas pu traiter votre paiement. Veuillez réessayer.",
+                "tryAgain": "Réessayer"
+            }
+        }
+    },
+    "common": {
+        "cancel": "Annuler",
+        "confirm": "Confirmer",
+        "confirmDelete": "Supprimer",
+        "deleting": "Suppression...",
+        "close": "Fermer",
+        "save": "Enregistrer",
+        "saving": "Enregistrement..."
+    },
+    "deleteDialog": {},
+    "table": {
+        "search": "Rechercher...",
+        "noResults": "Aucun résultat trouvé.",
+        "previous": "Précédent",
+        "next": "Suivant",
+        "viewDetails": "Voir les détails",
+        "edit": "Modifier",
+        "delete": "Supprimer",
+        "openMenu": "Ouvrir le menu"
+    },
+    "subscriptionPlans": {
+        "title": "Plans d'abonnement",
+        "description": "Gérez tous les plans d'abonnement disponibles pour les comptes de votre organisation.",
+        "addPlan": "Ajouter un plan",
+        "viewTitle": "Détails du plan d'abonnement",
+        "viewDescription": "Afficher les informations complètes du plan d'abonnement.",
+        "loadError": "Échec du chargement des plans d'abonnement.",
+        "empty": "Aucun plan d'abonnement trouvé.",
+        "genericError": "Une erreur s'est produite lors du traitement de ce plan.",
+        "table": {
+            "name": "Nom",
+            "slug": "Slug",
+            "price": "Prix",
+            "interval": "Intervalle de facturation",
+            "trialDays": "Jours d'essai",
+            "status": "Statut",
+            "createdOn": "Créé le"
+        },
+        "form": {
+            "id": "ID du plan",
+            "addTitle": "Ajouter un plan d'abonnement",
+            "addDescription": "Créez un nouveau plan d'abonnement disponible pour vos utilisateurs.",
+            "updateTitle": "Mettre à jour le plan d'abonnement",
+            "updateDescription": "Modifiez le plan d'abonnement sélectionné.",
+            "name": "Nom du plan",
+            "namePlaceholder": "ex. Plan Professionnel",
+            "amount": "Montant",
+            "amountMinError": "Montant invalide",
+            "amountMinErrorDesc": "Le montant doit être supérieur à 50 DZD.",
+            "invalidError": "Formulaire invalide",
+            "invalidErrorDesc": "Veuillez renseigner tous les champs obligatoires avec des valeurs valides.",
+            "currency": "Devise",
+            "billingInterval": "Intervalle de facturation",
+            "selectInterval": "Sélectionner un intervalle",
+            "intervalCount": "Nombre d'intervalles",
+            "trialDays": "Jours d'essai",
+            "addAction": "Ajouter le plan",
+            "updateAction": "Mettre à jour le plan"
+        },
+        "actions": {
+            "activate": "Activer",
+            "deactivate": "Désactiver"
+        },
+        "status": {
+            "active": "Actif",
+            "inactive": "Inactif"
+        },
+        "intervals": {
+            "day": "jour",
+            "week": "semaine",
+            "month": "mois",
+            "year": "année"
+        },
+        "intervalSingle": "Chaque {{interval}}",
+        "intervalMultiple": "Chaque {{count}} {{interval}}"
+    },
+    "staff": {
+        "title": "Personnel",
+        "description": "Gérez les membres de votre équipe et leurs rôles",
+        "addStaff": "Ajouter du personnel",
+        "noStaff": "Aucun membre du personnel trouvé",
+        "role": "Rôle",
+        "status": "Statut"
+    },
+    "user": {
+        "userId": "ID utilisateur",
+        "fullName": "Nom complet",
+        "registeredOn": "Inscrit le",
+        "tableRegistered": "Inscrit le"
+    },
+    "toast": {
+        "subscriptionPlan": {
+            "added": "Plan ajouté",
+            "addedDesc": "Le plan d'abonnement a été créé avec succès.",
+            "updated": "Plan mis à jour",
+            "updatedDesc": "Le plan d'abonnement a été mis à jour avec succès.",
+            "activated": "Plan activé",
+            "activatedDesc": "Le plan d'abonnement est maintenant actif.",
+            "deactivated": "Plan désactivé",
+            "deactivatedDesc": "Le plan d'abonnement est maintenant inactif."
+        },
+        "notification": {
+            "markedAsRead": "Notification lue",
+            "markedAsReadDesc": "La notification a été marquée comme lue.",
+            "markedAllAsRead": "Toutes les notifications lues",
+            "markedAllAsReadDesc": "Toutes les notifications ont été marquées comme lues.",
+            "pushEnabled": "Notifications bureau activées.",
+            "pushDisabled": "Notifications bureau désactivées."
+        },
+        "auth": {
+            "resetLinkSent": "Email de réinitialisation en file d'attente",
+            "resetLinkSentDesc": "Si un compte existe avec cet email, le lien de réinitialisation sera envoyé dans les 1 à 2 prochaines minutes.",
+            "passwordReset": "Mot de passe réinitialisé !",
+            "passwordResetDesc": "Votre mot de passe a été mis à jour avec succès. Vous pouvez vous connecter.",
+            "resendSuccess": "Email renvoyé",
+            "resendSuccessDesc": "Si un compte existe, un autre lien de réinitialisation sera envoyé sous peu."
+        },
+        "errorOccurred": "Une erreur s'est produite",
+        "genericErrorDesc": "Une erreur s'est produite. Veuillez réessayer plus tard.",
+        "success": "Succès",
+        "warning": "Avertissement",
+        "info": "Information"
+    },
+    "errors": {
+        "user": {
+            "notFound": "Utilisateur introuvable",
+            "notFoundDesc": "Le compte utilisateur n'a pas été trouvé.",
+            "invalidCredentials": "Identifiants invalides",
+            "invalidCredentialsDesc": "L'email ou le mot de passe que vous avez entré est incorrect.",
+            "expiredToken": "Session expirée",
+            "expiredTokenDesc": "Votre session a expiré. Veuillez vous reconnecter.",
+            "invalidPassword": "Mot de passe invalide",
+            "invalidPasswordDesc": "Le mot de passe que vous avez entré est invalide.",
+            "invalidPasswordLength": "Mot de passe trop court",
+            "invalidPasswordLengthDesc": "Le mot de passe doit contenir au moins 6 caractères.",
+            "emailAlreadyInUse": "Email déjà utilisé",
+            "emailAlreadyInUseDesc": "Cette adresse email est déjà associée à un compte.",
+            "invalidResetToken": "Lien de réinitialisation invalide",
+            "invalidResetTokenDesc": "Le lien de réinitialisation est invalide ou a expiré. Veuillez en demander un nouveau.",
+            "fetchUsers": "Échec du chargement des utilisateurs",
+            "fetchUser": "Échec du chargement de l'utilisateur",
+            "fetchCurrentUser": "Échec du chargement de l'utilisateur courant"
+        },
+        "subscription": {
+            "notFound": "Abonnement introuvable",
+            "notFoundDesc": "L'abonnement n'a pas été trouvé.",
+            "alreadyActive": "Abonnement déjà actif",
+            "alreadyActiveDesc": "Vous avez déjà un abonnement actif.",
+            "alreadyCancelled": "Abonnement déjà annulé",
+            "alreadyCancelledDesc": "Cet abonnement a déjà été annulé.",
+            "notActive": "Abonnement non actif",
+            "notActiveDesc": "Votre abonnement n'est pas actif actuellement.",
+            "checkoutFailed": "Échec du paiement",
+            "checkoutFailedDesc": "Nous n'avons pas pu traiter votre paiement. Veuillez réessayer.",
+            "planNotFound": "Forfait introuvable",
+            "planNotFoundDesc": "Le forfait d'abonnement sélectionné n'a pas été trouvé."
+        },
+        "subscriptionPlan": {
+            "alreadyExists": "Plan d'abonnement déjà existant",
+            "alreadyExistsDesc": "Un plan d'abonnement avec le même nom ou slug existe déjà.",
+            "alreadyActive": "Plan d'abonnement déjà actif",
+            "alreadyActiveDesc": "Ce plan d'abonnement est déjà actif.",
+            "alreadyNotActive": "Plan d'abonnement déjà inactif",
+            "alreadyNotActiveDesc": "Ce plan d'abonnement est déjà inactif."
+        },
+        "validation": "Erreur de validation",
+        "validationDesc": "Veuillez vérifier vos informations et réessayer.",
+        "network": "Erreur de connexion",
+        "networkDesc": "Impossible de se connecter au serveur. Veuillez vérifier votre connexion internet.",
+        "server": "Erreur serveur",
+        "serverDesc": "Une erreur serveur inattendue s'est produite. Veuillez réessayer plus tard.",
+        "unknown": "Erreur inconnue",
+        "unknownDesc": "Une erreur inattendue s'est produite. Veuillez réessayer.",
+        "notification": {
+            "fetchFailed": "Échec du chargement",
+            "fetchFailedDesc": "Impossible de charger les notifications. Veuillez réessayer.",
+            "markReadFailed": "Action échouée",
+            "markReadFailedDesc": "Impossible de marquer la notification comme lue. Veuillez réessayer.",
+            "pushFailed": "Échec push",
+            "pushFailedDesc": "Impossible d'activer les notifications bureau. Veuillez réessayer.",
+            "pushBlocked": "Notifications bloquées"
+        }
+    },
+    "dashboardPage": {
+        "title": "Tableau de bord",
+        "subtitle": "Bienvenue dans votre espace de travail"
+    },
+    "notification": {
+        "title": "Notifications",
+        "description": "Restez informé des activités de votre espace de travail",
+        "all": "Toutes",
+        "unread": "Non lues",
+        "markAsRead": "Marquer comme lu",
+        "markAllAsRead": "Tout marquer comme lu",
+        "noNotifications": "Aucune notification disponible",
+        "noNotificationsDesc": "Il n'y a aucune notification pour le moment.",
+        "noUnreadNotifications": "Aucune notification non lue",
+        "noUnreadNotificationsDesc": "Toutes les notifications ont été lues.",
+        "loadingMore": "Chargement...",
+        "justNow": "À l'instant",
+        "minutesAgo": "Il y a {{count}} min",
+        "hoursAgo": "Il y a {{count}}h",
+        "daysAgo": "Il y a {{count}}j",
+        "pushTitle": "Notifications bureau",
+        "pushEnable": "Activer",
+        "pushDisable": "Désactiver",
+        "pushEnabled": "Activé",
+        "pushDisabled": "Désactivé",
+        "pushBlocked": "Bloqué",
+        "pushBlockedDesc": "Les notifications sont bloquées dans les paramètres de votre navigateur.",
+        "pushUnsupported": "Non pris en charge",
+        "pushUnsupportedDesc": "Votre navigateur ne prend pas en charge les notifications bureau."
+    },
+    "settingsPage": {
+        "title": "Paramètres",
+        "description": "Gérez les préférences de votre compte",
+        "openMenu": "Ouvrir le menu des paramètres",
+        "tabs": {
+            "profile": "Profil",
+            "notifications": "Notifications",
+            "subscriptions": "Abonnement"
+        },
+        "profile": {
+            "header": "Informations personnelles",
+            "description": "Gérez vos informations personnelles et préférences",
+            "personalInfo": {
+                "title": "Informations personnelles",
+                "description": "Les détails de base de votre compte"
+            },
+            "firstName": "Prénom",
+            "firstNamePlaceholder": "Entrez votre prénom",
+            "lastName": "Nom de famille",
+            "lastNamePlaceholder": "Entrez votre nom de famille",
+            "username": "Nom d'utilisateur",
+            "usernamePlaceholder": "Entrez votre nom d'utilisateur",
+            "email": "E-mail",
+            "emailPlaceholder": "Entrez votre adresse e-mail",
+            "emailNote": "Changer votre e-mail nécessitera une vérification.",
+            "preferences": {
+                "title": "Préférences",
+                "description": "Langue et paramètres régionaux"
+            },
+            "language": "Langue",
+            "saveChanges": "Enregistrer les modifications",
+            "saved": "Enregistré",
+            "saving": "Enregistrement...",
+            "updateSuccess": "Profil mis à jour",
+            "updateSuccessDesc": "Votre profil a été mis à jour avec succès.",
+            "emailUpdateSuccess": "Mise à jour de l'e-mail initiée",
+            "emailUpdateSuccessDesc": "Votre e-mail a été mis à jour avec succès.",
+            "updateError": "Échec de la mise à jour",
+            "updateErrorDesc": "Échec de la mise à jour de votre profil. Veuillez réessayer."
+        },
+        "validation": {
+            "required": "Ce champ est obligatoire",
+            "invalidEmail": "Veuillez entrer une adresse e-mail valide"
+        },
+        "loading": "Chargement...",
+        "loadError": "Échec du chargement des paramètres. Veuillez réessayer.",
+        "notifications": {
+            "header": "Préférences de notification",
+            "description": "Gérez la façon dont vous recevez les notifications",
+            "pushDesc": "Recevez des notifications bureau même lorsque l'application est en arrière-plan."
+        },
+        "subscriptions": {
+            "header": "Abonnement",
+            "description": "Consultez votre plan actif et votre période de facturation",
+            "loadError": "Échec du chargement des détails d'abonnement.",
+            "retry": "Réessayer",
+            "emptyTitle": "Aucun abonnement actif trouvé",
+            "emptyDescription": "Les détails de votre abonnement apparaîtront ici lorsqu'un plan sera actif.",
+            "planName": "Plan",
+            "price": "Prix",
+            "interval": "Intervalle",
+            "status": "Statut",
+            "currentPeriodStart": "Début de la période actuelle",
+            "currentPeriodEnd": "Fin de la période actuelle",
+            "trialEndsAt": "Fin de l'essai",
+            "cancelledAt": "Annulé le",
+            "updatedAt": "Dernière mise à jour",
+            "subscriptionId": "ID d'abonnement",
+            "previousSubscriptionId": "ID d'abonnement précédent",
+            "notAvailable": "Non disponible",
+            "overview": {
+                "title": "Vue d'ensemble du plan",
+                "description": "Votre plan actuel et le statut de l'abonnement"
+            },
+            "billingCycle": {
+                "title": "Cycle de facturation",
+                "description": "Dates liées à votre période d'abonnement actuelle"
+            },
+            "identifiers": {
+                "title": "Identifiants",
+                "description": "Références techniques pour le support"
+            },
+            "actions": {
+                "title": "Actions",
+                "description": "Les changements de plan seront activés dès que les endpoints backend seront disponibles",
+                "upgrade": "Mettre à niveau",
+                "downgrade": "Rétrograder",
+                "cancel": "Annuler",
+                "renew": "Renouveler",
+                "comingSoon": "Ces actions seront disponibles bientôt."
+            },
+            "statusValues": {
+                "active": "Actif",
+                "trialing": "En essai",
+                "pending": "En attente",
+                "paymentFailed": "Paiement échoué",
+                "pastDue": "En retard",
+                "cancelled": "Annulé",
+                "expired": "Expiré",
+                "unknown": "Inconnu"
+            }
+        }
+    },
+    "auth": {
+        "forgotPassword": {
+            "title": "Mot de passe oublié ?",
+            "description": "Entrez votre email pour réinitialiser votre mot de passe",
+            "instructions": "Nous vous enverrons un lien de réinitialisation.",
+            "sendLink": "Envoyer le lien",
+            "sending": "Envoi...",
+            "emailSent": "Vérifiez votre email",
+            "emailSentMessage": "Si un compte existe avec cet email, nous avons envoyé un lien de réinitialisation.",
+            "backToLogin": "Retour à la connexion",
+            "successTitle": "Vérifiez votre email",
+            "successMessage": "Si un compte existe avec cet email, un lien de réinitialisation sera envoyé dans les 1 à 2 prochaines minutes. Veuillez vérifier votre boîte de réception et votre dossier spam.",
+            "resendEmail": "Renvoyer l'email",
+            "resending": "Renvoi en cours...",
+            "resendIn": "Renvoyer dans {{seconds}}s"
+        },
+        "resetPassword": {
+            "title": "Réinitialiser le mot de passe",
+            "description": "Entrez votre nouveau mot de passe ci-dessous",
+            "newPassword": "Nouveau mot de passe",
+            "confirmPassword": "Confirmer le mot de passe",
+            "submit": "Réinitialiser",
+            "submitting": "Réinitialisation...",
+            "success": "Mot de passe réinitialisé !",
+            "successMessage": "Votre mot de passe a été mis à jour. Vous pouvez vous connecter.",
+            "invalidLink": "Lien invalide ou expiré.",
+            "passwordsDoNotMatch": "Les mots de passe ne correspondent pas",
+            "minLength": "Le mot de passe doit contenir au moins 6 caractères",
+            "error": "Échec de la réinitialisation",
+            "errorMessage": "Impossible de réinitialiser le mot de passe. Le lien a peut-être expiré."
+        }
+    }
+}

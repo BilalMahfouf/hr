@@ -1,0 +1,213 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* ==================== HRENAP COLOR SYSTEM ==================== */
+/* HREnap HR Management Platform */
+/* Version: 1.0.0 - January 2026 */
+
+/* ==================== TAILWIND v4 THEME (OKLCH Format) ==================== */
+@theme inline {
+  /* Border Radius */
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+
+  /* Primary Brand Color - #1E88E5 (Material Blue 600) */
+  --color-primary: oklch(63.5% 0.18 244);
+  --color-primary-foreground: oklch(98% 0.01 244);
+
+  /* Neutral Slate Palette (10 shades) */
+  --color-slate-50: oklch(98.5% 0.005 244); /* #F8FAFC */
+  --color-slate-100: oklch(96.5% 0.01 244); /* #F1F5F9 */
+  --color-slate-200: oklch(92% 0.015 244); /* #E2E8F0 */
+  --color-slate-300: oklch(85% 0.02 244); /* #CBD5E1 */
+  --color-slate-400: oklch(70% 0.03 244); /* #94A3B8 */
+  --color-slate-500: oklch(56% 0.03 244); /* #64748B */
+  --color-slate-600: oklch(47% 0.03 244); /* #475569 */
+  --color-slate-700: oklch(39% 0.03 244); /* #334155 */
+  --color-slate-800: oklch(29% 0.03 244); /* #1E293B */
+  --color-slate-900: oklch(19% 0.03 244); /* #0F172A */
+
+  /* Semantic Status Colors - Green (Success/Stable) */
+  --color-green-50: oklch(97% 0.05 145); /* #F0FDF4 */
+  --color-green-100: oklch(94% 0.1 145); /* #DCFCE7 */
+  --color-green-500: oklch(70% 0.18 145); /* #22C55E */
+  --color-green-600: oklch(62% 0.17 145); /* #16A34A */
+  --color-green-700: oklch(54% 0.15 145); /* #15803D */
+
+  /* Semantic Status Colors - Amber (Warning/Observation) */
+  --color-amber-50: oklch(98% 0.02 85); /* #FFFBEB */
+  --color-amber-100: oklch(96% 0.05 85); /* #FEF3C7 */
+  --color-amber-500: oklch(75% 0.15 75); /* #F59E0B */
+  --color-amber-600: oklch(68% 0.16 65); /* #D97706 */
+  --color-amber-700: oklch(60% 0.15 55); /* #B45309 */
+
+  /* Semantic Status Colors - Red (Critical/Error) */
+  --color-red-50: oklch(97% 0.02 25); /* #FEF2F2 */
+  --color-red-100: oklch(95% 0.05 25); /* #FEE2E2 */
+  --color-red-300: oklch(82% 0.12 25); /* #FCA5A5 */
+  --color-red-500: oklch(63% 0.22 25); /* #EF4444 */
+  --color-red-600: oklch(58% 0.23 27); /* #DC2626 */
+
+  /* Semantic Status Colors - Blue (Information) */
+  --color-blue-50: oklch(97% 0.01 244); /* #EFF6FF */
+  --color-blue-100: oklch(94% 0.03 244); /* #DBEAFE */
+  --color-blue-400: oklch(72% 0.15 244); /* #60A5FA */
+  --color-blue-500: oklch(65% 0.18 244); /* #3B82F6 */
+  --color-blue-600: oklch(58% 0.2 244); /* #2563EB */
+
+  /* Semantic Status Colors - Purple (Appointments) */
+  --color-purple-50: oklch(97% 0.02 310); /* #FAF5FF */
+  --color-purple-100: oklch(95% 0.05 310); /* #F3E8FF */
+  --color-purple-600: oklch(55% 0.25 310); /* #9333EA */
+
+  /* Semantic Status Colors - Orange (Activity) */
+  --color-orange-50: oklch(98% 0.01 45); /* #FFF7ED */
+  --color-orange-600: oklch(65% 0.18 35); /* #EA580C */
+
+  /* UI Component Colors */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+}
+
+/* ==================== CSS CUSTOM PROPERTIES (HSL Format for shadcn/ui) ==================== */
+:root {
+  /* Border Radius */
+  --radius: 0.5rem; /* 8px */
+
+  /* Base Colors */
+  --background: 210 40% 98%; /* #F8FAFC - slate-50 */
+  --foreground: 222.2 84% 4.9%; /* #0A0F1E - near black */
+
+  /* Card Colors */
+  --card: 0 0% 100%; /* #FFFFFF - white */
+  --card-foreground: 222.2 84% 4.9%; /* #0A0F1E */
+
+  /* Popover Colors */
+  --popover: 0 0% 100%; /* #FFFFFF */
+  --popover-foreground: 222.2 84% 4.9%; /* #0A0F1E */
+
+  /* Primary Brand - #1E88E5 */
+  --primary: 207 73% 51%; /* #1E88E5 */
+  --primary-foreground: 210 40% 98%; /* #F8FAFC */
+
+  /* Secondary */
+  --secondary: 210 40% 96.1%; /* #F1F5F9 - slate-100 */
+  --secondary-foreground: 222.2 47.4% 11.2%; /* #1E293B - slate-800 */
+
+  /* Muted */
+  --muted: 210 40% 96.1%; /* #F1F5F9 - slate-100 */
+  --muted-foreground: 215.4 16.3% 46.9%; /* #64748B - slate-500 */
+
+  /* Accent */
+  --accent: 210 40% 96.1%; /* #F1F5F9 - slate-100 */
+  --accent-foreground: 222.2 47.4% 11.2%; /* #1E293B - slate-800 */
+
+  /* Destructive */
+  --destructive: 0 84.2% 60.2%; /* #EF4444 - red-500 */
+  --destructive-foreground: 210 40% 98%; /* #F8FAFC */
+
+  /* Borders & Inputs */
+  --border: 214.3 31.8% 91.4%; /* #E2E8F0 - slate-200 */
+  --input: 214.3 31.8% 91.4%; /* #E2E8F0 - slate-200 */
+  --ring: 207 73% 51%; /* #1E88E5 - primary */
+}
+
+/* ==================== DARK MODE (Future Support) ==================== */
+.dark {
+  --background: 222.2 84% 4.9%; /* Dark background */
+  --foreground: 210 40% 98%; /* Light text */
+
+  --card: 222.2 84% 4.9%;
+  --card-foreground: 210 40% 98%;
+
+  --popover: 222.2 84% 4.9%;
+  --popover-foreground: 210 40% 98%;
+
+  --primary: 210 40% 98%;
+  --primary-foreground: 222.2 47.4% 11.2%;
+
+  --secondary: 217.2 32.6% 17.5%;
+  --secondary-foreground: 210 40% 98%;
+
+  --muted: 217.2 32.6% 17.5%;
+  --muted-foreground: 215 20.2% 65.1%;
+
+  --accent: 217.2 32.6% 17.5%;
+  --accent-foreground: 210 40% 98%;
+
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 210 40% 98%;
+
+  --border: 217.2 32.6% 17.5%;
+  --input: 217.2 32.6% 17.5%;
+  --ring: 212.7 26.8% 83.9%;
+}
+
+/* ==================== GLOBAL STYLES ==================== */
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family:
+      -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+      "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+      sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* ==================== CUSTOM SCROLLBAR ==================== */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1; /* slate-300 */
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8; /* slate-400 */
+}
+
+/* ==================== UTILITY CLASSES ==================== */
+@layer utilities {
+  .bg-gradient-primary {
+    background: linear-gradient(
+      to right,
+      hsl(var(--primary)),
+      oklch(72% 0.15 244),
+      hsl(var(--primary))
+    );
+  }
+}

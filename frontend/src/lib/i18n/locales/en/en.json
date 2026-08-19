@@ -1,0 +1,448 @@
+{
+    "welcomMessage": "welcome to React and react-i18next",
+    "signIn": "Sign In",
+    "signInDescription": "Sign in to manage your company and your team.",
+    "login": "Login",
+    "loginDescription": "Login to manage your company and your team.",
+    "email": "Email",
+    "password": "Password",
+    "forgotPassword": "Forgot Password?",
+    "noAccount": "Don't have an account?",
+    "signUp": "Sign up",
+    "app": {
+        "name": "HREnap",
+        "logoAlt": "HREnap logo"
+    },
+    "dashboard": "Dashboard",
+    "subscriptionPlansNav": "Subscription Plans",
+    "notifications": "Notifications",
+    "settings": "Settings",
+    "sessionExpired": "Session Expired",
+    "sessionExpiredMessage": "Your session has ended. Please login again to continue.",
+    "register": {
+        "title": "Create an Account",
+        "description": "Enter your information to create your account.",
+        "firstName": "First Name",
+        "lastName": "Last Name",
+        "userName": "Username",
+        "email": "Email",
+        "password": "Password",
+        "confirmPassword": "Confirm Password",
+        "submit": "Register",
+        "alreadyHaveAccount": "Already have an account?",
+        "loginLink": "Login",
+        "successMessage": "Registration successful! Welcome to HREnap."
+    },
+    "onboarding": {
+        "subscribe": {
+            "title": "Activate your subscription",
+            "subtitle": "One simple plan. Everything your workspace needs.",
+            "planLabel": "Professional Plan",
+            "planName": "Full workspace access",
+            "currency": "DZD",
+            "period": "/ month",
+            "feature1": "Subscription and payment management",
+            "feature2": "Staff & roles management",
+            "feature3": "Real-time notifications",
+            "feature4": "Payment processing via Chargily",
+            "feature5": "User account and workspace administration",
+            "trialNote": "{{days}}-day free trial — no payment required to start",
+            "cta": "Start Free Trial",
+            "ctaLoading": "Redirecting...",
+            "signinPrompt": "Already have an account?",
+            "signinLink": "Sign in",
+            "errorGeneric": "Something went wrong. Please try again."
+        },
+        "renew": {
+            "title": "Renew your subscription",
+            "subtitle": "Continue using your workspace without interruption.",
+            "notice": "Your subscription needs renewal. Select a plan to continue.",
+            "cta": "Renew now",
+            "ctaLoading": "Redirecting...",
+            "signinPrompt": "Need a different account?",
+            "signinLink": "Sign in",
+            "errorGeneric": "Something went wrong. Please try again."
+        },
+        "payment": {
+            "success": {
+                "title": "Payment Successful!",
+                "subtitle": "Thank you for your subscription.",
+                "verifying": "Verifying your payment...",
+                "verified": "Payment verified successfully!",
+                "redirecting": "Redirecting to dashboard in {{seconds}} seconds...",
+                "timeout": "Verification is taking longer than expected",
+                "timeoutDesc": "Your payment may still be processing. You can try going to the dashboard manually.",
+                "goToDashboard": "Go to Dashboard"
+            },
+            "failed": {
+                "title": "Payment Failed",
+                "subtitle": "We couldn't process your payment. Please try again.",
+                "tryAgain": "Try Again"
+            }
+        }
+    },
+    "common": {
+        "cancel": "Cancel",
+        "confirm": "Confirm",
+        "confirmDelete": "Delete",
+        "deleting": "Deleting...",
+        "close": "Close",
+        "save": "Save",
+        "saving": "Saving..."
+    },
+    "deleteDialog": {},
+    "table": {
+        "search": "Search...",
+        "noResults": "No results found.",
+        "previous": "Previous",
+        "next": "Next",
+        "viewDetails": "View details",
+        "edit": "Edit",
+        "delete": "Delete",
+        "openMenu": "Open menu"
+    },
+    "subscriptionPlans": {
+        "title": "Subscription Plans",
+        "description": "Manage all available subscription plans for your organization's accounts.",
+        "addPlan": "Add Plan",
+        "viewTitle": "Subscription Plan Details",
+        "viewDescription": "View complete subscription plan information.",
+        "loadError": "Failed to load subscription plans.",
+        "empty": "No subscription plans found.",
+        "genericError": "Something went wrong while processing this plan.",
+        "table": {
+            "name": "Name",
+            "slug": "Slug",
+            "price": "Price",
+            "interval": "Billing Interval",
+            "trialDays": "Trial Days",
+            "status": "Status",
+            "createdOn": "Created On"
+        },
+        "form": {
+            "id": "Plan ID",
+            "addTitle": "Add Subscription Plan",
+            "addDescription": "Create a new subscription plan available to your users.",
+            "updateTitle": "Update Subscription Plan",
+            "updateDescription": "Edit the selected subscription plan.",
+            "name": "Plan Name",
+            "namePlaceholder": "e.g. Professional Plan",
+            "amount": "Amount",
+            "amountMinError": "Invalid Amount",
+            "amountMinErrorDesc": "Amount must be greater than 50 DZD.",
+            "invalidError": "Invalid Form",
+            "invalidErrorDesc": "Please fill all required fields with valid values.",
+            "currency": "Currency",
+            "billingInterval": "Billing Interval",
+            "selectInterval": "Select interval",
+            "intervalCount": "Interval Count",
+            "trialDays": "Trial Days",
+            "addAction": "Add Plan",
+            "updateAction": "Update Plan"
+        },
+        "actions": {
+            "activate": "Activate",
+            "deactivate": "Deactivate"
+        },
+        "status": {
+            "active": "Active",
+            "inactive": "Inactive"
+        },
+        "intervals": {
+            "day": "day",
+            "week": "week",
+            "month": "month",
+            "year": "year"
+        },
+        "intervalSingle": "Every {{interval}}",
+        "intervalMultiple": "Every {{count}} {{interval}}s"
+    },
+    "staff": {
+        "title": "Staff",
+        "description": "Manage your team members and their roles",
+        "addStaff": "Add Staff",
+        "noStaff": "No staff members found",
+        "role": "Role",
+        "status": "Status"
+    },
+    "user": {
+        "userId": "User ID",
+        "fullName": "Full Name",
+        "registeredOn": "Registered On",
+        "tableRegistered": "Registered On"
+    },
+    "toast": {
+        "subscriptionPlan": {
+            "added": "Plan Added",
+            "addedDesc": "The subscription plan has been created successfully.",
+            "updated": "Plan Updated",
+            "updatedDesc": "The subscription plan has been updated successfully.",
+            "activated": "Plan Activated",
+            "activatedDesc": "The subscription plan is now active.",
+            "deactivated": "Plan Deactivated",
+            "deactivatedDesc": "The subscription plan is now inactive."
+        },
+        "notification": {
+            "markedAsRead": "Notification Read",
+            "markedAsReadDesc": "The notification has been marked as read.",
+            "markedAllAsRead": "All Notifications Read",
+            "markedAllAsReadDesc": "All notifications have been marked as read.",
+            "pushEnabled": "Desktop notifications enabled.",
+            "pushDisabled": "Desktop notifications disabled."
+        },
+        "auth": {
+            "resetLinkSent": "Reset Email Queued",
+            "resetLinkSentDesc": "If an account exists with this email, the reset link will be sent within the next 1–2 minutes.",
+            "passwordReset": "Password Reset!",
+            "passwordResetDesc": "Your password has been updated successfully. You can now login.",
+            "resendSuccess": "Email Resent",
+            "resendSuccessDesc": "If an account exists, another reset link will be sent shortly."
+        },
+        "errorOccurred": "Error Occurred",
+        "genericErrorDesc": "Something went wrong. Please try again later.",
+        "success": "Success",
+        "warning": "Warning",
+        "info": "Information"
+    },
+    "errors": {
+        "user": {
+            "notFound": "User Not Found",
+            "notFoundDesc": "The user account could not be found.",
+            "invalidCredentials": "Invalid Credentials",
+            "invalidCredentialsDesc": "The email or password you entered is incorrect.",
+            "expiredToken": "Session Expired",
+            "expiredTokenDesc": "Your session has expired. Please log in again.",
+            "invalidPassword": "Invalid Password",
+            "invalidPasswordDesc": "The password you entered is invalid.",
+            "invalidPasswordLength": "Password Too Short",
+            "invalidPasswordLengthDesc": "Password must be at least 6 characters long.",
+            "emailAlreadyInUse": "Email Already In Use",
+            "emailAlreadyInUseDesc": "This email address is already associated with an account.",
+            "invalidResetToken": "Invalid Reset Link",
+            "invalidResetTokenDesc": "The password reset link is invalid or has expired. Please request a new one.",
+            "fetchUsers": "Failed to fetch users",
+            "fetchUser": "Failed to fetch user",
+            "fetchCurrentUser": "Failed to fetch current user"
+        },
+        "subscription": {
+            "notFound": "Subscription Not Found",
+            "notFoundDesc": "The subscription could not be found.",
+            "alreadyActive": "Subscription Already Active",
+            "alreadyActiveDesc": "You already have an active subscription.",
+            "alreadyCancelled": "Subscription Already Cancelled",
+            "alreadyCancelledDesc": "This subscription has already been cancelled.",
+            "notActive": "Subscription Not Active",
+            "notActiveDesc": "Your subscription is not currently active.",
+            "checkoutFailed": "Checkout Failed",
+            "checkoutFailedDesc": "We couldn't process your payment. Please try again.",
+            "planNotFound": "Plan Not Found",
+            "planNotFoundDesc": "The selected subscription plan could not be found."
+        },
+        "subscriptionPlan": {
+            "alreadyExists": "Subscription Plan Already Exists",
+            "alreadyExistsDesc": "A subscription plan with the same name or slug already exists.",
+            "alreadyActive": "Subscription Plan Already Active",
+            "alreadyActiveDesc": "This subscription plan is already active.",
+            "alreadyNotActive": "Subscription Plan Already Inactive",
+            "alreadyNotActiveDesc": "This subscription plan is already inactive."
+        },
+        "validation": "Validation Error",
+        "validationDesc": "Please check your input and try again.",
+        "network": "Connection Error",
+        "networkDesc": "Unable to connect to the server. Please check your internet connection.",
+        "server": "Server Error",
+        "serverDesc": "An unexpected server error occurred. Please try again later.",
+        "unknown": "Unknown Error",
+        "unknownDesc": "An unexpected error occurred. Please try again.",
+        "notification": {
+            "fetchFailed": "Failed to Load",
+            "fetchFailedDesc": "Unable to load notifications. Please try again.",
+            "markReadFailed": "Action Failed",
+            "markReadFailedDesc": "Unable to mark notification as read. Please try again.",
+            "pushFailed": "Push Failed",
+            "pushFailedDesc": "Unable to enable desktop notifications. Please try again.",
+            "pushBlocked": "Notifications Blocked"
+        }
+    },
+    "dashboardPage": {
+        "title": "Dashboard",
+        "subtitle": "Welcome to your workspace"
+    },
+    "notification": {
+        "title": "Notifications",
+        "description": "Stay updated with your workspace activities",
+        "all": "All",
+        "unread": "Unread",
+        "markAsRead": "Mark as read",
+        "markAllAsRead": "Mark all as read",
+        "noNotifications": "No notifications available",
+        "noNotificationsDesc": "There are no notifications at the moment.",
+        "noUnreadNotifications": "No unread notifications",
+        "noUnreadNotificationsDesc": "All notifications have been read.",
+        "loadingMore": "Loading more...",
+        "justNow": "Just now",
+        "minutesAgo": "{{count}} min ago",
+        "hoursAgo": "{{count}}h ago",
+        "daysAgo": "{{count}}d ago",
+        "pushTitle": "Desktop notifications",
+        "pushEnable": "Enable",
+        "pushDisable": "Disable",
+        "pushEnabled": "Enabled",
+        "pushDisabled": "Disabled",
+        "pushBlocked": "Blocked",
+        "pushBlockedDesc": "Notifications are blocked in your browser settings.",
+        "pushUnsupported": "Not supported",
+        "pushUnsupportedDesc": "Your browser does not support desktop push notifications."
+    },
+    "settingsPage": {
+        "title": "Settings",
+        "description": "Manage your account and preferences",
+        "openMenu": "Open settings menu",
+        "tabs": {
+            "profile": "Profile",
+            "notifications": "Notifications",
+            "subscriptions": "Subscriptions"
+        },
+        "profile": {
+            "header": "Profile Settings",
+            "description": "Manage your personal information and preferences",
+            "avatar": {
+                "title": "Profile Photo",
+                "description": "This will be displayed on your profile",
+                "upload": "Upload Photo",
+                "remove": "Remove",
+                "change": "Change"
+            },
+            "personalInfo": {
+                "title": "Personal Information",
+                "description": "Your basic account details"
+            },
+            "firstName": "First Name",
+            "firstNamePlaceholder": "Enter your first name",
+            "lastName": "Last Name",
+            "lastNamePlaceholder": "Enter your last name",
+            "fullName": "Full Name",
+            "fullNamePlaceholder": "Enter your full name",
+            "username": "Username",
+            "usernamePlaceholder": "Enter your username",
+            "email": "Email Address",
+            "emailPlaceholder": "Enter your email address",
+            "emailNote": "Changing your email will require verification.",
+            "emailReadOnly": "Contact support to change your email",
+            "phone": "Phone Number",
+            "phonePlaceholder": "Enter your phone number",
+            "phoneOptional": "Optional",
+            "preferences": {
+                "title": "Preferences",
+                "description": "Language and regional settings"
+            },
+            "language": "Language",
+            "languagePlaceholder": "Select language",
+            "timezone": "Timezone",
+            "timezonePlaceholder": "Select timezone",
+            "saveChanges": "Save Changes",
+            "saved": "Saved",
+            "saving": "Saving...",
+            "updateSuccess": "Profile Updated",
+            "updateSuccessDesc": "Your profile has been updated successfully.",
+            "emailUpdateSuccess": "Email Update Initiated",
+            "emailUpdateSuccessDesc": "Your email has been updated successfully.",
+            "updateError": "Update Failed",
+            "updateErrorDesc": "Failed to update your profile. Please try again."
+        },
+        "validation": {
+            "required": "This field is required",
+            "invalidEmail": "Please enter a valid email address"
+        },
+        "loading": "Loading...",
+        "loadError": "Failed to load settings. Please try again.",
+        "notifications": {
+            "header": "Notification Preferences",
+            "description": "Manage how you receive notifications",
+            "pushDesc": "Receive desktop notifications even when the app is in the background."
+        },
+        "subscriptions": {
+            "header": "Subscription",
+            "description": "Review your active plan and billing period",
+            "loadError": "Failed to load subscription details.",
+            "retry": "Try again",
+            "emptyTitle": "No active subscription found",
+            "emptyDescription": "Your subscription details will appear here once a plan is active.",
+            "planName": "Plan",
+            "price": "Price",
+            "interval": "Interval",
+            "status": "Status",
+            "currentPeriodStart": "Current period starts",
+            "currentPeriodEnd": "Current period ends",
+            "trialEndsAt": "Trial ends",
+            "cancelledAt": "Cancelled at",
+            "updatedAt": "Last updated",
+            "subscriptionId": "Subscription ID",
+            "previousSubscriptionId": "Previous subscription ID",
+            "notAvailable": "Not available",
+            "overview": {
+                "title": "Plan overview",
+                "description": "Your current plan and subscription status"
+            },
+            "billingCycle": {
+                "title": "Billing cycle",
+                "description": "Dates related to your current subscription period"
+            },
+            "identifiers": {
+                "title": "Identifiers",
+                "description": "Technical references for support and troubleshooting"
+            },
+            "actions": {
+                "title": "Actions",
+                "description": "Plan changes will be enabled once backend actions are available",
+                "upgrade": "Upgrade",
+                "downgrade": "Downgrade",
+                "cancel": "Cancel",
+                "renew": "Renew",
+                "comingSoon": "These actions are coming soon."
+            },
+            "statusValues": {
+                "active": "Active",
+                "trialing": "Trialing",
+                "pending": "Pending",
+                "paymentFailed": "Payment failed",
+                "pastDue": "Past due",
+                "cancelled": "Cancelled",
+                "expired": "Expired",
+                "unknown": "Unknown"
+            }
+        }
+    },
+    "auth": {
+        "forgotPassword": {
+            "title": "Forgot Password?",
+            "description": "Enter your email to reset your password",
+            "instructions": "We will send you a reset link to your email address.",
+            "sendLink": "Send Reset Link",
+            "sending": "Sending...",
+            "emailSent": "Check your email",
+            "emailSentMessage": "If an account exists with this email, we have sent a password reset link.",
+            "backToLogin": "Back to login",
+            "successTitle": "Check your email",
+            "successMessage": "If an account exists with this email, a password reset link will be sent within the next 1–2 minutes. Please check your inbox and spam folder.",
+            "resendEmail": "Resend email",
+            "resending": "Resending...",
+            "resendIn": "Resend in {{seconds}}s"
+        },
+        "resetPassword": {
+            "title": "Reset Password",
+            "description": "Enter your new password below",
+            "newPassword": "New Password",
+            "confirmPassword": "Confirm Password",
+            "submit": "Reset Password",
+            "submitting": "Resetting...",
+            "success": "Password Reset!",
+            "successMessage": "Your password has been updated. You can now login.",
+            "invalidLink": "Invalid or expired reset link.",
+            "passwordsDoNotMatch": "Passwords do not match",
+            "minLength": "Password must be at least 6 characters",
+            "error": "Reset Failed",
+            "errorMessage": "Unable to reset password. The link may have expired."
+        }
+    }
+}
