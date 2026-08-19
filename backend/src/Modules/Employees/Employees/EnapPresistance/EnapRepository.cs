@@ -29,7 +29,9 @@ internal class EnapRepository(ISqlConnectionFactory sqlConnectionFactory) : IEmp
         {
             return null;
         }
-        return employee;}
+
+        return new EmployeeDto(employee.EmployeeId.Trim(), employee.Bdge.Trim(), employee.EmployeeGroup);
+    }
 
     public async Task<EmployeeDto?> GetEmployeeByIdAsync(string employeeId, CancellationToken ct = default)
     {
@@ -48,6 +50,6 @@ internal class EnapRepository(ISqlConnectionFactory sqlConnectionFactory) : IEmp
         {
             return null;
         }
-        return employee;
+        return new EmployeeDto(employee.EmployeeId.Trim(), employee.Bdge.Trim(), employee.EmployeeGroup);
     }
 }

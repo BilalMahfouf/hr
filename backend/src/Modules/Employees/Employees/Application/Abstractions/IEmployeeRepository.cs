@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Modules.Employees.Application.Abstractions;
 
-public sealed record EmployeeDto(string EmployeeId, string Bdge, string EmployeeGroup);
+public sealed record EmployeeDto(string EmployeeId, string Bdge, string? EmployeeGroup);
 
 public interface IEmployeeRepository
 {
