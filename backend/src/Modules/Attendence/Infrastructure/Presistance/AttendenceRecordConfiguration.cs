@@ -62,7 +62,6 @@ public sealed class AttendanceRecordConfiguration
         {
             x.EmployeeId,
             x.CheckInAt
-        })
-        .IsUnique();
+        });
     }
 }
