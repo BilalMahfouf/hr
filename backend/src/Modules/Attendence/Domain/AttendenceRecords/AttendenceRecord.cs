@@ -13,7 +13,7 @@ public sealed class AttendanceRecord : Entity
     // Reference to Employee module
     public string EmployeeId { get; private set; } = null!;
 
-    public DateTime? CheckInAt { get; private set; }
+    public DateTime CheckInAt { get; private set; }
 
     public DateTime? CheckOutAt { get; private set; }
 
@@ -76,10 +76,10 @@ public sealed class AttendanceRecord : Entity
 
     private void CalculateWorkedTime()
     {
-        if (CheckInAt is null || CheckOutAt is null)
+        if (CheckOutAt is null)
             return;
 
-        var duration = CheckOutAt.Value - CheckInAt.Value;
+        var duration = CheckOutAt.Value - CheckInAt;
 
         WorkedTime = duration;
     }
@@ -98,10 +98,8 @@ public sealed class AttendanceRecord : Entity
 
     private void CalculateLateTime(DateTime expectedCheckInAt)
     {
-        if (CheckInAt is null)
-            return;
 
-        var lateTime = CheckInAt.Value - expectedCheckInAt;
+        var lateTime = CheckInAt - expectedCheckInAt;
 
         LateTime = lateTime > TimeSpan.Zero
             ? lateTime
