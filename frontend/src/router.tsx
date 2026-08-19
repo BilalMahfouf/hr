@@ -14,6 +14,9 @@ import RenewPage from './features/subscriptions/pages/RenewPage';
 import PaymentSuccessPage from './features/subscriptions/pages/PaymentSuccessPage';
 import PaymentFailedPage from './features/subscriptions/pages/PaymentFailedPage';
 import SubscriptionPlansPage from './features/subscriptions/pages/SubscriptionPlansPage';
+import MachinesPage from './features/machines/MachinesPage';
+import CreateMachinePage from './features/machines/CreateMachinePage';
+import EditMachinePage from './features/machines/EditMachinePage';
 
 export const router = createBrowserRouter([
     {
@@ -78,6 +81,30 @@ export const router = createBrowserRouter([
             element: (
                 <RoleGuard requiredRole="admin">
                     <SubscriptionPlansPage />
+                </RoleGuard>
+            ),
+        },
+        {
+            path: '/machines',
+            element: (
+                <RoleGuard requiredRole="admin">
+                    <MachinesPage />
+                </RoleGuard>
+            ),
+        },
+        {
+            path: '/machines/create',
+            element: (
+                <RoleGuard requiredRole="admin">
+                    <CreateMachinePage />
+                </RoleGuard>
+            ),
+        },
+        {
+            path: '/machines/:machineId/edit',
+            element: (
+                <RoleGuard requiredRole="admin">
+                    <EditMachinePage />
                 </RoleGuard>
             ),
         },
