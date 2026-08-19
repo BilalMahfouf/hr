@@ -5,8 +5,9 @@ namespace Modules.Attendence.Domain.AttendenceRecords;
 
 public sealed class AttendanceRecord : Entity
 {
-    public new AttendanceRecordId Id { get; private set; }
+    public static readonly int MinMinutesBetweenCheckInAndCheckOut = 3;
 
+    public new AttendanceRecordId Id { get; private set; }
 
     public MachineId MachineId { get; private set; }
 
@@ -55,10 +56,19 @@ public sealed class AttendanceRecord : Entity
             employeeId);
     }
 
-    public void RegisterCheckIn(DateTime checkInAt, DateTime ExpectedCheckInTime)
+    public void RegisterCheckIn(
+        DateTime checkInAt,
+        DateTime expectedCheckInTime,
+        AttendanceRecord? prevRecord)
     {
+        if (prevRecord?.CheckOutAt is DateTime previousCheckOutAt &&
+            previousCheckOutAt.AddMinutes(MinMinutesBetweenCheckInAndCheckOut) >= checkInAt)
+        {
+            throw new DomainException(AttendanceRecordErrors.InvalidAttendanceTimeRange);
+        }
+
         CheckInAt = checkInAt;
-        CalculateLateTime(ExpectedCheckInTime);
+        CalculateLateTime(expectedCheckInTime);
     }
 
     public void RegisterCheckOut(DateTime checkOutAt, WorkSchedule workSchedule)
@@ -67,11 +77,14 @@ public sealed class AttendanceRecord : Entity
         {
             throw new DomainException(AttendanceRecordErrors.InvalidAttendanceTimeRange);
         }
+        if (this.CheckInAt.AddMinutes(MinMinutesBetweenCheckInAndCheckOut) >= checkOutAt)
+        {
+            throw new DomainException(AttendanceRecordErrors.InvalidAttendanceTimeRange);
+        }
         CheckOutAt = checkOutAt;
         CalculateWorkedTime();
         CalculateOvertime(workSchedule.StandardWorkTime);
         CalculateEarlyLeave(workSchedule.ExpectedCheckOutTime);
-
     }
 
     private void CalculateWorkedTime()
@@ -98,7 +111,6 @@ public sealed class AttendanceRecord : Entity
 
     private void CalculateLateTime(DateTime expectedCheckInAt)
     {
-
         var lateTime = CheckInAt - expectedCheckInAt;
 
         LateTime = lateTime > TimeSpan.Zero
