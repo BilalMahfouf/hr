@@ -38,6 +38,11 @@ public sealed class AttendenceMachine : Entity
         IpAddress = ipAddress;
     }
 
+    public void Activate()
+    {
+        IsActive = true;
+    }
+
     public void Deactivate()
     {
         IsActive = false;
