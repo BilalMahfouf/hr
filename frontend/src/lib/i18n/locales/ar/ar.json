@@ -171,6 +171,56 @@
         "registeredOn": "تاريخ التسجيل",
         "tableRegistered": "تاريخ التسجيل"
     },
+    "machines": {
+        "title": "الآلات",
+        "description": "إدارة أجهزة الحضور الخاصة بك",
+        "addMachine": "إضافة جهاز",
+        "editMachine": "تعديل الجهاز",
+        "genericError": "حدث خطأ أثناء معالجة هذا الجهاز.",
+        "loadError": "فشل تحميل الآلات.",
+        "empty": "لم يتم العثور على أي جهاز.",
+        "notFound": "الجهاز غير موجود",
+        "notFoundDesc": "تعذر العثور على الجهاز المحدد.",
+        "table": {
+            "machineNumber": "رقم الجهاز",
+            "ipAddress": "عنوان IP",
+            "port": "المنفذ",
+            "status": "الحالة"
+        },
+        "status": {
+            "active": "نشط",
+            "inactive": "غير نشط"
+        },
+        "actions": {
+            "activate": "تفعيل",
+            "deactivate": "تعطيل"
+        },
+        "confirm": {
+            "activateTitle": "تفعيل الجهاز",
+            "activateDescription": "سيتم استخدام هذا الجهاز في عملية استيراد الحضور.",
+            "activateConfirm": "تفعيل",
+            "deactivateTitle": "تعطيل الجهاز",
+            "deactivateDescription": "سيتم استبعاد هذا الجهاز من عملية استيراد الحضور.",
+            "deactivateConfirm": "تعطيل"
+        },
+        "form": {
+            "addTitle": "إضافة جهاز حضور",
+            "addDescription": "سجّل جهاز حضور جديد.",
+            "updateTitle": "تعديل عنوان IP للجهاز",
+            "updateDescription": "قم بتحديث عنوان IP الخاص بالجهاز المحدد.",
+            "machineNumber": "رقم الجهاز",
+            "machineNumberPlaceholder": "مثال: 1",
+            "ipAddress": "عنوان IP",
+            "ipAddressPlaceholder": "مثال: 192.168.1.100",
+            "port": "المنفذ",
+            "portPlaceholder": "مثال: 4370",
+            "portOptional": "اختياري",
+            "invalidError": "نموذج غير صالح",
+            "invalidErrorDesc": "يرجى ملء جميع الحقول المطلوبة بقيم صحيحة.",
+            "addAction": "إضافة الجهاز",
+            "updateAction": "تحديث عنوان IP"
+        }
+    },
     "toast": {
         "subscriptionPlan": {
             "added": "تمت إضافة الخطة",
@@ -181,6 +231,16 @@
             "activatedDesc": "خطة الاشتراك أصبحت نشطة الآن.",
             "deactivated": "تم تعطيل الخطة",
             "deactivatedDesc": "خطة الاشتراك أصبحت غير نشطة الآن."
+        },
+        "machine": {
+            "added": "تمت إضافة الجهاز",
+            "addedDesc": "تم إنشاء جهاز الحضور بنجاح.",
+            "updated": "تم تحديث الجهاز",
+            "updatedDesc": "تم تحديث عنوان IP للجهاز بنجاح.",
+            "activated": "تم تفعيل الجهاز",
+            "activatedDesc": "الجهاز أصبح نشطاً الآن.",
+            "deactivated": "تم تعطيل الجهاز",
+            "deactivatedDesc": "الجهاز أصبح غير نشط الآن."
         },
         "notification": {
             "markedAsRead": "تم قراءة الإشعار",
@@ -223,6 +283,10 @@
             "fetchUsers": "فشل تحميل المستخدمين",
             "fetchUser": "فشل تحميل المستخدم",
             "fetchCurrentUser": "فشل تحميل المستخدم الحالي"
+        },
+        "machine": {
+            "fetchMachines": "فشل تحميل الآلات",
+            "fetchMachine": "فشل تحميل الجهاز"
         },
         "subscription": {
             "notFound": "الاشتراك غير موجود",
