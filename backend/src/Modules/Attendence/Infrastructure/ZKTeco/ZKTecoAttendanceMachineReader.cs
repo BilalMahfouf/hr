@@ -1,5 +1,6 @@
 using Modules.Attendence.Application.Abstractions;
 using Modules.Attendence.Domain.Machines;
+using Modules.Shared.Util;
 
 namespace Modules.Attendence.Infrastructure.ZKTeco;
 
@@ -132,13 +133,14 @@ public sealed class ZKTecoAttendanceMachineReader : IAttendanceMachineReader
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var timestamp = new DateTime(
-                year,
-                month,
-                day,
-                hour,
-                minute,
-                second);
+            var timestamp = AttendanceTime.DeviceLocalToUtc(
+                new DateTime(
+                    year,
+                    month,
+                    day,
+                    hour,
+                    minute,
+                    second));
 
             var date = DateOnly.FromDateTime(timestamp);
 

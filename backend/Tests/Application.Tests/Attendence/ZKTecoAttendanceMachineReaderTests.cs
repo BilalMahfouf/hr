@@ -194,11 +194,36 @@ public sealed class ZKTecoAttendanceMachineReaderTests
         Assert.Equal(machine.Id, single.MachineId);
         Assert.Equal(1, single.MachineNumber);
         Assert.Equal("100", single.EmployeeNumber);
-        Assert.Equal(new DateTime(2026, 8, 17, 9, 30, 0), single.Timestamp);
+        Assert.Equal(new DateTime(2026, 8, 17, 8, 30, 0, DateTimeKind.Utc), single.Timestamp);
         Assert.Equal(1, single.VerifyMode);
         Assert.Equal(0, single.InOutMode);
         Assert.Equal(0, single.WorkCode);
         Assert.Equal("SN-1", single.DeviceSerialNumber);
+        session.Verify(s => s.Dispose(), Times.Once);
+    }
+
+    [Fact]
+    public async Task GetLogsAsync_ConvertsDeviceLocalTimeToUtc()
+    {
+        var logs = new Queue<Log>();
+        logs.Enqueue(new Log(
+            "100",
+            new DateTime(2026, 8, 17, 9, 0, 0),
+            Verify: 1,
+            InOut: 0,
+            Work: 0));
+
+        var (factory, session, machine) = Arrange(logs, serial: "SN-1");
+
+        var reader = CreateReader(factory);
+
+        var result = await reader.GetLogsAsync(machine, From, To);
+
+        var single = Assert.Single(result);
+        Assert.Equal(
+            new DateTime(2026, 8, 17, 8, 0, 0, DateTimeKind.Utc),
+            single.Timestamp);
+        Assert.Equal(DateTimeKind.Utc, single.Timestamp.Kind);
         session.Verify(s => s.Dispose(), Times.Once);
     }
 
@@ -224,9 +249,9 @@ public sealed class ZKTecoAttendanceMachineReaderTests
     public async Task GetLogsAsync_DateRange_IsInclusive()
     {
         var logs = new Queue<Log>();
-        logs.Enqueue(new Log("boundary-from", new DateTime(2026, 8, 1, 0, 0, 0), 1, 0, 0));
+        logs.Enqueue(new Log("boundary-from", new DateTime(2026, 8, 1, 1, 0, 0), 1, 0, 0));
         logs.Enqueue(new Log("boundary-to", new DateTime(2026, 8, 3, 23, 59, 59), 1, 0, 0));
-        logs.Enqueue(new Log("outside", new DateTime(2026, 8, 4, 0, 0, 0), 1, 0, 0));
+        logs.Enqueue(new Log("outside", new DateTime(2026, 8, 4, 9, 0, 0), 1, 0, 0));
 
         var (factory, _, machine) = Arrange(logs);
 
