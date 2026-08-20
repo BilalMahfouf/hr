@@ -46,13 +46,8 @@ public sealed class EmployeeApi(IEmployeeRepository employeeRepo) : IEmployeeApi
         {
             return Result<EmployeeResponse>.Failure(EmployeeErrors.NotFound);
         }
-        var workSchedule = GetEmployeeWorkSchedule(employee.EmployeeGroup);
-        if(int.TryParse(employee.Bdge, out int bdg))
-        {
 
-        }
-        var response = new EmployeeResponse(employee.EmployeeId, bdg , workSchedule);
-        return Result<EmployeeResponse>.Success(response);
+        return Result<EmployeeResponse>.Success(MapToResponse(employee));
     }
 
     public async Task<Result<EmployeeResponse>> GetEmployeeByIdAsync(string id, CancellationToken ct = default)
@@ -62,14 +57,49 @@ public sealed class EmployeeApi(IEmployeeRepository employeeRepo) : IEmployeeApi
         {
             return Result<EmployeeResponse>.Failure(EmployeeErrors.NotFound);
         }
-        var workSchedule = GetEmployeeWorkSchedule(employee.EmployeeGroup);
-                if(int.TryParse(employee.Bdge, out int bdg))
+
+        return Result<EmployeeResponse>.Success(MapToResponse(employee));
+    }
+
+    public async Task<Result<IReadOnlyList<EmployeeResponse>>> GetEmployeesByBadgesAsync(
+        IReadOnlyCollection<int> badges,
+        CancellationToken ct = default)
+    {
+        if (badges is null || badges.Count == 0)
         {
-
+            return Result<IReadOnlyList<EmployeeResponse>>.Success([]);
         }
- 
-        var response = new EmployeeResponse(employee.EmployeeId, bdg, workSchedule);
-        return Result<EmployeeResponse>.Success(response);
 
+        var employees = await employeeRepo.GetEmployeesByBgdesAsync(badges, ct);
+
+        return Result<IReadOnlyList<EmployeeResponse>>.Success(
+            employees.Select(MapToResponse).ToList());
+    }
+
+    public async Task<Result<IReadOnlyList<EmployeeResponse>>> GetEmployeesByIdsAsync(
+        IReadOnlyCollection<string> ids,
+        CancellationToken ct = default)
+    {
+        if (ids is null || ids.Count == 0)
+        {
+            return Result<IReadOnlyList<EmployeeResponse>>.Success([]);
+        }
+
+        var employees = await employeeRepo.GetEmployeesByIdsAsync(ids, ct);
+
+        return Result<IReadOnlyList<EmployeeResponse>>.Success(
+            employees.Select(MapToResponse).ToList());
+    }
+
+    private EmployeeResponse MapToResponse(EmployeeDto employee)
+    {
+        var workSchedule = GetEmployeeWorkSchedule(employee.EmployeeGroup);
+        int.TryParse(employee.Bdge, out int bdg);
+
+        return new EmployeeResponse(
+            employee.EmployeeId,
+            bdg,
+            employee.FullName,
+            workSchedule);
     }
 }
