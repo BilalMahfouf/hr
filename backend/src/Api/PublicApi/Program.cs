@@ -40,7 +40,7 @@ builder.Services.AddInfrastructure(builder.Configuration);
 
 builder.Services.AddIdentityModule();
 
-builder.Services.AddEmployeeModule();
+builder.Services.AddEmployeeModule(connectionString!);
 
 builder.Services.AddAttendenceModule(connectionString!);
 

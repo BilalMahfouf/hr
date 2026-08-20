@@ -47,6 +47,7 @@ backend/
 | New migration (app) | `dotnet ef migrations add <Name> --project src/Api/PublicApi --startup-project src/Api/PublicApi --context ApplicationDbContext` |
 | New migration (shared) | `dotnet ef migrations add <Name> --project src/Modules/Shared --startup-project src/Api/PublicApi --context SharedDbContext` |
 | New migration (identity) | `dotnet ef migrations add <Name> --project src/Modules/Identity --startup-project src/Api/PublicApi --context IdentityDbContext` |
+| New migration (employees) | `dotnet ef migrations add <Name> --project src/Modules/Employees/Employees --startup-project src/Api/PublicApi --context EmployeeDbContext` |
 | Apply migration | `dotnet ef database update --project src/Api/PublicApi --startup-project src/Api/PublicApi --context <DbContext>` (migrations also auto-applied at startup via `app.ApplyMigrations()`) |
 | Scalar API UI | `https://localhost:<port>/scalar` (dev only) |
 | Docker Compose | `docker compose up --build` (starts API + Postgres 16 + pgAdmin) |

@@ -69,8 +69,9 @@ public sealed class EmployeeApi(IEmployeeRepository employeeRepo) : IEmployeeApi
         {
             return Result<IReadOnlyList<EmployeeResponse>>.Success([]);
         }
+        var stringBadges = badges.Select(b => b.ToString()).ToList();
 
-        var employees = await employeeRepo.GetEmployeesByBgdesAsync(badges, ct);
+        var employees = await employeeRepo.GetEmployeesByBgdesAsync(stringBadges, ct);
 
         return Result<IReadOnlyList<EmployeeResponse>>.Success(
             employees.Select(MapToResponse).ToList());
