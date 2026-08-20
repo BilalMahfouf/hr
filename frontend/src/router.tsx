@@ -17,6 +17,7 @@ import SubscriptionPlansPage from './features/subscriptions/pages/SubscriptionPl
 import MachinesPage from './features/machines/MachinesPage';
 import CreateMachinePage from './features/machines/CreateMachinePage';
 import EditMachinePage from './features/machines/EditMachinePage';
+import ViewMachinePage from './features/machines/ViewMachinePage';
 
 export const router = createBrowserRouter([
     {
@@ -105,6 +106,14 @@ export const router = createBrowserRouter([
             element: (
                 <RoleGuard requiredRole="admin">
                     <EditMachinePage />
+                </RoleGuard>
+            ),
+        },
+        {
+            path: '/machines/:machineId',
+            element: (
+                <RoleGuard requiredRole="admin">
+                    <ViewMachinePage />
                 </RoleGuard>
             ),
         },

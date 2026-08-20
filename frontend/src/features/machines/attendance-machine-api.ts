@@ -9,6 +9,7 @@ export type MachineRecord = {
   ipAddress: string;
   port: number;
   isActive: boolean;
+  createdOnUtc: string;
 };
 
 export type CreateMachineRequest = {
@@ -17,8 +18,9 @@ export type CreateMachineRequest = {
   port?: number;
 };
 
-export type UpdateMachineIpAddressRequest = {
+export type UpdateMachineRequest = {
   ipAddress: string;
+  port: number;
 };
 
 interface CreateMachineResponse {
@@ -92,13 +94,20 @@ const attendanceMachineApi = {
     return result.data.machineId;
   },
 
-  updateMachineIpAddress: async (
-    machineId: string,
-    request: UpdateMachineIpAddressRequest,
-  ): Promise<void> => {
+  getMachineById: async (machineId: string): Promise<MachineRecord> => {
+    const result = await api.get<MachineRecord>(`/attendance/machines/${machineId}`);
+
+    if (result.status !== 200) {
+      throw new Error(i18n.t(i18nKeyContainer.errors.machine.fetchMachine));
+    }
+
+    return result.data;
+  },
+
+  updateMachine: async (machineId: string, request: UpdateMachineRequest): Promise<void> => {
     const result = await api.put(`/attendance/machines/${machineId}`, request);
 
-    if (result.status !== 204) {
+    if (result.status !== 204 && result.status !== 200) {
       throw new Error(i18n.t(i18nKeyContainer.machines.genericError));
     }
   },

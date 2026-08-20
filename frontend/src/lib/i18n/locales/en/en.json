@@ -181,6 +181,16 @@
         "empty": "No machines found.",
         "notFound": "Machine Not Found",
         "notFoundDesc": "The selected machine could not be found.",
+        "view": {
+            "title": "Machine Details",
+            "description": "View complete details of the attendance machine.",
+            "machineId": "Machine ID",
+            "machineNumber": "Machine Number",
+            "ipAddress": "IP Address",
+            "port": "Port",
+            "status": "Status",
+            "createdOn": "Created On"
+        },
         "table": {
             "machineNumber": "Machine Number",
             "ipAddress": "IP Address",
@@ -206,8 +216,8 @@
         "form": {
             "addTitle": "Add Attendance Machine",
             "addDescription": "Register a new attendance machine.",
-            "updateTitle": "Edit Machine IP Address",
-            "updateDescription": "Update the IP address of the selected machine.",
+            "updateTitle": "Edit Machine",
+            "updateDescription": "Update the IP address and port of the selected machine.",
             "machineNumber": "Machine Number",
             "machineNumberPlaceholder": "e.g. 1",
             "ipAddress": "IP Address",
@@ -218,7 +228,7 @@
             "invalidError": "Invalid Form",
             "invalidErrorDesc": "Please fill all required fields with valid values.",
             "addAction": "Add Machine",
-            "updateAction": "Update IP Address"
+            "updateAction": "Save Changes"
         }
     },
     "toast": {
@@ -461,7 +471,8 @@
                 "description": "Plan changes will be enabled once backend actions are available",
                 "upgrade": "Upgrade",
                 "downgrade": "Downgrade",
-                "cancel": "Cancel",
+"cancel": "Cancel",
+        "back": "Back",
                 "renew": "Renew",
                 "comingSoon": "These actions are coming soon."
             },

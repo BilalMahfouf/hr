@@ -7,18 +7,20 @@ import {
   type DataTableColumn,
   type RowAction,
 } from "@/components/tables";
-import { Pencil, ToggleLeft, ToggleRight, Wifi } from "lucide-react";
+import { Eye, Pencil, ToggleLeft, ToggleRight, Wifi } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import i18nKeyContainer from "@/lib/i18n/keyContainer";
 import attendanceMachineApi, { type MachineRecord } from "./attendance-machine-api";
 
 interface MachinesDataTableProps {
+  onView?: (machine: MachineRecord) => void;
   onEdit?: (machine: MachineRecord) => void;
   onActivate?: (machine: MachineRecord) => void;
   onDeactivate?: (machine: MachineRecord) => void;
 }
 
 export default function MachinesDataTable({
+  onView,
   onEdit,
   onActivate,
   onDeactivate,
@@ -93,6 +95,11 @@ export default function MachinesDataTable({
       ),
       cell: ({ row }) => {
         const actions: RowAction<MachineRecord>[] = [
+          {
+            label: t(i18nKeyContainer.table.viewDetails),
+            onClick: (machine) => onView?.(machine),
+            icon: Eye,
+          },
           {
             label: t(i18nKeyContainer.table.edit),
             onClick: (machine) => onEdit?.(machine),

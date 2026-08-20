@@ -181,6 +181,16 @@
         "empty": "لم يتم العثور على أي جهاز.",
         "notFound": "الجهاز غير موجود",
         "notFoundDesc": "تعذر العثور على الجهاز المحدد.",
+        "view": {
+            "title": "تفاصيل الجهاز",
+            "description": "عرض التفاصيل الكاملة لجهاز الحضور.",
+            "machineId": "معرف الجهاز",
+            "machineNumber": "رقم الجهاز",
+            "ipAddress": "عنوان IP",
+            "port": "المنفذ",
+            "status": "الحالة",
+            "createdOn": "تاريخ الإنشاء"
+        },
         "table": {
             "machineNumber": "رقم الجهاز",
             "ipAddress": "عنوان IP",
@@ -206,8 +216,8 @@
         "form": {
             "addTitle": "إضافة جهاز حضور",
             "addDescription": "سجّل جهاز حضور جديد.",
-            "updateTitle": "تعديل عنوان IP للجهاز",
-            "updateDescription": "قم بتحديث عنوان IP الخاص بالجهاز المحدد.",
+            "updateTitle": "تعديل الجهاز",
+            "updateDescription": "قم بتحديث عنوان IP والمنفذ الخاص بالجهاز المحدد.",
             "machineNumber": "رقم الجهاز",
             "machineNumberPlaceholder": "مثال: 1",
             "ipAddress": "عنوان IP",
@@ -218,7 +228,7 @@
             "invalidError": "نموذج غير صالح",
             "invalidErrorDesc": "يرجى ملء جميع الحقول المطلوبة بقيم صحيحة.",
             "addAction": "إضافة الجهاز",
-            "updateAction": "تحديث عنوان IP"
+            "updateAction": "حفظ التغييرات"
         }
     },
     "toast": {
@@ -445,7 +455,8 @@
                 "description": "سيتم تفعيل تعديل الخطة عند توفر نقاط النهاية في الخلفية",
                 "upgrade": "ترقية",
                 "downgrade": "تخفيض",
-                "cancel": "إلغاء",
+"cancel": "إلغاء",
+        "back": "رجوع",
                 "renew": "تجديد",
                 "comingSoon": "هذه الإجراءات ستكون متاحة قريبًا."
             },

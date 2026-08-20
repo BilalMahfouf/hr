@@ -110,6 +110,7 @@ const i18nKeyContainer = {
     },
     common: {
         cancel: 'common.cancel',
+        back: 'common.back',
         close: 'common.close',
         save: 'common.save',
         saving: 'common.saving',
@@ -435,6 +436,16 @@ const i18nKeyContainer = {
         empty: 'machines.empty',
         notFound: 'machines.notFound',
         notFoundDesc: 'machines.notFoundDesc',
+        view: {
+            title: 'machines.view.title',
+            description: 'machines.view.description',
+            machineId: 'machines.view.machineId',
+            machineNumber: 'machines.view.machineNumber',
+            ipAddress: 'machines.view.ipAddress',
+            port: 'machines.view.port',
+            status: 'machines.view.status',
+            createdOn: 'machines.view.createdOn',
+        },
         table: {
             machineNumber: 'machines.table.machineNumber',
             ipAddress: 'machines.table.ipAddress',

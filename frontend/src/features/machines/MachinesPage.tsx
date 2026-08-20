@@ -53,6 +53,10 @@ export default function MachinesPage() {
     },
   });
 
+  const handleView = (machine: MachineRecord) => {
+    navigate(`/machines/${machine.machineId}`);
+  };
+
   const handleEdit = (machine: MachineRecord) => {
     navigate(`/machines/${machine.machineId}/edit`);
   };
@@ -96,6 +100,7 @@ export default function MachinesPage() {
       </div>
 
       <MachinesDataTable
+        onView={handleView}
         onEdit={handleEdit}
         onActivate={handleActivate}
         onDeactivate={handleDeactivate}

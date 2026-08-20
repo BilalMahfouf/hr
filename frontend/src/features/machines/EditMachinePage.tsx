@@ -12,7 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import i18nKeyContainer from "@/lib/i18n/keyContainer";
 import attendanceMachineApi, {
   type MachineRecord,
-  type UpdateMachineIpAddressRequest,
+  type UpdateMachineRequest,
 } from "./attendance-machine-api";
 
 const isValidIpv4 = (value: string): boolean => {
@@ -35,10 +35,11 @@ function EditMachineForm({ machine }: { machine: MachineRecord }) {
   const { handleApiError, success, warning } = useToast();
 
   const [ipAddress, setIpAddress] = useState(machine.ipAddress);
+  const [port, setPort] = useState(String(machine.port));
 
   const mutation = useMutation({
-    mutationFn: (request: UpdateMachineIpAddressRequest) =>
-      attendanceMachineApi.updateMachineIpAddress(machine.machineId, request),
+    mutationFn: (request: UpdateMachineRequest) =>
+      attendanceMachineApi.updateMachine(machine.machineId, request),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["machines"] });
       success(i18nKeyContainer.toast.machine.updated, {
@@ -54,14 +55,21 @@ function EditMachineForm({ machine }: { machine: MachineRecord }) {
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
-    if (!ipAddress.trim() || !isValidIpv4(ipAddress.trim())) {
+    const parsedPort = Number(port);
+
+    if (
+      !ipAddress.trim() ||
+      !isValidIpv4(ipAddress.trim()) ||
+      !Number.isInteger(parsedPort) ||
+      parsedPort <= 0
+    ) {
       warning(i18nKeyContainer.machines.form.invalidError, {
         description: i18nKeyContainer.machines.form.invalidErrorDesc,
       });
       return;
     }
 
-    mutation.mutate({ ipAddress: ipAddress.trim() });
+    mutation.mutate({ ipAddress: ipAddress.trim(), port: parsedPort });
   };
 
   return (
@@ -107,9 +115,13 @@ function EditMachineForm({ machine }: { machine: MachineRecord }) {
                   <Cable className="absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                   <Input
                     id="port"
-                    value={String(machine.port)}
-                    readOnly
-                    className="h-11 border-slate-200 bg-slate-100 ps-10 text-slate-500"
+                    type="number"
+                    step="1"
+                    min="1"
+                    value={port}
+                    onChange={(event) => setPort(event.target.value)}
+                    className="h-11 border-slate-200 bg-slate-50 ps-10 focus:bg-white"
+                    placeholder={t(i18nKeyContainer.machines.form.portPlaceholder)}
                   />
                 </div>
               </div>
