@@ -17,7 +17,7 @@ public interface IEmployeeRepository
     Task<EmployeeDto?> GetEmployeeByBgdeAsync(string bdge, CancellationToken ct = default);
 
     Task<IReadOnlyList<EmployeeDto>> GetEmployeesByBgdesAsync(
-        IEnumerable<int> bdges,
+        IEnumerable<string> bdges,
         CancellationToken ct = default);
 
     Task<IReadOnlyList<EmployeeDto>> GetEmployeesByIdsAsync(

@@ -67,7 +67,7 @@ internal class EnapRepository(ISqlConnectionFactory sqlConnectionFactory) : IEmp
     }
 
     public async Task<IReadOnlyList<EmployeeDto>> GetEmployeesByBgdesAsync(
-        IEnumerable<int> bdges,
+        IEnumerable<string> bdges,
         CancellationToken ct = default)
     {
         using var conn = sqlConnectionFactory.CreateConnection();
