@@ -497,6 +497,37 @@ const i18nKeyContainer = {
         },
     },
     deleteDialog: {},
+    attendance: {
+        title: 'attendance.title',
+        description: 'attendance.description',
+        tabs: {
+            punches: 'attendance.tabs.punches',
+            records: 'attendance.tabs.records',
+        },
+        status: {
+            present: 'attendance.status.present',
+            absent: 'attendance.status.absent',
+            open: 'attendance.status.open',
+        },
+        punches: {
+            empty: 'attendance.punches.empty',
+            table: {
+                employee: 'attendance.punches.table.employee',
+                machineIp: 'attendance.punches.table.machineIp',
+                punchOccurredOn: 'attendance.punches.table.punchOccurredOn',
+            },
+        },
+        records: {
+            empty: 'attendance.records.empty',
+            table: {
+                employee: 'attendance.records.table.employee',
+                checkIn: 'attendance.records.table.checkIn',
+                checkOut: 'attendance.records.table.checkOut',
+                workedTime: 'attendance.records.table.workedTime',
+                status: 'attendance.records.table.status',
+            },
+        },
+    },
     table: {
         search: 'table.search',
         noResults: 'table.noResults',
