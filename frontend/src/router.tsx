@@ -18,6 +18,9 @@ import MachinesPage from './features/machines/MachinesPage';
 import CreateMachinePage from './features/machines/CreateMachinePage';
 import EditMachinePage from './features/machines/EditMachinePage';
 import ViewMachinePage from './features/machines/ViewMachinePage';
+import AttendancePage from './features/attendance/AttendancePage';
+import ViewPunchPage from './features/attendance/ViewPunchPage';
+import ViewAttendanceRecordPage from './features/attendance/ViewAttendanceRecordPage';
 
 export const router = createBrowserRouter([
     {
@@ -116,6 +119,18 @@ export const router = createBrowserRouter([
                     <ViewMachinePage />
                 </RoleGuard>
             ),
+        },
+        {
+            path: '/attendance',
+            element: <AttendancePage />,
+        },
+        {
+            path: '/attendance/punches/:punchId',
+            element: <ViewPunchPage />,
+        },
+        {
+            path: '/attendance/records/:attendanceRecordId',
+            element: <ViewAttendanceRecordPage />,
         },
         {
             path: '/settings',

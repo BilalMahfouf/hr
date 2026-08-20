@@ -1,4 +1,4 @@
-import { LayoutDashboard, Settings, LogOut, Languages, Shield, CreditCard, ScanLine } from "lucide-react";
+import { LayoutDashboard, Settings, LogOut, Languages, Shield, CreditCard, ScanLine, CalendarClock } from "lucide-react";
 import SideBarLink from "./SideBarLink";
 import { useTranslation } from "react-i18next";
 import i18nKeyContainer from "@/lib/i18n/keyContainer";
@@ -14,6 +14,7 @@ const navigationItems = [
     { pathname: "/users", key: i18nKeyContainer.staff.title, icon: Shield, requiresAdmin: true },
     { pathname: "/subscription-plans", key: i18nKeyContainer.subscriptionPlansNav, icon: CreditCard, requiresAdmin: true },
     { pathname: "/machines", key: i18nKeyContainer.machines.title, icon: ScanLine, requiresAdmin: true },
+    { pathname: "/attendance", key: i18nKeyContainer.attendance.title, icon: CalendarClock },
     { pathname: "/settings", key: i18nKeyContainer.settings, icon: Settings },
 ];
 
