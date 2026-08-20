@@ -61,7 +61,7 @@ public static class UpdateMachine
             }
 
             var exists = await db.Machines
-                           .AnyAsync(e => e.IpAddress == command.IpAddress);
+                           .AnyAsync(e => e.IpAddress == command.IpAddress && e.Id != command.MachineId);
             if (exists)
             {
                 return Result<Response>.Failure(
