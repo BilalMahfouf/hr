@@ -8,6 +8,8 @@ public sealed class TestEmployeeApi : IEmployeeApi
     public Result<EmployeeResponse> Response { get; set; } =
         Result<EmployeeResponse>.Failure(EmployeeErrors.NotFound);
 
+    public IReadOnlyList<EmployeeResponse> Employees { get; set; } = [];
+
     public Task<Result<EmployeeResponse>> GetEmployeeByBadgeAsync(
         int badge,
         CancellationToken ct = default)
@@ -20,5 +22,19 @@ public sealed class TestEmployeeApi : IEmployeeApi
         CancellationToken ct = default)
     {
         return Task.FromResult(Response);
+    }
+
+    public Task<Result<IReadOnlyList<EmployeeResponse>>> GetEmployeesByBadgesAsync(
+        IReadOnlyCollection<int> badges,
+        CancellationToken ct = default)
+    {
+        return Task.FromResult(Result<IReadOnlyList<EmployeeResponse>>.Success(Employees));
+    }
+
+    public Task<Result<IReadOnlyList<EmployeeResponse>>> GetEmployeesByIdsAsync(
+        IReadOnlyCollection<string> ids,
+        CancellationToken ct = default)
+    {
+        return Task.FromResult(Result<IReadOnlyList<EmployeeResponse>>.Success(Employees));
     }
 }
