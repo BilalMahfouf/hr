@@ -16,7 +16,8 @@ public static class GetAllMachines
         int MachineNumber,
         string IpAddress,
         int Port,
-        bool IsActive);
+        bool IsActive,
+        DateTime CreatedOnUtc);
 
     public sealed record Query() : IQuery<IEnumerable<Response>>;
 
@@ -37,7 +38,8 @@ public static class GetAllMachines
                     m.MachineNumber,
                     m.IpAddress,
                     m.Port,
-                    m.IsActive));
+                    m.IsActive,
+                    m.CreatedOnUtc));
 
             return Result<IEnumerable<Response>>.Success(response);
         }

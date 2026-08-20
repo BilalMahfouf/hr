@@ -171,6 +171,66 @@
         "registeredOn": "Registered On",
         "tableRegistered": "Registered On"
     },
+    "machines": {
+        "title": "Machines",
+        "description": "Manage your attendance machines",
+        "addMachine": "Add Machine",
+        "editMachine": "Edit Machine",
+        "genericError": "Something went wrong while processing this machine.",
+        "loadError": "Failed to load machines.",
+        "empty": "No machines found.",
+        "notFound": "Machine Not Found",
+        "notFoundDesc": "The selected machine could not be found.",
+        "view": {
+            "title": "Machine Details",
+            "description": "View complete details of the attendance machine.",
+            "machineId": "Machine ID",
+            "machineNumber": "Machine Number",
+            "ipAddress": "IP Address",
+            "port": "Port",
+            "status": "Status",
+            "createdOn": "Created On"
+        },
+        "table": {
+            "machineNumber": "Machine Number",
+            "ipAddress": "IP Address",
+            "port": "Port",
+            "status": "Status"
+        },
+        "status": {
+            "active": "Active",
+            "inactive": "Inactive"
+        },
+        "actions": {
+            "activate": "Activate",
+            "deactivate": "Deactivate"
+        },
+        "confirm": {
+            "activateTitle": "Activate Machine",
+            "activateDescription": "This machine will be used by the attendance import process.",
+            "activateConfirm": "Activate",
+            "deactivateTitle": "Deactivate Machine",
+            "deactivateDescription": "The machine will be excluded from the attendance import process.",
+            "deactivateConfirm": "Deactivate"
+        },
+        "form": {
+            "addTitle": "Add Attendance Machine",
+            "addDescription": "Register a new attendance machine.",
+            "updateTitle": "Edit Machine",
+            "updateDescription": "Update the IP address and port of the selected machine.",
+            "machineNumber": "Machine Number",
+            "machineNumberPlaceholder": "e.g. 1",
+            "ipAddress": "IP Address",
+            "ipAddressPlaceholder": "e.g. 192.168.1.100",
+            "port": "Port",
+            "portPlaceholder": "e.g. 4370",
+            "portOptional": "Optional",
+            "invalidError": "Invalid Form",
+            "invalidErrorDesc": "Please fill all required fields with valid values.",
+            "addAction": "Add Machine",
+            "updateAction": "Save Changes"
+        }
+    },
     "toast": {
         "subscriptionPlan": {
             "added": "Plan Added",
@@ -181,6 +241,16 @@
             "activatedDesc": "The subscription plan is now active.",
             "deactivated": "Plan Deactivated",
             "deactivatedDesc": "The subscription plan is now inactive."
+        },
+        "machine": {
+            "added": "Machine Added",
+            "addedDesc": "The attendance machine has been created successfully.",
+            "updated": "Machine Updated",
+            "updatedDesc": "The machine IP address has been updated successfully.",
+            "activated": "Machine Activated",
+            "activatedDesc": "The machine is now active.",
+            "deactivated": "Machine Deactivated",
+            "deactivatedDesc": "The machine is now inactive."
         },
         "notification": {
             "markedAsRead": "Notification Read",
@@ -223,6 +293,14 @@
             "fetchUsers": "Failed to fetch users",
             "fetchUser": "Failed to fetch user",
             "fetchCurrentUser": "Failed to fetch current user"
+        },
+        "machine": {
+            "fetchMachines": "Failed to fetch machines",
+            "fetchMachine": "Failed to fetch machine",
+            "notFound": "Machine Not Found",
+            "notFoundDesc": "The selected machine could not be found.",
+            "alreadyExists": "Machine Already Exists",
+            "alreadyExistsDesc": "A machine with this IP address already exists."
         },
         "subscription": {
             "notFound": "Subscription Not Found",
@@ -397,7 +475,8 @@
                 "description": "Plan changes will be enabled once backend actions are available",
                 "upgrade": "Upgrade",
                 "downgrade": "Downgrade",
-                "cancel": "Cancel",
+"cancel": "Cancel",
+        "back": "Back",
                 "renew": "Renew",
                 "comingSoon": "These actions are coming soon."
             },

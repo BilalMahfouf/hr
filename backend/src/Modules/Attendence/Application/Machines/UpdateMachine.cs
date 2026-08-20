@@ -1,8 +1,6 @@
-using Carter;
 using FluentValidation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Modules.Attendence.Application.Shared;
@@ -13,12 +11,16 @@ using Modules.Shared.Results;
 
 namespace Modules.Attendence.Application.Machines;
 
-public static class CreateMachine
+public static class UpdateMachine
 {
-    public sealed record Command(
+    public sealed record Request(
         string IpAddress,
-        int MachineNumber,
-        int? Port) : ICommand<Response>;
+        int Port);
+
+    public sealed record Command(
+        Guid MachineId,
+        string IpAddress,
+        int Port) : ICommand<Response>;
 
     public sealed record Response(
         Guid MachineId);
@@ -27,13 +29,12 @@ public static class CreateMachine
     {
         public Validator()
         {
+            RuleFor(x => x.MachineId)
+                .NotEmpty();
             RuleFor(x => x.IpAddress)
                 .NotEmpty();
-            RuleFor(x => x.MachineNumber)
-                .GreaterThan(0);
             RuleFor(x => x.Port)
-                .GreaterThan(0)
-                .When(x => x.Port.HasValue);
+                .GreaterThan(0);
         }
     }
 
@@ -48,21 +49,26 @@ public static class CreateMachine
         {
             validator.ValidateAndThrow(command);
 
+            var machine = await db.Machines
+                .FirstOrDefaultAsync(
+                    m => m.Id == MachineId.From(command.MachineId),
+                    cancellationToken);
+
+            if (machine is null)
+            {
+                return Result<Response>.Failure(
+                    MachineErrors.MachineNotFound(command.MachineId));
+            }
+
             var exists = await db.Machines
-                .AnyAsync(e => e.IpAddress == command.IpAddress);
+                           .AnyAsync(e => e.IpAddress == command.IpAddress && e.Id != command.MachineId);
             if (exists)
             {
                 return Result<Response>.Failure(
                     MachineErrors.MachineAlreadyExists(command.IpAddress));
             }
 
-            var machine = AttendenceMachine.Create(
-                MachineId.New(),
-                command.IpAddress,
-                command.MachineNumber,
-                command.Port);
-
-            db.Machines.Add(machine);
+            machine.Update(command.IpAddress, command.Port);
             await db.SaveChangesAsync(cancellationToken);
 
             return Result<Response>.Success(new Response(machine.Id));
@@ -73,20 +79,23 @@ public static class CreateMachine
     {
         public void AddRoutes(IEndpointRouteBuilder app)
         {
-            app.MapPost("attendance/machines", async (
-                [FromBody] Command command,
+            app.MapPut("attendance/machines/{id:guid}", async (
+                Guid id,
+                Request request,
                 ICommandHandler<Command, Response> handler,
                 CancellationToken cancellationToken) =>
             {
+                var command = new Command(
+                    id,
+                    request.IpAddress,
+                    request.Port);
                 var result = await handler.Handle(command, cancellationToken);
-                return result.IsSuccess ? Results.Created(
-                    $"/attendance/machines/{result.Value.MachineId}",
-                    result.Value)
+                return result.IsSuccess ? Results.NoContent()
                 : result.Problem();
             })
             .WithTags("Attendance")
-            .WithSummary("Register an attendance machine")
-            .WithDescription("Creates a new attendance machine used by the import endpoint.");
+            .WithSummary("Update an attendance machine")
+            .WithDescription("Updates the IP address and port of an existing attendance machine.");
         }
     }
 }

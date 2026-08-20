@@ -1,6 +1,12 @@
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { parseApiError, getErrorI18nKey, type ParsedApiError } from "@/lib/api/error-types";
+import {
+    parseApiError,
+    getErrorI18nKey,
+    getErrorDescriptionKey,
+    isKnownApiError,
+    type ParsedApiError,
+} from "@/lib/api/error-types";
 
 type ToastType = "success" | "error" | "warning" | "info";
 
@@ -46,7 +52,10 @@ export function useToast() {
      */
     const handleApiError = (error: unknown, fallbackKey?: string): ParsedApiError => {
         const parsedError = parseApiError(error);
-        const errorTitleKey = getErrorI18nKey(parsedError.code);
+        const errorTitleKey = getErrorI18nKey(parsedError);
+        const descriptionKey = isKnownApiError(parsedError)
+            ? getErrorDescriptionKey(parsedError)
+            : fallbackKey;
 
         // Determine toast type based on error type
         let toastType: ToastType = "error";
@@ -57,7 +66,7 @@ export function useToast() {
         }
 
         showToast(toastType, errorTitleKey, {
-            description: fallbackKey,
+            description: descriptionKey,
         });
 
         return parsedError;

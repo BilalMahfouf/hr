@@ -171,6 +171,66 @@
         "registeredOn": "Inscrit le",
         "tableRegistered": "Inscrit le"
     },
+    "machines": {
+        "title": "Machines",
+        "description": "Gérez vos machines de pointage",
+        "addMachine": "Ajouter une machine",
+        "editMachine": "Modifier la machine",
+        "genericError": "Une erreur s'est produite lors du traitement de cette machine.",
+        "loadError": "Échec du chargement des machines.",
+        "empty": "Aucune machine trouvée.",
+        "notFound": "Machine introuvable",
+        "notFoundDesc": "La machine sélectionnée est introuvable.",
+        "view": {
+            "title": "Détails de la machine",
+            "description": "Affichez les détails complets de la machine de pointage.",
+            "machineId": "ID de la machine",
+            "machineNumber": "Numéro de machine",
+            "ipAddress": "Adresse IP",
+            "port": "Port",
+            "status": "Statut",
+            "createdOn": "Créée le"
+        },
+        "table": {
+            "machineNumber": "Numéro de machine",
+            "ipAddress": "Adresse IP",
+            "port": "Port",
+            "status": "Statut"
+        },
+        "status": {
+            "active": "Actif",
+            "inactive": "Inactif"
+        },
+        "actions": {
+            "activate": "Activer",
+            "deactivate": "Désactiver"
+        },
+        "confirm": {
+            "activateTitle": "Activer la machine",
+            "activateDescription": "Cette machine sera utilisée par le processus d'importation des présences.",
+            "activateConfirm": "Activer",
+            "deactivateTitle": "Désactiver la machine",
+            "deactivateDescription": "Cette machine sera exclue du processus d'importation des présences.",
+            "deactivateConfirm": "Désactiver"
+        },
+        "form": {
+            "addTitle": "Ajouter une machine de pointage",
+            "addDescription": "Enregistrez une nouvelle machine de pointage.",
+            "updateTitle": "Modifier la machine",
+            "updateDescription": "Mettez à jour l'adresse IP et le port de la machine sélectionnée.",
+            "machineNumber": "Numéro de machine",
+            "machineNumberPlaceholder": "ex. 1",
+            "ipAddress": "Adresse IP",
+            "ipAddressPlaceholder": "ex. 192.168.1.100",
+            "port": "Port",
+            "portPlaceholder": "ex. 4370",
+            "portOptional": "Optionnel",
+            "invalidError": "Formulaire invalide",
+            "invalidErrorDesc": "Veuillez renseigner tous les champs obligatoires avec des valeurs valides.",
+            "addAction": "Ajouter la machine",
+            "updateAction": "Enregistrer les modifications"
+        }
+    },
     "toast": {
         "subscriptionPlan": {
             "added": "Plan ajouté",
@@ -181,6 +241,16 @@
             "activatedDesc": "Le plan d'abonnement est maintenant actif.",
             "deactivated": "Plan désactivé",
             "deactivatedDesc": "Le plan d'abonnement est maintenant inactif."
+        },
+        "machine": {
+            "added": "Machine ajoutée",
+            "addedDesc": "La machine de pointage a été créée avec succès.",
+            "updated": "Machine mise à jour",
+            "updatedDesc": "L'adresse IP de la machine a été mise à jour avec succès.",
+            "activated": "Machine activée",
+            "activatedDesc": "La machine est maintenant active.",
+            "deactivated": "Machine désactivée",
+            "deactivatedDesc": "La machine est maintenant inactive."
         },
         "notification": {
             "markedAsRead": "Notification lue",
@@ -223,6 +293,14 @@
             "fetchUsers": "Échec du chargement des utilisateurs",
             "fetchUser": "Échec du chargement de l'utilisateur",
             "fetchCurrentUser": "Échec du chargement de l'utilisateur courant"
+        },
+        "machine": {
+            "fetchMachines": "Échec de la récupération des machines",
+            "fetchMachine": "Échec de la récupération de la machine",
+            "notFound": "Machine introuvable",
+            "notFoundDesc": "La machine sélectionnée est introuvable.",
+            "alreadyExists": "Machine déjà existante",
+            "alreadyExistsDesc": "Une machine avec cette adresse IP existe déjà."
         },
         "subscription": {
             "notFound": "Abonnement introuvable",
@@ -381,7 +459,8 @@
                 "description": "Les changements de plan seront activés dès que les endpoints backend seront disponibles",
                 "upgrade": "Mettre à niveau",
                 "downgrade": "Rétrograder",
-                "cancel": "Annuler",
+"cancel": "Annuler",
+        "back": "Retour",
                 "renew": "Renouveler",
                 "comingSoon": "Ces actions seront disponibles bientôt."
             },
