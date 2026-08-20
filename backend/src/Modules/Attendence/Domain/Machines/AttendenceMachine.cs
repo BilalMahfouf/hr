@@ -33,9 +33,10 @@ public sealed class AttendenceMachine : Entity
         return machine;
     }
 
-    public void UpdateIpAddress(string ipAddress)
+    public void Update(string ipAddress, int port)
     {
         IpAddress = ipAddress;
+        Port = port;
     }
 
     public void Activate()
