@@ -13,14 +13,15 @@ public sealed class MachineCrudTests : AttendenceTestBase
     {
     }
 
-    private static (GetMachineById.QueryHandler, ActivateMachine.CommandHandler, DeactivateMachine.CommandHandler) CreateHandlers(
+    private static (GetMachineById.QueryHandler, ActivateMachine.CommandHandler, DeactivateMachine.CommandHandler, UpdateMachine.CommandHandler) CreateHandlers(
         IServiceProvider services)
     {
         var db = services.GetRequiredService<IAttendanceDbContext>();
         return (
             new GetMachineById.QueryHandler(db),
             new ActivateMachine.CommandHandler(db),
-            new DeactivateMachine.CommandHandler(db));
+            new DeactivateMachine.CommandHandler(db),
+            new UpdateMachine.CommandHandler(db, new UpdateMachine.Validator()));
     }
 
     private static async Task<AttendenceMachine> SeedMachineAsync(
@@ -44,7 +45,7 @@ public sealed class MachineCrudTests : AttendenceTestBase
         using var scope = CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<IAttendanceDbContext>();
         var machine = await SeedMachineAsync(db);
-        var (getById, _, _) = CreateHandlers(scope.ServiceProvider);
+        var (getById, _, _, _) = CreateHandlers(scope.ServiceProvider);
 
         var result = await getById.Handle(
             new GetMachineById.Query(machine.Id),
@@ -62,7 +63,7 @@ public sealed class MachineCrudTests : AttendenceTestBase
     public async Task GetById_WhenMachineDoesNotExist_ReturnsNotFound()
     {
         using var scope = CreateScope();
-        var (getById, _, _) = CreateHandlers(scope.ServiceProvider);
+        var (getById, _, _, _) = CreateHandlers(scope.ServiceProvider);
 
         var result = await getById.Handle(
             new GetMachineById.Query(Guid.NewGuid()),
@@ -76,7 +77,7 @@ public sealed class MachineCrudTests : AttendenceTestBase
     public async Task GetById_WhenIdIsEmpty_ReturnsNotFound()
     {
         using var scope = CreateScope();
-        var (getById, _, _) = CreateHandlers(scope.ServiceProvider);
+        var (getById, _, _, _) = CreateHandlers(scope.ServiceProvider);
 
         var result = await getById.Handle(
             new GetMachineById.Query(Guid.Empty),
@@ -92,7 +93,7 @@ public sealed class MachineCrudTests : AttendenceTestBase
         using var scope = CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<IAttendanceDbContext>();
         var machine = await SeedMachineAsync(db, active: false);
-        var (_, activate, _) = CreateHandlers(scope.ServiceProvider);
+        var (_, activate, _, _) = CreateHandlers(scope.ServiceProvider);
 
         var result = await activate.Handle(
             new ActivateMachine.Command(machine.Id),
@@ -110,7 +111,7 @@ public sealed class MachineCrudTests : AttendenceTestBase
     public async Task Activate_WhenMachineDoesNotExist_ReturnsNotFound()
     {
         using var scope = CreateScope();
-        var (_, activate, _) = CreateHandlers(scope.ServiceProvider);
+        var (_, activate, _, _) = CreateHandlers(scope.ServiceProvider);
 
         var result = await activate.Handle(
             new ActivateMachine.Command(Guid.NewGuid()),
@@ -126,7 +127,7 @@ public sealed class MachineCrudTests : AttendenceTestBase
         using var scope = CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<IAttendanceDbContext>();
         var machine = await SeedMachineAsync(db);
-        var (_, _, deactivate) = CreateHandlers(scope.ServiceProvider);
+        var (_, _, deactivate, _) = CreateHandlers(scope.ServiceProvider);
 
         var result = await deactivate.Handle(
             new DeactivateMachine.Command(machine.Id),
@@ -144,7 +145,7 @@ public sealed class MachineCrudTests : AttendenceTestBase
     public async Task Deactivate_WhenMachineDoesNotExist_ReturnsNotFound()
     {
         using var scope = CreateScope();
-        var (_, _, deactivate) = CreateHandlers(scope.ServiceProvider);
+        var (_, _, deactivate, _) = CreateHandlers(scope.ServiceProvider);
 
         var result = await deactivate.Handle(
             new DeactivateMachine.Command(Guid.NewGuid()),
@@ -152,5 +153,57 @@ public sealed class MachineCrudTests : AttendenceTestBase
 
         Assert.False(result.IsSuccess);
         Assert.Equal("AttendenceMachine.NotFound", result.Error.Code);
+    }
+
+    [Fact]
+    public async Task Update_WhenMachineExists_UpdatesIpAddressAndPortAndPersists()
+    {
+        using var scope = CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<IAttendanceDbContext>();
+        var machine = await SeedMachineAsync(db);
+        var (_, _, _, update) = CreateHandlers(scope.ServiceProvider);
+
+        var result = await update.Handle(
+            new UpdateMachine.Command(machine.Id, "192.168.3.210", 8080),
+            CancellationToken.None);
+
+        Assert.True(result.IsSuccess);
+        Assert.Equal(machine.Id, result.Value.MachineId);
+
+        var saved = await db.Machines
+            .AsNoTracking()
+            .SingleAsync(m => m.Id == machine.Id);
+        Assert.Equal("192.168.3.210", saved.IpAddress);
+        Assert.Equal(8080, saved.Port);
+        Assert.Equal(machine.MachineNumber, saved.MachineNumber);
+        Assert.True(saved.IsActive);
+    }
+
+    [Fact]
+    public async Task Update_WhenMachineDoesNotExist_ReturnsNotFound()
+    {
+        using var scope = CreateScope();
+        var (_, _, _, update) = CreateHandlers(scope.ServiceProvider);
+
+        var result = await update.Handle(
+            new UpdateMachine.Command(Guid.NewGuid(), "192.168.3.210", 8080),
+            CancellationToken.None);
+
+        Assert.False(result.IsSuccess);
+        Assert.Equal("AttendenceMachine.NotFound", result.Error.Code);
+    }
+
+    [Fact]
+    public async Task Update_WhenCommandIsInvalid_ThrowsValidationException()
+    {
+        using var scope = CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<IAttendanceDbContext>();
+        var machine = await SeedMachineAsync(db);
+        var (_, _, _, update) = CreateHandlers(scope.ServiceProvider);
+
+        await Assert.ThrowsAsync<FluentValidation.ValidationException>(() =>
+            update.Handle(
+                new UpdateMachine.Command(machine.Id, "", 0),
+                CancellationToken.None));
     }
 }
