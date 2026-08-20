@@ -34,6 +34,7 @@ public sealed class GetMachineByIdTests
         Assert.Equal("192.168.3.205", result.Value.IpAddress);
         Assert.Equal(8080, result.Value.Port);
         Assert.True(result.Value.IsActive);
+        Assert.Equal(machine.CreatedOnUtc, result.Value.CreatedOnUtc);
     }
 
     [Fact]

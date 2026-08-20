@@ -37,13 +37,15 @@ public sealed class GetAllMachinesTests
             m.MachineNumber == 1 &&
             m.IpAddress == "192.168.3.205" &&
             m.Port == 4370 &&
-            m.IsActive);
+            m.IsActive &&
+            m.CreatedOnUtc == machine1.CreatedOnUtc);
         Assert.Contains(machines, m =>
             m.MachineId == machine2.Id &&
             m.MachineNumber == 2 &&
             m.IpAddress == "192.168.3.206" &&
             m.Port == 8080 &&
-            !m.IsActive);
+            !m.IsActive &&
+            m.CreatedOnUtc == machine2.CreatedOnUtc);
     }
 
     [Fact]
