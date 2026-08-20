@@ -91,6 +91,63 @@
         "saving": "Enregistrement..."
     },
     "deleteDialog": {},
+    "attendance": {
+        "title": "Présences",
+        "description": "Consultez les pointeuses et les relevés de présence",
+        "tabs": {
+            "punches": "Pointeuses",
+            "records": "Relevés de présence"
+        },
+        "status": {
+            "present": "Présent",
+            "absent": "Absent",
+            "open": "Ouvert"
+        },
+        "punches": {
+            "empty": "Aucune pointeuse trouvée.",
+            "notFound": "Pointeuse introuvable",
+            "notFoundDesc": "La pointeuse sélectionnée est introuvable.",
+            "table": {
+                "employee": "Employé",
+                "machineIp": "IP de la machine",
+                "punchOccurredOn": "Heure du pointage"
+            },
+            "view": {
+                "title": "Détails du pointage",
+                "description": "Consultez les détails complets du pointage.",
+                "punchId": "ID du pointage",
+                "machineId": "ID de la machine",
+                "machineIp": "IP de la machine",
+                "employeeId": "ID de l'employé",
+                "employeeFullName": "Nom de l'employé",
+                "punchOccurredOn": "Pointage effectué le",
+                "createdOn": "Créé le"
+            }
+        },
+        "records": {
+            "empty": "Aucun relevé de présence trouvé.",
+            "notFound": "Relevé de présence introuvable",
+            "notFoundDesc": "Le relevé de présence sélectionné est introuvable.",
+            "table": {
+                "employee": "Employé",
+                "checkIn": "Entrée",
+                "checkOut": "Sortie",
+                "workedTime": "Temps de travail",
+                "status": "Statut"
+            },
+            "view": {
+                "title": "Détails du relevé de présence",
+                "description": "Consultez les détails complets du relevé de présence.",
+                "attendanceRecordId": "ID du relevé",
+                "employeeId": "ID de l'employé",
+                "employeeFullName": "Nom de l'employé",
+                "checkIn": "Entrée",
+                "checkOut": "Sortie",
+                "workedTime": "Temps de travail",
+                "status": "Statut"
+            }
+        }
+    },
     "table": {
         "search": "Rechercher...",
         "noResults": "Aucun résultat trouvé.",
@@ -301,6 +358,12 @@
             "notFoundDesc": "La machine sélectionnée est introuvable.",
             "alreadyExists": "Machine déjà existante",
             "alreadyExistsDesc": "Une machine avec cette adresse IP existe déjà."
+        },
+        "attendance": {
+            "fetchPunches": "Échec du chargement des pointages",
+            "fetchPunch": "Échec du chargement du pointage",
+            "fetchRecords": "Échec du chargement des relevés de présence",
+            "fetchRecord": "Échec du chargement du relevé de présence"
         },
         "subscription": {
             "notFound": "Abonnement introuvable",
