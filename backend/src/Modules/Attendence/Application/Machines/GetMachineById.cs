@@ -17,7 +17,8 @@ public static class GetMachineById
         int MachineNumber,
         string IpAddress,
         int Port,
-        bool IsActive);
+        bool IsActive,
+        DateTime CreatedOnUtc);
 
     public sealed record Query(Guid MachineId) : IQuery<Response>;
 
@@ -44,7 +45,8 @@ public static class GetMachineById
                     m.MachineNumber,
                     m.IpAddress,
                     m.Port,
-                    m.IsActive))
+                    m.IsActive,
+                    m.CreatedOnUtc))
                 .FirstOrDefaultAsync(cancellationToken);
 
             if (machine is null)
