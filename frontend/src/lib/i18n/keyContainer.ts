@@ -184,6 +184,12 @@ const i18nKeyContainer = {
             alreadyExists: 'errors.machine.alreadyExists',
             alreadyExistsDesc: 'errors.machine.alreadyExistsDesc',
         },
+        attendance: {
+            fetchPunches: 'errors.attendance.fetchPunches',
+            fetchPunch: 'errors.attendance.fetchPunch',
+            fetchRecords: 'errors.attendance.fetchRecords',
+            fetchRecord: 'errors.attendance.fetchRecord',
+        },
         subscription: {
             notFound: 'errors.subscription.notFound',
             notFoundDesc: 'errors.subscription.notFoundDesc',
