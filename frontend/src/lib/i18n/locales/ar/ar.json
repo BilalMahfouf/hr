@@ -91,6 +91,63 @@
         "saving": "جاري الحفظ..."
     },
     "deleteDialog": {},
+    "attendance": {
+        "title": "الحضور والانصراف",
+        "description": "متابعة بصمات وسجلات الحضور",
+        "tabs": {
+            "punches": "البصمات",
+            "records": "سجلات الحضور"
+        },
+        "status": {
+            "present": "حاضر",
+            "absent": "غائب",
+            "open": "مفتوح"
+        },
+        "punches": {
+            "empty": "لا توجد بصمات.",
+            "notFound": "البصمة غير موجودة",
+            "notFoundDesc": "تعذر العثور على البصمة المحددة.",
+            "table": {
+                "employee": "الموظف",
+                "machineIp": "عنوان IP للجهاز",
+                "punchOccurredOn": "وقت البصمة"
+            },
+            "view": {
+                "title": "تفاصيل البصمة",
+                "description": "عرض تفاصيل البصمة بالكامل.",
+                "punchId": "معرف البصمة",
+                "machineId": "معرف الجهاز",
+                "machineIp": "عنوان IP للجهاز",
+                "employeeId": "معرف الموظف",
+                "employeeFullName": "اسم الموظف",
+                "punchOccurredOn": "وقت البصمة",
+                "createdOn": "تاريخ الإنشاء"
+            }
+        },
+        "records": {
+            "empty": "لا توجد سجلات حضور.",
+            "notFound": "سجل الحضور غير موجود",
+            "notFoundDesc": "تعذر العثور على سجل الحضور المحدد.",
+            "table": {
+                "employee": "الموظف",
+                "checkIn": "وقت الدخول",
+                "checkOut": "وقت الخروج",
+                "workedTime": "مدة العمل",
+                "status": "الحالة"
+            },
+            "view": {
+                "title": "تفاصيل سجل الحضور",
+                "description": "عرض تفاصيل سجل الحضور بالكامل.",
+                "attendanceRecordId": "معرف السجل",
+                "employeeId": "معرف الموظف",
+                "employeeFullName": "اسم الموظف",
+                "checkIn": "وقت الدخول",
+                "checkOut": "وقت الخروج",
+                "workedTime": "مدة العمل",
+                "status": "الحالة"
+            }
+        }
+    },
     "table": {
         "search": "بحث...",
         "noResults": "لا توجد نتائج.",
@@ -301,6 +358,12 @@
             "notFoundDesc": "تعذر العثور على الجهاز المحدد.",
             "alreadyExists": "الجهاز موجود بالفعل",
             "alreadyExistsDesc": "يوجد جهاز بنفس عنوان IP بالفعل."
+        },
+        "attendance": {
+            "fetchPunches": "فشل تحميل البصمات",
+            "fetchPunch": "فشل تحميل البصمة",
+            "fetchRecords": "فشل تحميل سجلات الحضور",
+            "fetchRecord": "فشل تحميل سجل الحضور"
         },
         "subscription": {
             "notFound": "الاشتراك غير موجود",

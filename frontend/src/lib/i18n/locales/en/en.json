@@ -91,6 +91,63 @@
         "saving": "Saving..."
     },
     "deleteDialog": {},
+    "attendance": {
+        "title": "Attendance",
+        "description": "Monitor attendance punches and records",
+        "tabs": {
+            "punches": "Punches",
+            "records": "Attendance Records"
+        },
+        "status": {
+            "present": "Present",
+            "absent": "Absent",
+            "open": "Open"
+        },
+        "punches": {
+            "empty": "No punches found.",
+            "notFound": "Punch Not Found",
+            "notFoundDesc": "The selected punch could not be found.",
+            "table": {
+                "employee": "Employee",
+                "machineIp": "Machine IP",
+                "punchOccurredOn": "Punch Time"
+            },
+            "view": {
+                "title": "Punch Details",
+                "description": "View complete details of the attendance punch.",
+                "punchId": "Punch ID",
+                "machineId": "Machine ID",
+                "machineIp": "Machine IP",
+                "employeeId": "Employee ID",
+                "employeeFullName": "Employee Name",
+                "punchOccurredOn": "Punch Occurred On",
+                "createdOn": "Created On"
+            }
+        },
+        "records": {
+            "empty": "No attendance records found.",
+            "notFound": "Attendance Record Not Found",
+            "notFoundDesc": "The selected attendance record could not be found.",
+            "table": {
+                "employee": "Employee",
+                "checkIn": "Check In",
+                "checkOut": "Check Out",
+                "workedTime": "Worked Time",
+                "status": "Status"
+            },
+            "view": {
+                "title": "Attendance Record Details",
+                "description": "View complete details of the attendance record.",
+                "attendanceRecordId": "Record ID",
+                "employeeId": "Employee ID",
+                "employeeFullName": "Employee Name",
+                "checkIn": "Check In",
+                "checkOut": "Check Out",
+                "workedTime": "Worked Time",
+                "status": "Status"
+            }
+        }
+    },
     "table": {
         "search": "Search...",
         "noResults": "No results found.",
@@ -301,6 +358,12 @@
             "notFoundDesc": "The selected machine could not be found.",
             "alreadyExists": "Machine Already Exists",
             "alreadyExistsDesc": "A machine with this IP address already exists."
+        },
+        "attendance": {
+            "fetchPunches": "Failed to fetch punches",
+            "fetchPunch": "Failed to fetch punch",
+            "fetchRecords": "Failed to fetch attendance records",
+            "fetchRecord": "Failed to fetch attendance record"
         },
         "subscription": {
             "notFound": "Subscription Not Found",
