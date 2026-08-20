@@ -179,6 +179,10 @@ const i18nKeyContainer = {
         machine: {
             fetchMachines: 'errors.machine.fetchMachines',
             fetchMachine: 'errors.machine.fetchMachine',
+            notFound: 'errors.machine.notFound',
+            notFoundDesc: 'errors.machine.notFoundDesc',
+            alreadyExists: 'errors.machine.alreadyExists',
+            alreadyExistsDesc: 'errors.machine.alreadyExistsDesc',
         },
         subscription: {
             notFound: 'errors.subscription.notFound',

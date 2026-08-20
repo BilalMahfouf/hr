@@ -296,7 +296,11 @@
         },
         "machine": {
             "fetchMachines": "Échec de la récupération des machines",
-            "fetchMachine": "Échec de la récupération de la machine"
+            "fetchMachine": "Échec de la récupération de la machine",
+            "notFound": "Machine introuvable",
+            "notFoundDesc": "La machine sélectionnée est introuvable.",
+            "alreadyExists": "Machine déjà existante",
+            "alreadyExistsDesc": "Une machine avec cette adresse IP existe déjà."
         },
         "subscription": {
             "notFound": "Abonnement introuvable",

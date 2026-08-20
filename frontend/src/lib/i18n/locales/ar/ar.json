@@ -294,9 +294,13 @@
             "fetchUser": "فشل تحميل المستخدم",
             "fetchCurrentUser": "فشل تحميل المستخدم الحالي"
         },
-        "machine": {
-            "fetchMachines": "فشل تحميل الآلات",
-            "fetchMachine": "فشل تحميل الجهاز"
+"machine": {
+            "fetchMachines": "فشل جلب الآلات",
+            "fetchMachine": "فشل جلب الآلة",
+            "notFound": "الجهاز غير موجود",
+            "notFoundDesc": "تعذر العثور على الجهاز المحدد.",
+            "alreadyExists": "الجهاز موجود بالفعل",
+            "alreadyExistsDesc": "يوجد جهاز بنفس عنوان IP بالفعل."
         },
         "subscription": {
             "notFound": "الاشتراك غير موجود",

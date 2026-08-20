@@ -296,7 +296,11 @@
         },
         "machine": {
             "fetchMachines": "Failed to fetch machines",
-            "fetchMachine": "Failed to fetch machine"
+            "fetchMachine": "Failed to fetch machine",
+            "notFound": "Machine Not Found",
+            "notFoundDesc": "The selected machine could not be found.",
+            "alreadyExists": "Machine Already Exists",
+            "alreadyExistsDesc": "A machine with this IP address already exists."
         },
         "subscription": {
             "notFound": "Subscription Not Found",
