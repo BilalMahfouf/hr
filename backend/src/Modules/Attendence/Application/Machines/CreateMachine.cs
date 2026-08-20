@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.EntityFrameworkCore;
 using Modules.Attendence.Application.Shared;
 using Modules.Attendence.Domain.Machines;
 using Modules.Shared.CQRS;
@@ -46,6 +47,14 @@ public static class CreateMachine
             CancellationToken cancellationToken = default)
         {
             validator.ValidateAndThrow(command);
+
+            var exists = await db.Machines
+                .AnyAsync(e => e.IpAddress == command.IpAddress);
+            if (exists)
+            {
+                return Result<Response>.Failure(
+                    MachineErrors.MachineAlreadyExists(command.IpAddress));
+            }
 
             var machine = AttendenceMachine.Create(
                 MachineId.New(),

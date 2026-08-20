@@ -60,6 +60,14 @@ public static class UpdateMachine
                     MachineErrors.MachineNotFound(command.MachineId));
             }
 
+            var exists = await db.Machines
+                           .AnyAsync(e => e.IpAddress == command.IpAddress);
+            if (exists)
+            {
+                return Result<Response>.Failure(
+                    MachineErrors.MachineAlreadyExists(command.IpAddress));
+            }
+
             machine.Update(command.IpAddress, command.Port);
             await db.SaveChangesAsync(cancellationToken);
 
@@ -82,7 +90,7 @@ public static class UpdateMachine
                     request.IpAddress,
                     request.Port);
                 var result = await handler.Handle(command, cancellationToken);
-                return result.IsSuccess ? Results.Ok(result.Value)
+                return result.IsSuccess ? Results.NoContent()
                 : result.Problem();
             })
             .WithTags("Attendance")
