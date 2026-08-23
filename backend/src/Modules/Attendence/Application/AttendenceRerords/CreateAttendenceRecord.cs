@@ -55,9 +55,16 @@ public static class CreateAttendenceRecord
                     var newRecord = AttendanceRecord.Create(command.MachineId, employee.Value.EmployeeId);
                     try
                     {
+                        var expectedCheckInTime = employee
+                            .Value
+                            .Schedule
+                            .ShiftStartTime
+                            .AddMinutes(employee.Value.Schedule.AllowedCheckInLatenessMinutes);
+
+                        var expectedCheckInDateTime = punch.PunchOccurredAt.Date.Add(expectedCheckInTime.ToTimeSpan());
                         newRecord.RegisterCheckIn(
                             punch.PunchOccurredAt,
-                            employee.Value.Schedule.ExpectedCheckInTime,
+                            expectedCheckInDateTime,
                             lastRecord);
                     }
                     catch (DomainException)
@@ -67,10 +74,21 @@ public static class CreateAttendenceRecord
                     newAttendanceRecords.Add(newRecord);
                     continue;
                 }
+                var expectedCheckOutTime = employee
+                    .Value
+                    .Schedule
+                    .ShiftEndTime
+                    .AddMinutes(-employee.Value.Schedule.AllowedCheckOutEarlinessMinutes);
+
+                var expectedCheckOutDateTime = lastRecord.CheckInAt.Date
+                    .Add(expectedCheckOutTime.ToTimeSpan())
+                    .AddDays(employee.Value.Schedule.EndDayOffset);
+
 
                 var schedule = new Modules.Attendence.Domain.AttendenceRecords.WorkSchedule(
-                    employee.Value.Schedule.StandardWorkTime,
-                    employee.Value.Schedule.ExpectedCheckOutTime);
+                    employee.Value.Schedule.WorkTime,
+                    expectedCheckOutDateTime);
+
                 try
                 {
                     lastRecord.RegisterCheckOut(punch.PunchOccurredAt, schedule);

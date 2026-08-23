@@ -37,4 +37,9 @@ public sealed class TestEmployeeApi : IEmployeeApi
     {
         return Task.FromResult(Result<IReadOnlyList<EmployeeResponse>>.Success(Employees));
     }
+
+    public Task<Result<WorkScheduleReadDto>> GetEmployeeWorkSchedule(Guid employeeGroupId, CancellationToken ct = default)
+    {
+        throw new NotImplementedException();
+    }
 }

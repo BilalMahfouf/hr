@@ -18,4 +18,9 @@ public static class EmployeeGroupErrors
         Error.Conflict(
             $"{nameof(EmployeeGroup)}.{nameof(WorkScheduleBelongsToAnotherGroup)}",
             "Work schedule belongs to another employee group.");
+
+    public static Error ActiveWorkScheduleAlreadyExists =>
+        Error.Conflict(
+            $"{nameof(EmployeeGroup)}.{nameof(ActiveWorkScheduleAlreadyExists)}",
+            "An active work schedule already exists for this employee group.");
 }

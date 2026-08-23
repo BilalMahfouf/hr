@@ -94,13 +94,19 @@ public sealed class EmployeeApi(IEmployeeRepository employeeRepo) : IEmployeeApi
 
     private EmployeeResponse MapToResponse(EmployeeDto employee)
     {
-        var workSchedule = GetEmployeeWorkSchedule(employee.EmployeeGroup);
-        int.TryParse(employee.Bdge, out int bdg);
+        //var workSchedule = GetEmployeeWorkSchedule(employee.EmployeeGroup);
+        //int.TryParse(employee.Bdge, out int bdg);
 
-        return new EmployeeResponse(
-            employee.EmployeeId,
-            bdg,
-            employee.FullName,
-            workSchedule);
+        //return new EmployeeResponse(
+        //    employee.EmployeeId,
+        //    bdg,
+        //    employee.FullName,
+        //    workSchedule);
+        throw new NotImplementedException();
+    }
+
+    public Task<Result<WorkScheduleReadDto>> GetEmployeeWorkSchedule(Guid employeeGroupId, CancellationToken ct = default)
+    {
+        throw new NotImplementedException();
     }
 }

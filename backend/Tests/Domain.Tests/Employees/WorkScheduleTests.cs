@@ -1,4 +1,5 @@
 using Modules.Employees.Domain.EmployeeGroups;
+using Modules.Employees.Domain.EmployeeGroups.WorkSchedules;
 using Modules.Shared.Domain.Common;
 
 namespace Domain.Tests.Employees;

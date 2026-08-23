@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Modules.Employees.Domain.EmployeeGroups;
+using Modules.Employees.Domain.EmployeeGroups.WorkSchedules;
 using Modules.Shared.Infrastructure.Persistence;
 
 namespace Modules.Employees.Infrastructure.Presistance;
@@ -13,6 +14,8 @@ public sealed class WorkScheduleConfiguration
         builder.ToTable("work_schedules");
 
         builder.IgnoreSoftDelete<WorkSchedule>();
+
+        builder.Ignore(e => e.WorkTime);
 
         builder.HasKey(x => x.Id);
 
@@ -36,6 +39,13 @@ public sealed class WorkScheduleConfiguration
 
         builder.Property(x => x.ShiftEndTime)
             .HasColumnName("shift_end_time")
+            .IsRequired();
+        builder.Property(x => x.EndDayOffset)
+            .HasColumnName("end_day_offset")
+            .IsRequired();
+
+        builder.Property(e => e.IsActive)
+            .HasColumnName("is_active")
             .IsRequired();
 
         builder.Property(x => x.BreakStartTime)

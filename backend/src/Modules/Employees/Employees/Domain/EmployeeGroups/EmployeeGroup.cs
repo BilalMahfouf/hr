@@ -1,4 +1,5 @@
-﻿using Modules.Shared.Domain.Common;
+﻿using Modules.Employees.Domain.EmployeeGroups.WorkSchedules;
+using Modules.Shared.Domain.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -59,13 +60,60 @@ public sealed class EmployeeGroup : Entity
             description);
     }
 
-    public void AddWorkSchedule(WorkSchedule schedule)
+    public void AddWorkSchedule(CreateWorkScheduleDto schedule)
     {
         if (schedule.EmployeeGroupId != Id)
         {
             throw new DomainException(EmployeeGroupErrors.WorkScheduleBelongsToAnotherGroup);
         }
+        var newSchedule = WorkSchedule.Create(
+            schedule.EmployeeGroupId,
+            schedule.ShiftStartTime,
+            schedule.ShiftEndTime,
+            schedule.BreakStartTime,
+            schedule.BreakEndTime,
+            schedule.AllowedCheckInLatenessMinutes,
+            schedule.AllowedCheckOutEarlinessMinutes,
+            schedule.EndDayOffset);
 
-        _workSchedules.Add(schedule);
+        _workSchedules.Add(newSchedule);
+    }
+    public void UpdateWorkSchedule(UpdateWorkScheduleDto schedule)
+    {
+        var existingSchedule = _workSchedules.First(ws => ws.Id == schedule.Id);
+        _workSchedules.Remove(existingSchedule);
+        _workSchedules.Add(WorkSchedule.Create(
+            schedule.EmployeeGroupId,
+            schedule.ShiftStartTime,
+            schedule.ShiftEndTime,
+            schedule.BreakStartTime,
+            schedule.BreakEndTime,
+            schedule.AllowedCheckInLatenessMinutes,
+            schedule.AllowedCheckOutEarlinessMinutes,
+            schedule.EndDayOffset));
+    }
+    public void RemoveWorkSchedule(WorkSchedule schedule)
+    {
+        if (schedule.EmployeeGroupId != Id)
+        {
+            throw new DomainException(EmployeeGroupErrors.WorkScheduleBelongsToAnotherGroup);
+        }
+        _workSchedules.Remove(schedule);
+    }
+    public void ActivateWorkSchedule(WorkSchedule schedule)
+    {
+        if (schedule.EmployeeGroupId != Id)
+        {
+            throw new DomainException(EmployeeGroupErrors.WorkScheduleBelongsToAnotherGroup);
+        }
+        schedule.Activate();
+    }
+    public void DeactivateWorkSchedule(WorkSchedule schedule)
+    {
+        if (schedule.EmployeeGroupId != Id)
+        {
+            throw new DomainException(EmployeeGroupErrors.WorkScheduleBelongsToAnotherGroup);
+        }
+        schedule.Deactivate();
     }
 }

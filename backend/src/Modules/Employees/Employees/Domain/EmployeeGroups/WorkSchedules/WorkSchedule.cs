@@ -1,7 +1,7 @@
 ﻿using Modules.Shared.Domain.Common;
 using System;
 
-namespace Modules.Employees.Domain.EmployeeGroups;
+namespace Modules.Employees.Domain.EmployeeGroups.WorkSchedules;
 
 public sealed class WorkSchedule : Entity
 {
@@ -13,6 +13,10 @@ public sealed class WorkSchedule : Entity
 
     public TimeOnly ShiftEndTime { get; private set; }
 
+    public TimeSpan WorkTime => CalculateWorkTime();
+
+    public int EndDayOffset { get; private set; }
+
     public TimeOnly BreakStartTime { get; private set; }
 
     public TimeOnly BreakEndTime { get; private set; }
@@ -20,6 +24,8 @@ public sealed class WorkSchedule : Entity
     public int AllowedCheckInLatenessMinutes { get; private set; }
 
     public int AllowedCheckOutEarlinessMinutes { get; private set; }
+
+    public bool IsActive { get; private set; }
 
     public EmployeeGroup EmployeeGroup { get; private set; } = null!;
 
@@ -35,7 +41,8 @@ public sealed class WorkSchedule : Entity
         TimeOnly breakStartTime,
         TimeOnly breakEndTime,
         int allowedCheckInLatenessMinutes,
-        int allowedCheckOutEarlinessMinutes)
+        int allowedCheckOutEarlinessMinutes,
+        int endDayOffset)
     {
         Id = id;
         EmployeeGroupId = employeeGroupId;
@@ -45,6 +52,8 @@ public sealed class WorkSchedule : Entity
         BreakEndTime = breakEndTime;
         AllowedCheckInLatenessMinutes = allowedCheckInLatenessMinutes;
         AllowedCheckOutEarlinessMinutes = allowedCheckOutEarlinessMinutes;
+        EndDayOffset = endDayOffset;
+        IsActive = false;
     }
 
     public static WorkSchedule Create(
@@ -54,9 +63,10 @@ public sealed class WorkSchedule : Entity
         TimeOnly breakStartTime,
         TimeOnly breakEndTime,
         int allowedCheckInLatenessMinutes,
-        int allowedCheckOutEarlinessMinutes)
+        int allowedCheckOutEarlinessMinutes,
+        int endDayOffset = 0)
     {
-        if (shiftStartTime >= shiftEndTime)
+        if (shiftStartTime >= shiftEndTime && endDayOffset == 0)
             throw new DomainException(WorkScheduleErrors.InvalidShiftRange);
 
         if (breakStartTime >= breakEndTime)
@@ -71,7 +81,7 @@ public sealed class WorkSchedule : Entity
         if (allowedCheckOutEarlinessMinutes < 0)
             throw new DomainException(WorkScheduleErrors.InvalidCheckOutEarliness);
 
-        return new WorkSchedule(
+        WorkSchedule workSchedule = new WorkSchedule(
             WorkScheduleId.New(),
             employeeGroupId,
             shiftStartTime,
@@ -79,6 +89,25 @@ public sealed class WorkSchedule : Entity
             breakStartTime,
             breakEndTime,
             allowedCheckInLatenessMinutes,
-            allowedCheckOutEarlinessMinutes);
+            allowedCheckOutEarlinessMinutes,
+            endDayOffset);
+
+        return workSchedule;
+    }
+    public void Activate()
+    {
+        RaiseDomainEvent(new WorkSheduleActivatedDomainEvent(Id, EmployeeGroupId, DateTime.UtcNow));
+        IsActive = true;
+    }
+    public void Deactivate()
+    {
+        RaiseDomainEvent(new WorkSheduleDeactivatedDomainEvent(Id, EmployeeGroupId, DateTime.UtcNow));
+        IsActive = false;
+    }
+    private TimeSpan CalculateWorkTime()
+    {
+        var today = DateTime.UtcNow;
+        var workTime = today.Add(ShiftEndTime.ToTimeSpan()).AddDays(EndDayOffset) - today.Add(ShiftStartTime.ToTimeSpan());
+        return workTime;
     }
 }

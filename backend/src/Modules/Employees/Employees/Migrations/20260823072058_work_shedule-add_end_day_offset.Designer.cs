@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Modules.Employees.Infrastructure.Presistance;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Modules.Employees.Migrations
 {
     [DbContext(typeof(EmployeeDbContext))]
-    partial class EmployeeDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260823072058_work_shedule-add_end_day_offset")]
+    partial class work_sheduleadd_end_day_offset
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -59,7 +62,7 @@ namespace Modules.Employees.Migrations
                     b.ToTable("employee_groups", "employees");
                 });
 
-            modelBuilder.Entity("Modules.Employees.Domain.EmployeeGroups.WorkSchedules.WorkSchedule", b =>
+            modelBuilder.Entity("Modules.Employees.Domain.EmployeeGroups.WorkSchedule", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid")
@@ -92,10 +95,6 @@ namespace Modules.Employees.Migrations
                     b.Property<int>("EndDayOffset")
                         .HasColumnType("integer")
                         .HasColumnName("end_day_offset");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_active");
 
                     b.Property<TimeOnly>("ShiftEndTime")
                         .HasColumnType("time without time zone")
@@ -161,7 +160,7 @@ namespace Modules.Employees.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Modules.Employees.Domain.EmployeeGroups.WorkSchedules.WorkSchedule", b =>
+            modelBuilder.Entity("Modules.Employees.Domain.EmployeeGroups.WorkSchedule", b =>
                 {
                     b.HasOne("Modules.Employees.Domain.EmployeeGroups.EmployeeGroup", "EmployeeGroup")
                         .WithMany("WorkSchedules")

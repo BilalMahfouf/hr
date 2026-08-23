@@ -1,6 +1,6 @@
 using Modules.Shared.Errors;
 
-namespace Modules.Employees.Domain.EmployeeGroups;
+namespace Modules.Employees.Domain.EmployeeGroups.WorkSchedules;
 
 public static class WorkScheduleErrors
 {

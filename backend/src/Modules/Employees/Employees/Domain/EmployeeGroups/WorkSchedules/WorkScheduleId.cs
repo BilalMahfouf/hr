@@ -1,6 +1,6 @@
 using System;
 
-namespace Modules.Employees.Domain.EmployeeGroups;
+namespace Modules.Employees.Domain.EmployeeGroups.WorkSchedules;
 
 public readonly record struct WorkScheduleId(Guid Value)
 {

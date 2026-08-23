@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Modules.Employees.Domain.EmployeeGroups;
+using Modules.Employees.Domain.EmployeeGroups.WorkSchedules;
 
 namespace Modules.Employees.Application.Abstractions;
 

@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Modules.Employees.Application.Abstractions;
 using Modules.Employees.Domain.EmployeeGroups;
+using Modules.Employees.Domain.EmployeeGroups.WorkSchedules;
 using Modules.Shared.Infrastructure.Outbox;
 
 namespace Modules.Employees.Infrastructure.Presistance;
