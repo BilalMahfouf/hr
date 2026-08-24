@@ -288,6 +288,37 @@
             "updateAction": "Save Changes"
         }
     },
+    "employees": {
+        "title": "Employees",
+        "description": "Browse your company's employee directory",
+        "view": {
+            "title": "Employee Details",
+            "description": "View the complete profile of the selected employee.",
+            "personalInfoSection": "Personal Information",
+            "jobInfoSection": "Job Information",
+            "matricule": "Matricule",
+            "bdg": "BDG",
+            "firstName": "First Name",
+            "lastName": "Last Name",
+            "birthDate": "Birth Date",
+            "birthPlace": "Birth Place",
+            "phone": "Phone",
+            "sex": "Sex",
+            "address": "Address",
+            "nationality": "Nationality",
+            "group": "Group",
+            "department": "Department",
+            "codeNiv": "Level Code",
+            "spec": "Specialty"
+        },
+        "table": {
+            "matricule": "Matricule",
+            "name": "Name",
+            "group": "Group",
+            "department": "Department",
+            "phone": "Phone"
+        }
+    },
     "toast": {
         "subscriptionPlan": {
             "added": "Plan Added",
@@ -364,6 +395,12 @@
             "fetchPunch": "Failed to fetch punch",
             "fetchRecords": "Failed to fetch attendance records",
             "fetchRecord": "Failed to fetch attendance record"
+        },
+        "employee": {
+            "fetchEmployees": "Failed to fetch employees",
+            "fetchEmployee": "Failed to fetch the employee",
+            "notFound": "Employee Not Found",
+            "notFoundDesc": "The selected employee could not be found."
         },
         "subscription": {
             "notFound": "Subscription Not Found",

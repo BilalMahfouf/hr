@@ -288,6 +288,37 @@
             "updateAction": "حفظ التغييرات"
         }
     },
+    "employees": {
+        "title": "الموظفون",
+        "description": "تصفح دليل موظفي شركتك",
+        "view": {
+            "title": "تفاصيل الموظف",
+            "description": "اعرض الملف الكامل للموظف المحدد.",
+            "personalInfoSection": "المعلومات الشخصية",
+            "jobInfoSection": "المعلومات الوظيفية",
+            "matricule": "الرقم الوظيفي",
+            "bdg": "BDG",
+            "firstName": "الاسم",
+            "lastName": "اللقب",
+            "birthDate": "تاريخ الميلاد",
+            "birthPlace": "مكان الميلاد",
+            "phone": "الهاتف",
+            "sex": "الجنس",
+            "address": "العنوان",
+            "nationality": "الجنسية",
+            "group": "المجموعة",
+            "department": "القسم",
+            "codeNiv": "رمز المستوى",
+            "spec": "التخصص"
+        },
+        "table": {
+            "matricule": "الرقم الوظيفي",
+            "name": "الاسم",
+            "group": "المجموعة",
+            "department": "القسم",
+            "phone": "الهاتف"
+        }
+    },
     "toast": {
         "subscriptionPlan": {
             "added": "تمت إضافة الخطة",
@@ -364,6 +395,12 @@
             "fetchPunch": "فشل تحميل البصمة",
             "fetchRecords": "فشل تحميل سجلات الحضور",
             "fetchRecord": "فشل تحميل سجل الحضور"
+        },
+        "employee": {
+            "fetchEmployees": "فشل جلب الموظفين",
+            "fetchEmployee": "فشل جلب الموظف",
+            "notFound": "الموظف غير موجود",
+            "notFoundDesc": "تعذر العثور على الموظف المحدد."
         },
         "subscription": {
             "notFound": "الاشتراك غير موجود",

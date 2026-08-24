@@ -288,6 +288,37 @@
             "updateAction": "Enregistrer les modifications"
         }
     },
+    "employees": {
+        "title": "Employés",
+        "description": "Consultez l'annuaire des employés de votre entreprise",
+        "view": {
+            "title": "Détails de l'employé",
+            "description": "Consultez le profil complet de l'employé sélectionné.",
+            "personalInfoSection": "Informations personnelles",
+            "jobInfoSection": "Informations professionnelles",
+            "matricule": "Matricule",
+            "bdg": "BDG",
+            "firstName": "Prénom",
+            "lastName": "Nom",
+            "birthDate": "Date de naissance",
+            "birthPlace": "Lieu de naissance",
+            "phone": "Téléphone",
+            "sex": "Sexe",
+            "address": "Adresse",
+            "nationality": "Nationalité",
+            "group": "Groupe",
+            "department": "Département",
+            "codeNiv": "Code niveau",
+            "spec": "Spécialité"
+        },
+        "table": {
+            "matricule": "Matricule",
+            "name": "Nom",
+            "group": "Groupe",
+            "department": "Département",
+            "phone": "Téléphone"
+        }
+    },
     "toast": {
         "subscriptionPlan": {
             "added": "Plan ajouté",
@@ -364,6 +395,12 @@
             "fetchPunch": "Échec du chargement du pointage",
             "fetchRecords": "Échec du chargement des relevés de présence",
             "fetchRecord": "Échec du chargement du relevé de présence"
+        },
+        "employee": {
+            "fetchEmployees": "Échec de la récupération des employés",
+            "fetchEmployee": "Échec de la récupération de l'employé",
+            "notFound": "Employé introuvable",
+            "notFoundDesc": "L'employé sélectionné est introuvable."
         },
         "subscription": {
             "notFound": "Abonnement introuvable",
