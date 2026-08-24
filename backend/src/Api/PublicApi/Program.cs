@@ -25,7 +25,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSharedModule(
     typeof(Program).Assembly,
     typeof(Modules.Identity.Application.Users.Register).Assembly,
-    typeof(Modules.Attendence.Application.Importer.ImportAttendanceLogs).Assembly);
+    typeof(Modules.Attendence.Application.Importer.ImportAttendanceLogs).Assembly,
+    typeof(Modules.Employees.DependencyInjection).Assembly);
 
 builder.Services.AddProblemDetails();
 

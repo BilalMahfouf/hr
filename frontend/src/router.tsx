@@ -21,6 +21,8 @@ import ViewMachinePage from './features/machines/ViewMachinePage';
 import AttendancePage from './features/attendance/AttendancePage';
 import ViewPunchPage from './features/attendance/ViewPunchPage';
 import ViewAttendanceRecordPage from './features/attendance/ViewAttendanceRecordPage';
+import EmployeesPage from './features/employees/employees-page';
+import ViewEmployeePage from './features/employees/view-employee-page';
 
 export const router = createBrowserRouter([
     {
@@ -131,6 +133,14 @@ export const router = createBrowserRouter([
         {
             path: '/attendance/records/:attendanceRecordId',
             element: <ViewAttendanceRecordPage />,
+        },
+        {
+            path: '/employees',
+            element: <EmployeesPage />,
+        },
+        {
+            path: '/employees/:id',
+            element: <ViewEmployeePage />,
         },
         {
             path: '/settings',

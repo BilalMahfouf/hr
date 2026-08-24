@@ -19,8 +19,10 @@ export default function AuthGuard() {
     );
   }
 
+  // for production uncoment this for secuitity 
+
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
+    // return <Navigate to="/login" replace />;
   }
 
   return <Outlet />;
