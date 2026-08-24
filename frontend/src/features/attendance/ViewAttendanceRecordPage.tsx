@@ -82,7 +82,7 @@ export default function ViewAttendanceRecordPage() {
             {t(i18nKeyContainer.attendance.records.view.description)}
           </p>
         </div>
-        <Card className="max-w-2xl border-slate-200 bg-white shadow-sm">
+        <Card className="mx-auto max-w-2xl border-slate-200 bg-white shadow-sm">
           <CardContent className="space-y-3 p-6">
             <div className="h-11 rounded-lg bg-slate-100 animate-pulse" />
             <div className="h-11 rounded-lg bg-slate-100 animate-pulse" />
@@ -133,7 +133,7 @@ export default function ViewAttendanceRecordPage() {
         </Button>
       </div>
 
-      <Card className="max-w-2xl border-slate-200 bg-white shadow-sm">
+      <Card className="mx-auto max-w-2xl border-slate-200 bg-white shadow-sm">
         <CardHeader className="border-b border-slate-100">
           <CardTitle className="text-lg text-slate-900">
             {t(i18nKeyContainer.attendance.records.view.title)}
