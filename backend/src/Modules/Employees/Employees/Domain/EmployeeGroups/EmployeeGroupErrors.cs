@@ -4,6 +4,10 @@ namespace Modules.Employees.Domain.EmployeeGroups;
 
 public static class EmployeeGroupErrors
 {
+    public static Error NotFound =>
+        Error.NotFound(
+            $"{nameof(EmployeeGroup)}.{nameof(NotFound)}",
+            "Employee group not found.");
     public static Error InvalidName =>
         Error.Validation(
             $"{nameof(EmployeeGroup)}.{nameof(InvalidName)}",

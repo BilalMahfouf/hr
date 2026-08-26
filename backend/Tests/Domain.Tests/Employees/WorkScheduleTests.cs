@@ -8,15 +8,30 @@ public sealed class WorkScheduleTests
 {
     private static readonly EmployeeGroupId EmployeeGroupId = EmployeeGroupId.New();
 
-    private static WorkSchedule CreateSchedule() =>
-        WorkSchedule.Create(
+    private static WorkSchedule CreateSchedule(
+        TimeOnly shiftStart = default, TimeOnly shiftEnd = default,
+        TimeOnly breakStart = default, TimeOnly breakEnd = default,
+        int allowedCheckInLatenessMinutes = 5,
+        int allowedCheckOutEarlinessMinutes = 5,
+        int endDayOffset = 0)
+    {
+        if (shiftStart == default) shiftStart = new TimeOnly(8, 0);
+        if (shiftEnd == default) shiftEnd = new TimeOnly(16, 0);
+        if (breakStart == default) breakStart = new TimeOnly(12, 0);
+        if (breakEnd == default) breakEnd = new TimeOnly(13, 0);
+
+        return WorkSchedule.Create(
             EmployeeGroupId,
-            new TimeOnly(8, 0),
-            new TimeOnly(16, 0),
-            new TimeOnly(12, 0),
-            new TimeOnly(13, 0),
-            allowedCheckInLatenessMinutes: 5,
-            allowedCheckOutEarlinessMinutes: 5);
+            shiftStart,
+            shiftEnd,
+            breakStart,
+            breakEnd,
+            allowedCheckInLatenessMinutes,
+            allowedCheckOutEarlinessMinutes,
+            endDayOffset);
+    }
+
+    #region Create - Initial State
 
     [Fact]
     public void Create_SetsExpectedInitialState()
@@ -34,7 +49,44 @@ public sealed class WorkScheduleTests
     }
 
     [Fact]
-    public void Create_WhenShiftStartNotBeforeShiftEnd_ThrowsDomainException()
+    public void Create_SetsIsActiveFalse()
+    {
+        var schedule = CreateSchedule();
+
+        Assert.False(schedule.IsActive);
+    }
+
+    [Fact]
+    public void Create_SetsEndDayOffset()
+    {
+        var schedule = CreateSchedule(endDayOffset: 1);
+
+        Assert.Equal(1, schedule.EndDayOffset);
+    }
+
+    [Fact]
+    public void Create_DefaultEndDayOffsetIsZero()
+    {
+        var schedule = CreateSchedule();
+
+        Assert.Equal(0, schedule.EndDayOffset);
+    }
+
+    [Fact]
+    public void Create_GeneratesUniqueIds()
+    {
+        var schedule1 = CreateSchedule();
+        var schedule2 = CreateSchedule();
+
+        Assert.NotEqual(schedule1.Id, schedule2.Id);
+    }
+
+    #endregion
+
+    #region Create - Shift Validation
+
+    [Fact]
+    public void Create_WhenShiftStartEqualsShiftEnd_ThrowsDomainException()
     {
         var exception = Assert.Throws<DomainException>(() =>
             WorkSchedule.Create(
@@ -49,7 +101,58 @@ public sealed class WorkScheduleTests
     }
 
     [Fact]
-    public void Create_WhenBreakStartNotBeforeBreakEnd_ThrowsDomainException()
+    public void Create_WhenShiftStartAfterShiftEnd_ThrowsDomainException()
+    {
+        var exception = Assert.Throws<DomainException>(() =>
+            WorkSchedule.Create(
+                EmployeeGroupId,
+                new TimeOnly(17, 0),
+                new TimeOnly(16, 0),
+                new TimeOnly(12, 0),
+                new TimeOnly(13, 0),
+                0, 0));
+
+        Assert.Equal(WorkScheduleErrors.InvalidShiftRange.Code, exception.Error.Code);
+    }
+
+    [Fact]
+    public void Create_CrossMidnight_ShiftWithEndDayOffsetAllowed()
+    {
+        var schedule = WorkSchedule.Create(
+            EmployeeGroupId,
+            new TimeOnly(22, 0),
+            new TimeOnly(6, 0),
+            new TimeOnly(23, 0),
+            new TimeOnly(0, 0),
+            0, 0,
+            endDayOffset: 1);
+
+        Assert.Equal(new TimeOnly(22, 0), schedule.ShiftStartTime);
+        Assert.Equal(new TimeOnly(6, 0), schedule.ShiftEndTime);
+        Assert.Equal(1, schedule.EndDayOffset);
+    }
+
+    #endregion
+
+    #region Create - Break Validation
+
+    [Fact]
+    public void Create_WhenBreakStartEqualsBreakEnd_ThrowsDomainException()
+    {
+        var exception = Assert.Throws<DomainException>(() =>
+            WorkSchedule.Create(
+                EmployeeGroupId,
+                new TimeOnly(8, 0),
+                new TimeOnly(16, 0),
+                new TimeOnly(12, 0),
+                new TimeOnly(12, 0),
+                0, 0));
+
+        Assert.Equal(WorkScheduleErrors.InvalidBreakRange.Code, exception.Error.Code);
+    }
+
+    [Fact]
+    public void Create_WhenBreakStartAfterBreakEnd_ThrowsDomainException()
     {
         var exception = Assert.Throws<DomainException>(() =>
             WorkSchedule.Create(
@@ -94,6 +197,40 @@ public sealed class WorkScheduleTests
     }
 
     [Fact]
+    public void Create_WhenBreakExactlyAtShiftBoundaries_Succeeds()
+    {
+        var schedule = WorkSchedule.Create(
+            EmployeeGroupId,
+            new TimeOnly(8, 0),
+            new TimeOnly(16, 0),
+            new TimeOnly(8, 0),
+            new TimeOnly(16, 0),
+            0, 0);
+
+        Assert.Equal(new TimeOnly(8, 0), schedule.BreakStartTime);
+        Assert.Equal(new TimeOnly(16, 0), schedule.BreakEndTime);
+    }
+
+    [Fact]
+    public void Create_WhenBreakInsideShift_Succeeds()
+    {
+        var schedule = WorkSchedule.Create(
+            EmployeeGroupId,
+            new TimeOnly(8, 0),
+            new TimeOnly(16, 0),
+            new TimeOnly(10, 0),
+            new TimeOnly(11, 0),
+            0, 0);
+
+        Assert.Equal(new TimeOnly(10, 0), schedule.BreakStartTime);
+        Assert.Equal(new TimeOnly(11, 0), schedule.BreakEndTime);
+    }
+
+    #endregion
+
+    #region Create - Lateness/Earliness Validation
+
+    [Fact]
     public void Create_WhenCheckInLatenessNegative_ThrowsDomainException()
     {
         var exception = Assert.Throws<DomainException>(() =>
@@ -122,4 +259,188 @@ public sealed class WorkScheduleTests
 
         Assert.Equal(WorkScheduleErrors.InvalidCheckOutEarliness.Code, exception.Error.Code);
     }
+
+    [Fact]
+    public void Create_WhenCheckInLatenessZero_Succeeds()
+    {
+        var schedule = WorkSchedule.Create(
+            EmployeeGroupId,
+            new TimeOnly(8, 0),
+            new TimeOnly(16, 0),
+            new TimeOnly(12, 0),
+            new TimeOnly(13, 0),
+            0, 0);
+
+        Assert.Equal(0, schedule.AllowedCheckInLatenessMinutes);
+    }
+
+    [Fact]
+    public void Create_WhenCheckOutEarlinessZero_Succeeds()
+    {
+        var schedule = WorkSchedule.Create(
+            EmployeeGroupId,
+            new TimeOnly(8, 0),
+            new TimeOnly(16, 0),
+            new TimeOnly(12, 0),
+            new TimeOnly(13, 0),
+            0, 0);
+
+        Assert.Equal(0, schedule.AllowedCheckOutEarlinessMinutes);
+    }
+
+    [Fact]
+    public void Create_WhenBothCheckInAndCheckOutNegative_ThrowsDomainException()
+    {
+        var exception = Assert.Throws<DomainException>(() =>
+            WorkSchedule.Create(
+                EmployeeGroupId,
+                new TimeOnly(8, 0),
+                new TimeOnly(16, 0),
+                new TimeOnly(12, 0),
+                new TimeOnly(13, 0),
+                -1, -1));
+
+        Assert.Equal(WorkScheduleErrors.InvalidCheckInLateness.Code, exception.Error.Code);
+    }
+
+    #endregion
+
+    #region Activate
+
+    [Fact]
+    public void Activate_SetsIsActiveTrue()
+    {
+        var schedule = CreateSchedule();
+
+        schedule.Activate();
+
+        Assert.True(schedule.IsActive);
+    }
+
+    [Fact]
+    public void Activate_RaisesWorkScheduleActivatedDomainEvent()
+    {
+        var schedule = CreateSchedule();
+
+        schedule.Activate();
+
+        var domainEvent = schedule.DomainEvents
+            .OfType<WorkSheduleActivatedDomainEvent>()
+            .SingleOrDefault();
+        Assert.NotNull(domainEvent);
+        Assert.Equal(schedule.Id, domainEvent.WorkScheduleId);
+        Assert.Equal(EmployeeGroupId, domainEvent.EmployeeGroupId);
+        Assert.True(domainEvent.ActivatedAt <= DateTime.UtcNow);
+    }
+
+    [Fact]
+    public void Activate_WhenAlreadyActive_RemainsActive()
+    {
+        var schedule = CreateSchedule();
+        schedule.Activate();
+
+        schedule.Activate();
+
+        Assert.True(schedule.IsActive);
+    }
+
+    #endregion
+
+    #region Deactivate
+
+    [Fact]
+    public void Deactivate_SetsIsActiveFalse()
+    {
+        var schedule = CreateSchedule();
+        schedule.Activate();
+
+        schedule.Deactivate();
+
+        Assert.False(schedule.IsActive);
+    }
+
+    [Fact]
+    public void Deactivate_RaisesWorkScheduleDeactivatedDomainEvent()
+    {
+        var schedule = CreateSchedule();
+        schedule.Activate();
+        schedule.ClearDomainEvent();
+
+        schedule.Deactivate();
+
+        var domainEvent = schedule.DomainEvents
+            .OfType<WorkSheduleDeactivatedDomainEvent>()
+            .SingleOrDefault();
+        Assert.NotNull(domainEvent);
+        Assert.Equal(schedule.Id, domainEvent.WorkScheduleId);
+        Assert.Equal(EmployeeGroupId, domainEvent.EmployeeGroupId);
+        Assert.True(domainEvent.DeactivatedAt <= DateTime.UtcNow);
+    }
+
+    [Fact]
+    public void Deactivate_WhenAlreadyInactive_RemainsInactive()
+    {
+        var schedule = CreateSchedule();
+
+        schedule.Deactivate();
+
+        Assert.False(schedule.IsActive);
+    }
+
+    [Fact]
+    public void Activate_ThenDeactivate_TogglesCorrectly()
+    {
+        var schedule = CreateSchedule();
+
+        schedule.Activate();
+        Assert.True(schedule.IsActive);
+
+        schedule.Deactivate();
+        Assert.False(schedule.IsActive);
+    }
+
+    #endregion
+
+    #region WorkTime
+
+    [Fact]
+    public void WorkTime_CalculatesCorrectlyForSameDayShift()
+    {
+        var schedule = CreateSchedule(
+            shiftStart: new TimeOnly(8, 0),
+            shiftEnd: new TimeOnly(16, 0),
+            breakStart: new TimeOnly(12, 0),
+            breakEnd: new TimeOnly(13, 0));
+
+        Assert.Equal(TimeSpan.FromHours(8), schedule.WorkTime);
+    }
+
+    [Fact]
+    public void WorkTime_CalculatesCorrectlyForCrossMidnightShift()
+    {
+        var schedule = WorkSchedule.Create(
+            EmployeeGroupId,
+            new TimeOnly(22, 0),
+            new TimeOnly(6, 0),
+            new TimeOnly(23, 0),
+            new TimeOnly(0, 0),
+            0, 0,
+            endDayOffset: 1);
+
+        Assert.Equal(TimeSpan.FromHours(8), schedule.WorkTime);
+    }
+
+    [Fact]
+    public void WorkTime_CalculatesCorrectlyForShortShift()
+    {
+        var schedule = CreateSchedule(
+            shiftStart: new TimeOnly(9, 0),
+            shiftEnd: new TimeOnly(12, 0),
+            breakStart: new TimeOnly(10, 0),
+            breakEnd: new TimeOnly(10, 30));
+
+        Assert.Equal(TimeSpan.FromHours(3), schedule.WorkTime);
+    }
+
+    #endregion
 }

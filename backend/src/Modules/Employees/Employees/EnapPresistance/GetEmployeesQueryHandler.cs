@@ -31,7 +31,8 @@ internal sealed class GetEmployeesQueryHandler(ISqlConnectionFactory sqlConnecti
         using var conn = sqlConnectionFactory.CreateConnection();
         var rows = (await conn.QueryAsync<EmployeeRow>(
             new CommandDefinition(_sql, cancellationToken: cancellationToken)))
-            .AsList();
+            .AsQueryable();
+
 
         var responses = rows.Select(Map).ToList();
 

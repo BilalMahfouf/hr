@@ -69,7 +69,7 @@ public sealed class WorkSchedule : Entity
         if (shiftStartTime >= shiftEndTime && endDayOffset == 0)
             throw new DomainException(WorkScheduleErrors.InvalidShiftRange);
 
-        if (breakStartTime >= breakEndTime)
+        if (breakStartTime >= breakEndTime && endDayOffset == 0)
             throw new DomainException(WorkScheduleErrors.InvalidBreakRange);
 
         if (breakStartTime < shiftStartTime || breakEndTime > shiftEndTime)
