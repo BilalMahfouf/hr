@@ -8,9 +8,6 @@ import {
   ScanLine,
   CalendarClock,
   Users,
-  ListTodo,
-  UserCog,
-  FolderKanban,
 } from "lucide-react";
 import SideBarLink from "./SideBarLink";
 import CollapsibleSideBarItem from "./CollapsibleSideBarItem";
@@ -23,36 +20,36 @@ import { authApi } from "@/lib/api/auth";
 import { useNavigate } from "react-router-dom";
 import { useCurrentUser } from "@/features/auth/useCurrentUser";
 
-const navigationItems = [
+type NavLinkItem = {
+  pathname: string;
+  key: string;
+  icon: typeof LayoutDashboard;
+  requiresAdmin?: boolean;
+};
+
+type CollapsibleItem = {
+  labelKey: string;
+  icon: typeof Users;
+  children: { pathname: string; key: string }[];
+};
+
+const navigationItems: (NavLinkItem | CollapsibleItem)[] = [
   { pathname: "/dashboard", key: i18nKeyContainer.dashboard, icon: LayoutDashboard },
   { pathname: "/users", key: i18nKeyContainer.staff.title, icon: Shield, requiresAdmin: true },
   { pathname: "/subscription-plans", key: i18nKeyContainer.subscriptionPlansNav, icon: CreditCard, requiresAdmin: true },
   { pathname: "/machines", key: i18nKeyContainer.machines.title, icon: ScanLine, requiresAdmin: true },
+  // Note: Attendance & Settings use internal tabs (no sub-URLs yet).
+  // Switch them to CollapsibleSideBarItem when dedicated routes exist.
+  { pathname: "/attendance", key: i18nKeyContainer.attendance.title, icon: CalendarClock },
   {
-    label: i18nKeyContainer.attendance.title,
-    icon: CalendarClock,
-    children: [
-      { pathname: "/attendance", key: i18nKeyContainer.attendance.tabs.records, icon: ListTodo },
-      { pathname: "/attendance/punches", key: i18nKeyContainer.attendance.tabs.punches, icon: FolderKanban },
-    ],
-  },
-  {
-    label: i18nKeyContainer.employees.title,
+    labelKey: i18nKeyContainer.employees.title,
     icon: Users,
     children: [
-      { pathname: "/employees", key: i18nKeyContainer.employees.title, icon: Users },
-      { pathname: "/employee-groups", key: i18nKeyContainer.employeeGroups.title, icon: UserCog },
+      { pathname: "/employees", key: i18nKeyContainer.employees.title },
+      { pathname: "/employee-groups", key: i18nKeyContainer.employeeGroups.title },
     ],
   },
-  {
-    label: i18nKeyContainer.settings,
-    icon: Settings,
-    children: [
-      { pathname: "/settings", key: i18nKeyContainer.settingsPage.tabs.profile, icon: UserCog },
-      { pathname: "/settings/notifications", key: i18nKeyContainer.settingsPage.tabs.notifications, icon: UserCog },
-      { pathname: "/settings/subscriptions", key: i18nKeyContainer.settingsPage.tabs.subscriptions, icon: CreditCard },
-    ],
-  },
+  { pathname: "/settings", key: i18nKeyContainer.settings, icon: Settings },
 ];
 
 export default function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
@@ -74,8 +71,6 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose:
   const handleLogOut = () => {
     mutation.mutate();
   };
-
-  const isSidebarCollapsed = !isOpen;
 
   return (
     <>
@@ -104,20 +99,18 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose:
           {/* Navigation */}
           <nav className="flex-1 overflow-y-auto p-4 space-y-1 bg-white">
             {navigationItems
-              .filter((item) => !item.requiresAdmin || canAccessUsers)
+              .filter((item) => !("requiresAdmin" in item) || !item.requiresAdmin || canAccessUsers)
               .map((item) => {
                 if ("children" in item) {
                   return (
                     <CollapsibleSideBarItem
-                      key={item.children[0]?.pathname ?? item.label}
-                      label={t(item.label as string)}
+                      key={item.children[0]?.pathname ?? item.labelKey}
+                      label={t(item.labelKey)}
                       icon={item.icon}
-                      children={item.children.map((child) => ({
+                      items={item.children.map((child) => ({
                         label: t(child.key),
                         pathname: child.pathname,
-                        icon: child.icon,
                       }))}
-                      isSidebarCollapsed={isSidebarCollapsed}
                     />
                   );
                 }

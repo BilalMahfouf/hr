@@ -23,6 +23,9 @@ import ViewPunchPage from './features/attendance/ViewPunchPage';
 import ViewAttendanceRecordPage from './features/attendance/ViewAttendanceRecordPage';
 import EmployeesPage from './features/employees/employees-page';
 import ViewEmployeePage from './features/employees/view-employee-page';
+import EmployeeGroupsPage from './features/employees/employee-groups-page';
+import CreateEmployeeGroupPage from './features/employees/create-employee-group-page';
+import EditEmployeeGroupPage from './features/employees/edit-employee-group-page';
 
 export const router = createBrowserRouter([
     {
@@ -141,6 +144,18 @@ export const router = createBrowserRouter([
         {
             path: '/employees/:id',
             element: <ViewEmployeePage />,
+        },
+        {
+            path: '/employee-groups',
+            element: <EmployeeGroupsPage />,
+        },
+        {
+            path: '/employee-groups/new',
+            element: <CreateEmployeeGroupPage />,
+        },
+        {
+            path: '/employee-groups/:id',
+            element: <EditEmployeeGroupPage />,
         },
         {
             path: '/settings',

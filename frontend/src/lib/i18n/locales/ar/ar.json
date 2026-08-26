@@ -319,6 +319,109 @@
             "phone": "الهاتف"
         }
     },
+    "employeeGroups": {
+        "title": "مجموعات الموظفين",
+        "description": "إدارة جداول العمل ومجموعات التناوب للموظفين",
+        "addTitle": "مجموعة جديدة",
+        "addDescription": "حدد معلومات المجموعة وجداول العمل ودورة التناوب.",
+        "editTitle": "تعديل مجموعة الموظفين",
+        "editDescription": "معلومات المجموعة للقراءة فقط. يمكنك إدارة الجداول والتناوب أدناه.",
+        "list": {
+            "name": "الاسم",
+            "isSecurity": "أمن",
+            "rotationStartDate": "بداية التناوب",
+            "schedulesCount": "الجداول",
+            "rotationsCount": "التناوبات",
+            "created": "تاريخ الإنشاء"
+        },
+        "form": {
+            "name": "الاسم",
+            "namePlaceholder": "مثال: الممرضون - الفترة أ",
+            "isSecurity": "مجموعة أمنية",
+            "description": "الوصف",
+            "descriptionPlaceholder": "وصف اختياري للمجموعة",
+            "rotationStartDate": "تاريخ بداية التناوب",
+            "rotationStartDatePlaceholder": "",
+            "workSchedules": "جداول العمل",
+            "addSchedule": "إضافة جدول",
+            "rotations": "التناوبات",
+            "addRotation": "إضافة تناوب",
+            "addWorkRotation": "إضافة عمل",
+            "addRestRotation": "إضافة راحة",
+            "schedule": {
+                "shiftStartTime": "بداية الوردية",
+                "shiftEndTime": "نهاية الوردية",
+                "breakStartTime": "بداية الراحة",
+                "breakEndTime": "نهاية الراحة",
+                "endDayOffset": "امتداد لليوم التالي",
+                "allowedCheckInLatenessMinutes": "سماح التأخير (دقيقة)",
+                "allowedCheckOutEarlinessMinutes": "سماح الانصراف المبكر (دقيقة)",
+                "isActive": "نشط",
+                "actions": "جدول",
+                "activate": "تنشيط",
+                "deactivate": "تعطيل",
+                "delete": "حذف"
+            },
+            "rotation": {
+                "position": "الموضع",
+                "type": "النوع",
+                "work": "عمل",
+                "rest": "راحة",
+                "workSchedule": "الجدول",
+                "selectSchedule": "اختر جدولاً",
+                "actions": "الإجراءات",
+                "delete": "حذف"
+            },
+            "validation": {
+                "nameRequired": "الاسم مطلوب.",
+                "nameMaxLength": "يجب ألا يتجاوز الاسم 100 حرف.",
+                "rotationStartDateRequired": "تاريخ البداية مطلوب.",
+                "rotationStartDatePast": "لا يمكن أن يكون تاريخ البداية في الماضي.",
+                "shiftStartBeforeEnd": "يجب أن يكون بداية الوردية قبل نهايتها.",
+                "breakStartBeforeEnd": "يجب أن تكون بداية الراحة قبل نهايتها.",
+                "breakWithinShift": "يجب أن تقع الراحة ضمن أوقات الوردية.",
+                "endDayOffsetMin": "يجب أن يكون الامتداد 0 أو أكثر.",
+                "latenessMin": "يجب أن يكون سماح التأخير 0 أو أكثر.",
+                "earlinessMin": "يجب أن يكون سماح الانصراف المبكر 0 أو أكثر.",
+                "uniquePosition": "يجب أن تكون المواضع فريدة.",
+                "scheduleReference": "يجب أن يشير تناوب العمل إلى جدول.",
+                "atLeastOneSchedule": "أضف جدولاً واحداً على الأقل.",
+                "atLeastOneRotation": "أضف تناوباً واحداً على الأقل."
+            }
+        },
+        "tabs": {
+            "schedules": "الجداول",
+            "rotations": "التناوبات"
+        },
+        "toast": {
+            "added": "تم إنشاء المجموعة",
+            "addedDesc": "تم إنشاء مجموعة الموظفين بنجاح.",
+            "updated": "تم حفظ التغييرات",
+            "updatedDesc": "تم تحديث الجداول والتناوبات بنجاح.",
+            "deleted": "تم حذف المجموعة",
+            "deletedDesc": "تم حذف مجموعة الموظفين.",
+            "error": "حدث خطأ ما. حاول مرة أخرى.",
+            "scheduleActivated": "تم تنشيط الجدول.",
+            "scheduleDeactivated": "تم تعطيل الجدول.",
+            "scheduleDeleted": "تم حذف الجدول.",
+            "rotationAdded": "تمت إضافة التناوب.",
+            "rotationDeleted": "تم حذف التناوب."
+        },
+        "confirm": {
+            "deleteTitle": "حذف هذه المجموعة؟",
+            "deleteDescription": "سيتم حذف المجموعة نهائياً مع جميع جداولها وتناوباتها. لا يمكن التراجع عن هذا الإجراء.",
+            "deleteScheduleTitle": "حذف هذا الجدول؟",
+            "deleteScheduleDescription": "سيتم حذف هذا الجدول نهائياً.",
+            "deleteRotationTitle": "إزالة هذا التناوب؟",
+            "deleteRotationDescription": "ستتم إزالة التناوب وإعادة ترقيم المواضع."
+        },
+        "notFound": "المجموعة غير موجودة",
+        "notFoundDesc": "تعذر العثور على مجموعة الموظفين المطلوبة.",
+        "genericError": "حدث خطأ أثناء إدارة مجموعات الموظفين.",
+        "loadError": "تعذر تحميل مجموعات الموظفين.",
+        "empty": "لا توجد مجموعات موظفين بعد.",
+        "scheduleInUse": "لا يمكن الحذف: يستخدم هذا الجدول في التناوبات."
+    },
     "toast": {
         "subscriptionPlan": {
             "added": "تمت إضافة الخطة",
@@ -382,7 +485,7 @@
             "fetchUser": "فشل تحميل المستخدم",
             "fetchCurrentUser": "فشل تحميل المستخدم الحالي"
         },
-"machine": {
+        "machine": {
             "fetchMachines": "فشل جلب الآلات",
             "fetchMachine": "فشل جلب الآلة",
             "notFound": "الجهاز غير موجود",
@@ -440,6 +543,16 @@
             "pushFailed": "فشل الإشعار",
             "pushFailedDesc": "تعذر تفعيل إشعارات سطح المكتب. يرجى المحاولة مرة أخرى.",
             "pushBlocked": "الإشعارات محظورة"
+        },
+        "employeeGroup": {
+            "fetchEmployeeGroups": "تعذر تحميل مجموعات الموظفين",
+            "fetchEmployeeGroup": "تعذر تحميل مجموعة الموظفين",
+            "notFound": "المجموعة غير موجودة",
+            "notFoundDesc": "تعذر العثور على مجموعة الموظفين المحددة.",
+            "alreadyExists": "الاسم مستخدم بالفعل",
+            "alreadyExistsDesc": "توجد مجموعة موظفين بهذا الاسم بالفعل.",
+            "scheduleInUse": "الجدول قيد الاستخدام",
+            "scheduleInUseDesc": "هذا الجدول مستخدم في التناوبات ولا يمكن حذفه."
         }
     },
     "dashboardPage": {
@@ -559,8 +672,8 @@
                 "description": "سيتم تفعيل تعديل الخطة عند توفر نقاط النهاية في الخلفية",
                 "upgrade": "ترقية",
                 "downgrade": "تخفيض",
-"cancel": "إلغاء",
-        "back": "رجوع",
+                "cancel": "إلغاء",
+                "back": "رجوع",
                 "renew": "تجديد",
                 "comingSoon": "هذه الإجراءات ستكون متاحة قريبًا."
             },

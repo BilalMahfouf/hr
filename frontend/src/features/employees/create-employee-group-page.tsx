@@ -2,19 +2,14 @@ import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { Plus, Trash2, Calendar, Clock, Shield, RotateCcw } from "lucide-react";
+import { Plus, Trash2, Clock, Shield, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import i18nKeyContainer from "@/lib/i18n/keyContainer";
-import employeeGroupApi, {
-  type CreateEmployeeGroupRequest,
-  type CreateWorkScheduleRequest,
-  type CreateRotationEntryRequest,
-} from "./employee-group-api";
+import employeeGroupApi, { type CreateEmployeeGroupRequest } from "./employee-group-api";
 import DateInput from "./DateInput";
 import TimeInput from "./TimeInput";
 import NumberInput from "./NumberInput";
@@ -36,14 +31,6 @@ interface RotationForm {
   position: string;
   type: "Work" | "Rest";
   workScheduleId: string;
-}
-
-function generateScheduleId() {
-  return `schedule-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-}
-
-function generateRotationId() {
-  return `rotation-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 }
 
 function getDefaultSchedule(): WorkScheduleForm {
@@ -276,7 +263,7 @@ export default function CreateEmployeeGroupPage() {
                   <Checkbox
                     id="isSecurity"
                     checked={isSecurity}
-                    onCheckedChange={setIsSecurity}
+                    onCheckedChange={(checked) => setIsSecurity(checked === true)}
                     className="h-4 w-4 rounded border-slate-300 text-primary focus:ring-primary"
                   />
                   {t(i18nKeyContainer.employeeGroups.form.isSecurity)}

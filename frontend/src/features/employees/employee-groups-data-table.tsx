@@ -9,6 +9,7 @@ import {
 import { Eye, Trash2, Shield } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import i18nKeyContainer from "@/lib/i18n/keyContainer";
+import { cn } from "@/lib/utils";
 import employeeGroupApi, { type EmployeeGroupResponse } from "./employee-group-api";
 
 interface EmployeeGroupsDataTableProps {

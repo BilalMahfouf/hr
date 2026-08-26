@@ -201,7 +201,7 @@ const employeeGroupApi = {
     const result = await api.put<WorkScheduleResponse>(`/employee-groups/${groupId}/work-schedules/${scheduleId}`, request);
 
     if (result.status !== 200) {
-      throw new Error(i18n.t(i18nKeyContainer.employeeGroups?.toast?.error ?? "errors.employee.fetchEmployees"));
+      throw new Error(i18n.t(i18nKeyContainer.employeeGroups.toast.error));
     }
 
     return result.data;
@@ -212,9 +212,9 @@ const employeeGroupApi = {
 
     if (result.status !== 204) {
       if (result.status === 409) {
-        throw new Error(i18n.t(i18nKeyContainer.employeeGroups?.form?.scheduleInUse ?? "errors.employee.fetchEmployees"));
+        throw new Error(i18n.t(i18nKeyContainer.employeeGroups.scheduleInUse));
       }
-      throw new Error(i18n.t(i18nKeyContainer.employeeGroups?.toast?.error ?? "errors.employee.fetchEmployees"));
+      throw new Error(i18n.t(i18nKeyContainer.employeeGroups.toast.error));
     }
   },
 
@@ -222,7 +222,7 @@ const employeeGroupApi = {
     const result = await api.post<WorkScheduleResponse>(`/employee-groups/${groupId}/work-schedules/${scheduleId}/activate`);
 
     if (result.status !== 200) {
-      throw new Error(i18n.t(i18nKeyContainer.employeeGroups?.toast?.error ?? "errors.employee.fetchEmployees"));
+      throw new Error(i18n.t(i18nKeyContainer.employeeGroups.toast.error));
     }
 
     return result.data;
@@ -232,7 +232,7 @@ const employeeGroupApi = {
     const result = await api.post<WorkScheduleResponse>(`/employee-groups/${groupId}/work-schedules/${scheduleId}/deactivate`);
 
     if (result.status !== 200) {
-      throw new Error(i18n.t(i18nKeyContainer.employeeGroups?.toast?.error ?? "errors.employee.fetchEmployees"));
+      throw new Error(i18n.t(i18nKeyContainer.employeeGroups.toast.error));
     }
 
     return result.data;
@@ -243,7 +243,7 @@ const employeeGroupApi = {
     const result = await api.get<RotationEntryResponse[]>(`/employee-groups/${groupId}/rotations`);
 
     if (result.status !== 200) {
-      throw new Error(i18n.t(i18nKeyContainer.employeeGroups?.toast?.error ?? "errors.employee.fetchEmployees"));
+      throw new Error(i18n.t(i18nKeyContainer.employeeGroups.toast.error));
     }
 
     return result.data;
@@ -256,7 +256,7 @@ const employeeGroupApi = {
     const result = await api.post<RotationEntryResponse>(`/employee-groups/${groupId}/rotations/work`, request);
 
     if (result.status !== 201) {
-      throw new Error(i18n.t(i18nKeyContainer.employeeGroups?.toast?.error ?? "errors.employee.fetchEmployees"));
+      throw new Error(i18n.t(i18nKeyContainer.employeeGroups.toast.error));
     }
 
     return result.data;
@@ -269,7 +269,7 @@ const employeeGroupApi = {
     const result = await api.post<RotationEntryResponse>(`/employee-groups/${groupId}/rotations/rest`, request);
 
     if (result.status !== 201) {
-      throw new Error(i18n.t(i18nKeyContainer.employeeGroups?.toast?.error ?? "errors.employee.fetchEmployees"));
+      throw new Error(i18n.t(i18nKeyContainer.employeeGroups.toast.error));
     }
 
     return result.data;
@@ -283,7 +283,7 @@ const employeeGroupApi = {
     const result = await api.put<RotationEntryResponse>(`/employee-groups/${groupId}/rotations/${position}`, request);
 
     if (result.status !== 200) {
-      throw new Error(i18n.t(i18nKeyContainer.employeeGroups?.toast?.error ?? "errors.employee.fetchEmployees"));
+      throw new Error(i18n.t(i18nKeyContainer.employeeGroups.toast.error));
     }
 
     return result.data;
@@ -293,7 +293,7 @@ const employeeGroupApi = {
     const result = await api.delete(`/employee-groups/${groupId}/rotations/${position}`);
 
     if (result.status !== 204) {
-      throw new Error(i18n.t(i18nKeyContainer.employeeGroups?.toast?.error ?? "errors.employee.fetchEmployees"));
+      throw new Error(i18n.t(i18nKeyContainer.employeeGroups.toast.error));
     }
   },
 };
@@ -320,8 +320,10 @@ const sortEmployeeGroups = (
   const sorted = [...groups].sort((a, b) => {
     const aValue = a[sortColumn as keyof EmployeeGroupResponse];
     const bValue = b[sortColumn as keyof EmployeeGroupResponse];
-    if (aValue < bValue) return -1;
-    if (aValue > bValue) return 1;
+    const aStr = aValue ?? "";
+    const bStr = bValue ?? "";
+    if (aStr < bStr) return -1;
+    if (aStr > bStr) return 1;
     return 0;
   });
 

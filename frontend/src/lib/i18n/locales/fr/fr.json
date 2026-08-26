@@ -319,6 +319,109 @@
             "phone": "Téléphone"
         }
     },
+    "employeeGroups": {
+        "title": "Groupes d'employés",
+        "description": "Gérez les horaires et les groupes de rotation de vos employés",
+        "addTitle": "Nouveau groupe",
+        "addDescription": "Définissez les infos du groupe, les horaires et le cycle de rotation.",
+        "editTitle": "Modifier le groupe",
+        "editDescription": "Les informations du groupe sont en lecture seule. Gérez les horaires et rotations ci-dessous.",
+        "list": {
+            "name": "Nom",
+            "isSecurity": "Sécurité",
+            "rotationStartDate": "Début rotation",
+            "schedulesCount": "Horaires",
+            "rotationsCount": "Rotations",
+            "created": "Créé le"
+        },
+        "form": {
+            "name": "Nom",
+            "namePlaceholder": "ex. Infirmiers - Équipe A",
+            "isSecurity": "Groupe de sécurité",
+            "description": "Description",
+            "descriptionPlaceholder": "Description optionnelle du groupe",
+            "rotationStartDate": "Date de début de rotation",
+            "rotationStartDatePlaceholder": "",
+            "workSchedules": "Horaires de travail",
+            "addSchedule": "Ajouter un horaire",
+            "rotations": "Rotations",
+            "addRotation": "Ajouter une rotation",
+            "addWorkRotation": "Ajouter travail",
+            "addRestRotation": "Ajouter repos",
+            "schedule": {
+                "shiftStartTime": "Début du shift",
+                "shiftEndTime": "Fin du shift",
+                "breakStartTime": "Début de pause",
+                "breakEndTime": "Fin de pause",
+                "endDayOffset": "Décalage jour suivant",
+                "allowedCheckInLatenessMinutes": "Tolérance retard (min)",
+                "allowedCheckOutEarlinessMinutes": "Tolérance départ anticipé (min)",
+                "isActive": "Actif",
+                "actions": "Horaire",
+                "activate": "Activer",
+                "deactivate": "Désactiver",
+                "delete": "Supprimer"
+            },
+            "rotation": {
+                "position": "Position",
+                "type": "Type",
+                "work": "Travail",
+                "rest": "Repos",
+                "workSchedule": "Horaire",
+                "selectSchedule": "Choisir un horaire",
+                "actions": "Actions",
+                "delete": "Supprimer"
+            },
+            "validation": {
+                "nameRequired": "Le nom est obligatoire.",
+                "nameMaxLength": "Le nom doit contenir au plus 100 caractères.",
+                "rotationStartDateRequired": "La date de début est obligatoire.",
+                "rotationStartDatePast": "La date de début ne peut pas être dans le passé.",
+                "shiftStartBeforeEnd": "Le début du shift doit précéder la fin.",
+                "breakStartBeforeEnd": "Le début de pause doit précéder la fin.",
+                "breakWithinShift": "La pause doit être comprise dans le shift.",
+                "endDayOffsetMin": "Le décalage doit être 0 ou plus.",
+                "latenessMin": "La tolérance retard doit être 0 ou plus.",
+                "earlinessMin": "La tolérance départ doit être 0 ou plus.",
+                "uniquePosition": "Les positions doivent être uniques.",
+                "scheduleReference": "Une rotation de travail doit référencer un horaire.",
+                "atLeastOneSchedule": "Ajoutez au moins un horaire.",
+                "atLeastOneRotation": "Ajoutez au moins une rotation."
+            }
+        },
+        "tabs": {
+            "schedules": "Horaires",
+            "rotations": "Rotations"
+        },
+        "toast": {
+            "added": "Groupe créé",
+            "addedDesc": "Le groupe d'employés a été créé avec succès.",
+            "updated": "Modifications enregistrées",
+            "updatedDesc": "Les horaires et rotations ont été mis à jour avec succès.",
+            "deleted": "Groupe supprimé",
+            "deletedDesc": "Le groupe d'employés a été supprimé.",
+            "error": "Une erreur est survenue. Veuillez réessayer.",
+            "scheduleActivated": "Horaire activé.",
+            "scheduleDeactivated": "Horaire désactivé.",
+            "scheduleDeleted": "Horaire supprimé.",
+            "rotationAdded": "Rotation ajoutée.",
+            "rotationDeleted": "Rotation supprimée."
+        },
+        "confirm": {
+            "deleteTitle": "Supprimer ce groupe ?",
+            "deleteDescription": "Cela supprimera définitivement le groupe ainsi que tous ses horaires et rotations. Cette action est irréversible.",
+            "deleteScheduleTitle": "Supprimer cet horaire ?",
+            "deleteScheduleDescription": "Cet horaire sera définitivement supprimé.",
+            "deleteRotationTitle": "Retirer cette rotation ?",
+            "deleteRotationDescription": "La rotation sera retirée et les positions renumérotées."
+        },
+        "notFound": "Groupe introuvable",
+        "notFoundDesc": "Le groupe d'employés demandé est introuvable.",
+        "genericError": "Une erreur est survenue lors de la gestion des groupes.",
+        "loadError": "Échec du chargement des groupes d'employés.",
+        "empty": "Aucun groupe d'employés pour le moment.",
+        "scheduleInUse": "Suppression impossible : cet horaire est utilisé par des rotations."
+    },
     "toast": {
         "subscriptionPlan": {
             "added": "Plan ajouté",
@@ -440,6 +543,16 @@
             "pushFailed": "Échec push",
             "pushFailedDesc": "Impossible d'activer les notifications bureau. Veuillez réessayer.",
             "pushBlocked": "Notifications bloquées"
+        },
+        "employeeGroup": {
+            "fetchEmployeeGroups": "Échec du chargement des groupes d'employés",
+            "fetchEmployeeGroup": "Échec du chargement du groupe d'employés",
+            "notFound": "Groupe introuvable",
+            "notFoundDesc": "Le groupe d'employés sélectionné est introuvable.",
+            "alreadyExists": "Nom déjà utilisé",
+            "alreadyExistsDesc": "Un groupe d'employés portant ce nom existe déjà.",
+            "scheduleInUse": "Horaire utilisé",
+            "scheduleInUseDesc": "Cet horaire est référencé par des rotations et ne peut pas être supprimé."
         }
     },
     "dashboardPage": {
@@ -559,8 +672,8 @@
                 "description": "Les changements de plan seront activés dès que les endpoints backend seront disponibles",
                 "upgrade": "Mettre à niveau",
                 "downgrade": "Rétrograder",
-"cancel": "Annuler",
-        "back": "Retour",
+                "cancel": "Annuler",
+                "back": "Retour",
                 "renew": "Renouveler",
                 "comingSoon": "Ces actions seront disponibles bientôt."
             },
