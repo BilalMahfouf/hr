@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Modules.Employees.Application.Abstractions;
 using Modules.Employees.Domain.EmployeeGroups;
+using Modules.Employees.Domain.EmployeeGroups.Rotation;
 using Modules.Employees.Domain.EmployeeGroups.WorkSchedules;
 using Modules.Shared.Infrastructure.Outbox;
 
@@ -15,6 +16,8 @@ public sealed class EmployeeDbContext : DbContext, IEmployeeDbContext
     public DbSet<EmployeeGroup> EmployeeGroups { get; set; } = null!;
 
     public DbSet<WorkSchedule> WorkSchedules { get; set; } = null!;
+
+    public DbSet<RotationEntry> RotationEntries { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
