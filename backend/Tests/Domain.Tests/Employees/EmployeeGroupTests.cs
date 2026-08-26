@@ -736,7 +736,7 @@ public sealed class EmployeeGroupTests
     #region GetGroupWorkScheduleInDateTime
 
     [Fact]
-    public void GetGroupWorkScheduleInDateTime_WorkDay_UsesNavigationProperty_Bug()
+    public void GetGroupWorkScheduleInDateTime_WorkDay_ReturnsSchedule()
     {
         var group = CreateGroup();
         AddDefaultSchedule(group);
@@ -745,10 +745,34 @@ public sealed class EmployeeGroupTests
         group.AddRestRotation(2);
         var workDate = GetDeterministicDateForPosition(1, 2);
 
-        var exception = Assert.Throws<NullReferenceException>(() =>
-            group.GetGroupWorkScheduleInDateTime(workDate));
+        var result = group.GetGroupWorkScheduleInDateTime(workDate);
 
-        Assert.NotNull(exception);
+        Assert.NotNull(result);
+        Assert.Equal(workDate.ToDateTime(new TimeOnly(8, 0)), result.ExpectedCheckInAt);
+        Assert.Equal(workDate.ToDateTime(new TimeOnly(16, 0)), result.ExpectedCheckoutAt);
+    }
+
+    [Fact]
+    public void GetGroupWorkScheduleInDateTime_RestDay_WithPrevScheduleOffset_ReturnsCarryOver()
+    {
+        var group = CreateGroup();
+        group.AddWorkSchedule(
+            new TimeOnly(22, 0),
+            new TimeOnly(6, 0),
+            new TimeOnly(23, 0),
+            new TimeOnly(0, 0),
+            0, 0,
+            endDayOffset: 1);
+        var scheduleId = group.WorkSchedules.Single().Id;
+        group.AddWorkRotation(1, scheduleId);
+        group.AddRestRotation(2);
+        var restDate = GetDeterministicDateForPosition(2, 2);
+
+        var result = group.GetGroupWorkScheduleInDateTime(restDate);
+
+        Assert.NotNull(result);
+        Assert.Equal(restDate.AddDays(-1).ToDateTime(new TimeOnly(22, 0)), result.ExpectedCheckInAt);
+        Assert.Equal(restDate.ToDateTime(new TimeOnly(6, 0)), result.ExpectedCheckoutAt);
     }
 
     [Fact]
@@ -776,7 +800,7 @@ public sealed class EmployeeGroupTests
     }
 
     [Fact]
-    public void GetGroupWorkScheduleInDateTime_CrossMidnight_WorkDay_UsesNavigationProperty_Bug()
+    public void GetGroupWorkScheduleInDateTime_CrossMidnight_Shift_ReturnsCorrectTimes()
     {
         var group = CreateGroup();
         group.AddWorkSchedule(
@@ -791,10 +815,11 @@ public sealed class EmployeeGroupTests
         group.AddRestRotation(2);
         var workDate = GetDeterministicDateForPosition(1, 2);
 
-        var exception = Assert.Throws<NullReferenceException>(() =>
-            group.GetGroupWorkScheduleInDateTime(workDate));
+        var result = group.GetGroupWorkScheduleInDateTime(workDate);
 
-        Assert.NotNull(exception);
+        Assert.NotNull(result);
+        Assert.Equal(workDate.ToDateTime(new TimeOnly(22, 0)), result.ExpectedCheckInAt);
+        Assert.Equal(workDate.AddDays(1).ToDateTime(new TimeOnly(6, 0)), result.ExpectedCheckoutAt);
     }
 
     #endregion

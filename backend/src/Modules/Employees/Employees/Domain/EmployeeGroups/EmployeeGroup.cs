@@ -214,7 +214,7 @@ public sealed class EmployeeGroup : Entity
     {
         if (date < RotationStartDate)
         {
-            throw new DomainException();
+            throw new DomainException(EmployeeGroupErrors.InvalidNumberOfRotations);
         }
         var daysElapsed = date.DayNumber - RotationStartDate.DayNumber;
         var position = (daysElapsed % NumberOfRotations) + 1;
@@ -231,23 +231,29 @@ public sealed class EmployeeGroup : Entity
         if (rotation.Status == RotationStatus.Rest)
         {
             var prevRotation = _rotationEntries.FirstOrDefault(e => e.Position == rotation.Position - 1);
-            if (prevRotation != null &&
-                prevRotation.WorkSchedule != null &&
-                prevRotation.WorkSchedule.EndDayOffset > 0)
+            if (prevRotation?.WorkScheduleId is not null)
             {
-                var expectedCheckin = date
-                     .AddDays(-prevRotation.WorkSchedule.EndDayOffset)
-                     .ToDateTime(prevRotation.WorkSchedule.ShiftStartTime);
-                var expectedCheckout = date
-                    .ToDateTime(prevRotation.WorkSchedule.ShiftEndTime);
+                var prevSchedule = _workSchedules.FirstOrDefault(ws => ws.Id == prevRotation.WorkScheduleId);
+                if (prevSchedule is not null && prevSchedule.EndDayOffset > 0)
+                {
+                    var expectedCheckin = date
+                         .AddDays(-prevSchedule.EndDayOffset)
+                         .ToDateTime(prevSchedule.ShiftStartTime);
+                    var expectedCheckout = date
+                        .ToDateTime(prevSchedule.ShiftEndTime);
 
-                return new WorkScheduleResponse(expectedCheckin, expectedCheckout);
+                    return new WorkScheduleResponse(expectedCheckin, expectedCheckout);
+                }
             }
             return null;
 
         }
-        var schedule = rotation.WorkSchedule;
-        var expectedCheckIn = date.ToDateTime(schedule!.ShiftStartTime);
+        var schedule = _workSchedules.FirstOrDefault(ws => ws.Id == rotation.WorkScheduleId);
+        if (schedule is null)
+        {
+            return null;
+        }
+        var expectedCheckIn = date.ToDateTime(schedule.ShiftStartTime);
         var expectedCheckOut = date.AddDays(schedule.EndDayOffset).ToDateTime(schedule.ShiftEndTime);
         return new WorkScheduleResponse(expectedCheckIn, expectedCheckOut);
 
