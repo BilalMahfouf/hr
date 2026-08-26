@@ -1,4 +1,5 @@
 using Modules.Employees.Domain.EmployeeGroups;
+using Modules.Employees.Domain.EmployeeGroups.Rotation;
 using Modules.Employees.Domain.EmployeeGroups.WorkSchedules;
 using Modules.Shared.Domain.Common;
 
@@ -6,19 +7,21 @@ namespace Domain.Tests.Employees;
 
 public sealed class EmployeeGroupTests
 {
-    private static EmployeeGroup CreateGroup(string name = "Day Shift", bool isSecurity = false, string? description = null) =>
+    private static EmployeeGroup CreateGroup(
+        string name = "Day Shift",
+        bool isSecurity = false,
+        string? description = null) =>
         EmployeeGroup.Create(name, isSecurity, description);
 
-    private static CreateWorkScheduleDto CreateScheduleDto(EmployeeGroupId groupId) =>
-        new(
-            groupId,
-            ShiftStartTime: new TimeOnly(8, 0),
-            ShiftEndTime: new TimeOnly(16, 0),
-            EndDayOffset: 0,
-            BreakStartTime: new TimeOnly(12, 0),
-            BreakEndTime: new TimeOnly(13, 0),
-            AllowedCheckInLatenessMinutes: 5,
-            AllowedCheckOutEarlinessMinutes: 5);
+    private static void AddDefaultSchedule(EmployeeGroup group) =>
+        group.AddWorkSchedule(
+            new TimeOnly(8, 0),
+            new TimeOnly(16, 0),
+            new TimeOnly(12, 0),
+            new TimeOnly(13, 0),
+            allowedCheckInLatenessMinutes: 5,
+            allowedCheckOutEarlinessMinutes: 5,
+            endDayOffset: 0);
 
     #region Create
 
@@ -99,9 +102,8 @@ public sealed class EmployeeGroupTests
     public void AddWorkSchedule_AddsToCollection()
     {
         var group = CreateGroup();
-        var dto = CreateScheduleDto(group.Id);
 
-        group.AddWorkSchedule(dto);
+        AddDefaultSchedule(group);
 
         Assert.Single(group.WorkSchedules);
     }
@@ -110,9 +112,8 @@ public sealed class EmployeeGroupTests
     public void AddWorkSchedule_SetsCorrectEmployeeGroupId()
     {
         var group = CreateGroup();
-        var dto = CreateScheduleDto(group.Id);
 
-        group.AddWorkSchedule(dto);
+        AddDefaultSchedule(group);
 
         Assert.Equal(group.Id, group.WorkSchedules.Single().EmployeeGroupId);
     }
@@ -121,9 +122,8 @@ public sealed class EmployeeGroupTests
     public void AddWorkSchedule_SetsShiftTimes()
     {
         var group = CreateGroup();
-        var dto = CreateScheduleDto(group.Id);
 
-        group.AddWorkSchedule(dto);
+        AddDefaultSchedule(group);
 
         var schedule = group.WorkSchedules.Single();
         Assert.Equal(new TimeOnly(8, 0), schedule.ShiftStartTime);
@@ -134,9 +134,8 @@ public sealed class EmployeeGroupTests
     public void AddWorkSchedule_SetsBreakTimes()
     {
         var group = CreateGroup();
-        var dto = CreateScheduleDto(group.Id);
 
-        group.AddWorkSchedule(dto);
+        AddDefaultSchedule(group);
 
         var schedule = group.WorkSchedules.Single();
         Assert.Equal(new TimeOnly(12, 0), schedule.BreakStartTime);
@@ -147,9 +146,8 @@ public sealed class EmployeeGroupTests
     public void AddWorkSchedule_SetsLatenessAndEarliness()
     {
         var group = CreateGroup();
-        var dto = CreateScheduleDto(group.Id);
 
-        group.AddWorkSchedule(dto);
+        AddDefaultSchedule(group);
 
         var schedule = group.WorkSchedules.Single();
         Assert.Equal(5, schedule.AllowedCheckInLatenessMinutes);
@@ -160,17 +158,14 @@ public sealed class EmployeeGroupTests
     public void AddWorkSchedule_SetsEndDayOffset()
     {
         var group = CreateGroup();
-        var dto = new CreateWorkScheduleDto(
-            group.Id,
-            ShiftStartTime: new TimeOnly(22, 0),
-            ShiftEndTime: new TimeOnly(6, 0),
-            EndDayOffset: 1,
-            BreakStartTime: new TimeOnly(23, 0),
-            BreakEndTime: new TimeOnly(0, 0),
-            AllowedCheckInLatenessMinutes: 0,
-            AllowedCheckOutEarlinessMinutes: 0);
 
-        group.AddWorkSchedule(dto);
+        group.AddWorkSchedule(
+            new TimeOnly(22, 0),
+            new TimeOnly(6, 0),
+            new TimeOnly(23, 0),
+            new TimeOnly(0, 0),
+            0, 0,
+            endDayOffset: 1);
 
         var schedule = group.WorkSchedules.Single();
         Assert.Equal(1, schedule.EndDayOffset);
@@ -180,9 +175,8 @@ public sealed class EmployeeGroupTests
     public void AddWorkSchedule_NewScheduleIsNotActive()
     {
         var group = CreateGroup();
-        var dto = CreateScheduleDto(group.Id);
 
-        group.AddWorkSchedule(dto);
+        AddDefaultSchedule(group);
 
         Assert.False(group.WorkSchedules.Single().IsActive);
     }
@@ -191,89 +185,33 @@ public sealed class EmployeeGroupTests
     public void AddWorkSchedule_MultipleSchedules_AllAdded()
     {
         var group = CreateGroup();
-        var dto1 = CreateScheduleDto(group.Id);
-        var dto2 = new CreateWorkScheduleDto(
-            group.Id,
-            ShiftStartTime: new TimeOnly(20, 0),
-            ShiftEndTime: new TimeOnly(4, 0),
-            EndDayOffset: 1,
-            BreakStartTime: new TimeOnly(23, 0),
-            BreakEndTime: new TimeOnly(0, 0),
-            AllowedCheckInLatenessMinutes: 0,
-            AllowedCheckOutEarlinessMinutes: 0);
 
-        group.AddWorkSchedule(dto1);
-        group.AddWorkSchedule(dto2);
+        AddDefaultSchedule(group);
+        group.AddWorkSchedule(
+            new TimeOnly(20, 0),
+            new TimeOnly(4, 0),
+            new TimeOnly(23, 0),
+            new TimeOnly(0, 0),
+            0, 0,
+            endDayOffset: 1);
 
         Assert.Equal(2, group.WorkSchedules.Count);
     }
 
     [Fact]
-    public void AddWorkSchedule_WhenBelongsToAnotherGroup_ThrowsDomainException()
+    public void AddWorkSchedule_InvalidShiftRange_ThrowsDomainException()
     {
         var group = CreateGroup();
-        var otherGroup = CreateGroup(name: "Other");
-        var dto = CreateScheduleDto(otherGroup.Id);
 
-        var exception = Assert.Throws<DomainException>(() => group.AddWorkSchedule(dto));
+        var exception = Assert.Throws<DomainException>(() =>
+            group.AddWorkSchedule(
+                new TimeOnly(16, 0),
+                new TimeOnly(8, 0),
+                new TimeOnly(12, 0),
+                new TimeOnly(13, 0),
+                0, 0, 0));
 
-        Assert.Equal(EmployeeGroupErrors.WorkScheduleBelongsToAnotherGroup.Code, exception.Error.Code);
-        Assert.Empty(group.WorkSchedules);
-    }
-
-    #endregion
-
-    #region RemoveWorkSchedule
-
-    [Fact]
-    public void RemoveWorkSchedule_RemovesFromCollection()
-    {
-        var group = CreateGroup();
-        var dto = CreateScheduleDto(group.Id);
-        group.AddWorkSchedule(dto);
-        var schedule = group.WorkSchedules.Single();
-
-        group.RemoveWorkSchedule(schedule);
-
-        Assert.Empty(group.WorkSchedules);
-    }
-
-    [Fact]
-    public void RemoveWorkSchedule_WhenBelongsToAnotherGroup_ThrowsDomainException()
-    {
-        var group = CreateGroup();
-        var otherGroup = CreateGroup(name: "Other");
-        var otherDto = CreateScheduleDto(otherGroup.Id);
-        otherGroup.AddWorkSchedule(otherDto);
-        var scheduleFromOther = otherGroup.WorkSchedules.Single();
-
-        var exception = Assert.Throws<DomainException>(() => group.RemoveWorkSchedule(scheduleFromOther));
-
-        Assert.Equal(EmployeeGroupErrors.WorkScheduleBelongsToAnotherGroup.Code, exception.Error.Code);
-        Assert.Empty(group.WorkSchedules);
-    }
-
-    [Fact]
-    public void RemoveWorkSchedule_FromMultiple_RemovesOnlyTarget()
-    {
-        var group = CreateGroup();
-        var dto1 = CreateScheduleDto(group.Id);
-        var dto2 = new CreateWorkScheduleDto(
-            group.Id,
-            ShiftStartTime: new TimeOnly(20, 0),
-            ShiftEndTime: new TimeOnly(4, 0),
-            EndDayOffset: 1,
-            BreakStartTime: new TimeOnly(23, 0),
-            BreakEndTime: new TimeOnly(0, 0),
-            AllowedCheckInLatenessMinutes: 0,
-            AllowedCheckOutEarlinessMinutes: 0);
-        group.AddWorkSchedule(dto1);
-        group.AddWorkSchedule(dto2);
-        var first = group.WorkSchedules.First();
-
-        group.RemoveWorkSchedule(first);
-
-        Assert.Single(group.WorkSchedules);
+        Assert.Equal(WorkScheduleErrors.InvalidShiftRange.Code, exception.Error.Code);
     }
 
     #endregion
@@ -281,25 +219,19 @@ public sealed class EmployeeGroupTests
     #region UpdateWorkSchedule
 
     [Fact]
-    public void UpdateWorkSchedule_ReplacesExistingSchedule()
+    public void UpdateWorkSchedule_UpdatesExistingSchedule()
     {
         var group = CreateGroup();
-        var dto = CreateScheduleDto(group.Id);
-        group.AddWorkSchedule(dto);
-        var existing = group.WorkSchedules.Single();
+        AddDefaultSchedule(group);
+        var existingId = group.WorkSchedules.Single().Id;
 
-        var updateDto = new UpdateWorkScheduleDto(
-            existing.Id,
-            group.Id,
-            ShiftStartTime: new TimeOnly(9, 0),
-            ShiftEndTime: new TimeOnly(17, 0),
-            EndDayOffset: 0,
-            BreakStartTime: new TimeOnly(12, 0),
-            BreakEndTime: new TimeOnly(13, 0),
-            AllowedCheckInLatenessMinutes: 10,
-            AllowedCheckOutEarlinessMinutes: 10);
-
-        group.UpdateWorkSchedule(updateDto);
+        group.UpdateWorkSchedule(
+            existingId,
+            new TimeOnly(9, 0),
+            new TimeOnly(17, 0),
+            new TimeOnly(12, 0),
+            new TimeOnly(13, 0),
+            10, 10, 0);
 
         var updated = group.WorkSchedules.Single();
         Assert.Equal(new TimeOnly(9, 0), updated.ShiftStartTime);
@@ -312,49 +244,173 @@ public sealed class EmployeeGroupTests
     public void UpdateWorkSchedule_CollectionCountRemainsSame()
     {
         var group = CreateGroup();
-        var dto = CreateScheduleDto(group.Id);
-        group.AddWorkSchedule(dto);
-        var existing = group.WorkSchedules.Single();
+        AddDefaultSchedule(group);
+        var existingId = group.WorkSchedules.Single().Id;
 
-        var updateDto = new UpdateWorkScheduleDto(
-            existing.Id,
-            group.Id,
-            ShiftStartTime: new TimeOnly(9, 0),
-            ShiftEndTime: new TimeOnly(17, 0),
-            EndDayOffset: 0,
-            BreakStartTime: new TimeOnly(12, 0),
-            BreakEndTime: new TimeOnly(13, 0),
-            AllowedCheckInLatenessMinutes: 10,
-            AllowedCheckOutEarlinessMinutes: 10);
-
-        group.UpdateWorkSchedule(updateDto);
+        group.UpdateWorkSchedule(
+            existingId,
+            new TimeOnly(9, 0),
+            new TimeOnly(17, 0),
+            new TimeOnly(12, 0),
+            new TimeOnly(13, 0),
+            10, 10, 0);
 
         Assert.Single(group.WorkSchedules);
     }
 
     [Fact]
-    public void UpdateWorkSchedule_GeneratesNewScheduleId()
+    public void UpdateWorkSchedule_SameId_KeepsSameId()
     {
         var group = CreateGroup();
-        var dto = CreateScheduleDto(group.Id);
-        group.AddWorkSchedule(dto);
+        AddDefaultSchedule(group);
         var existingId = group.WorkSchedules.Single().Id;
 
-        var updateDto = new UpdateWorkScheduleDto(
+        group.UpdateWorkSchedule(
             existingId,
-            group.Id,
-            ShiftStartTime: new TimeOnly(9, 0),
-            ShiftEndTime: new TimeOnly(17, 0),
-            EndDayOffset: 0,
-            BreakStartTime: new TimeOnly(12, 0),
-            BreakEndTime: new TimeOnly(13, 0),
-            AllowedCheckInLatenessMinutes: 10,
-            AllowedCheckOutEarlinessMinutes: 10);
+            new TimeOnly(9, 0),
+            new TimeOnly(17, 0),
+            new TimeOnly(12, 0),
+            new TimeOnly(13, 0),
+            10, 10, 0);
 
-        group.UpdateWorkSchedule(updateDto);
+        Assert.Equal(existingId, group.WorkSchedules.Single().Id);
+    }
 
-        var newId = group.WorkSchedules.Single().Id;
-        Assert.NotEqual(existingId, newId);
+    [Fact]
+    public void UpdateWorkSchedule_NotFound_ThrowsDomainException()
+    {
+        var group = CreateGroup();
+        var fakeId = WorkScheduleId.New();
+
+        var exception = Assert.Throws<DomainException>(() =>
+            group.UpdateWorkSchedule(
+                fakeId,
+                new TimeOnly(9, 0),
+                new TimeOnly(17, 0),
+                new TimeOnly(12, 0),
+                new TimeOnly(13, 0),
+                10, 10, 0));
+
+        Assert.Equal(EmployeeGroupErrors.WorkScheduleBelongsToAnotherGroup.Code, exception.Error.Code);
+    }
+
+    [Fact]
+    public void UpdateWorkSchedule_NegativeLateness_ThrowsDomainException()
+    {
+        var group = CreateGroup();
+        AddDefaultSchedule(group);
+        var existingId = group.WorkSchedules.Single().Id;
+
+        var exception = Assert.Throws<DomainException>(() =>
+            group.UpdateWorkSchedule(
+                existingId,
+                new TimeOnly(9, 0),
+                new TimeOnly(17, 0),
+                new TimeOnly(12, 0),
+                new TimeOnly(13, 0),
+                -1, 0, 0));
+
+        Assert.Equal(WorkScheduleErrors.InvalidCheckInLateness.Code, exception.Error.Code);
+    }
+
+    [Fact]
+    public void UpdateWorkSchedule_NegativeEarliness_ThrowsDomainException()
+    {
+        var group = CreateGroup();
+        AddDefaultSchedule(group);
+        var existingId = group.WorkSchedules.Single().Id;
+
+        var exception = Assert.Throws<DomainException>(() =>
+            group.UpdateWorkSchedule(
+                existingId,
+                new TimeOnly(9, 0),
+                new TimeOnly(17, 0),
+                new TimeOnly(12, 0),
+                new TimeOnly(13, 0),
+                0, -1, 0));
+
+        Assert.Equal(WorkScheduleErrors.InvalidCheckOutEarliness.Code, exception.Error.Code);
+    }
+
+    [Fact]
+    public void UpdateWorkSchedule_NegativeEndDayOffset_ThrowsDomainException()
+    {
+        var group = CreateGroup();
+        AddDefaultSchedule(group);
+        var existingId = group.WorkSchedules.Single().Id;
+
+        var exception = Assert.Throws<DomainException>(() =>
+            group.UpdateWorkSchedule(
+                existingId,
+                new TimeOnly(9, 0),
+                new TimeOnly(17, 0),
+                new TimeOnly(12, 0),
+                new TimeOnly(13, 0),
+                0, 0, -1));
+
+        Assert.Equal(WorkScheduleErrors.InvalidEndDayOffset.Code, exception.Error.Code);
+    }
+
+    #endregion
+
+    #region RemoveWorkSchedule
+
+    [Fact]
+    public void RemoveWorkSchedule_RemovesFromCollection()
+    {
+        var group = CreateGroup();
+        AddDefaultSchedule(group);
+        var scheduleId = group.WorkSchedules.Single().Id;
+
+        group.RemoveWorkSchedule(scheduleId);
+
+        Assert.Empty(group.WorkSchedules);
+    }
+
+    [Fact]
+    public void RemoveWorkSchedule_NotFound_ThrowsDomainException()
+    {
+        var group = CreateGroup();
+        var fakeId = WorkScheduleId.New();
+
+        var exception = Assert.Throws<DomainException>(() =>
+            group.RemoveWorkSchedule(fakeId));
+
+        Assert.Equal(EmployeeGroupErrors.WorkScheduleBelongsToAnotherGroup.Code, exception.Error.Code);
+    }
+
+    [Fact]
+    public void RemoveWorkSchedule_UsedByRotation_ThrowsDomainException()
+    {
+        var group = CreateGroup();
+        AddDefaultSchedule(group);
+        var scheduleId = group.WorkSchedules.Single().Id;
+        group.AddWorkRotation(1, scheduleId);
+
+        var exception = Assert.Throws<DomainException>(() =>
+            group.RemoveWorkSchedule(scheduleId));
+
+        Assert.Equal(EmployeeGroupErrors.WorkScheduleUsedByRotation.Code, exception.Error.Code);
+        Assert.Single(group.WorkSchedules);
+    }
+
+    [Fact]
+    public void RemoveWorkSchedule_FromMultiple_RemovesOnlyTarget()
+    {
+        var group = CreateGroup();
+        AddDefaultSchedule(group);
+        group.AddWorkSchedule(
+            new TimeOnly(20, 0),
+            new TimeOnly(4, 0),
+            new TimeOnly(23, 0),
+            new TimeOnly(0, 0),
+            0, 0,
+            endDayOffset: 1);
+        var firstId = group.WorkSchedules.First().Id;
+
+        group.RemoveWorkSchedule(firstId);
+
+        Assert.Single(group.WorkSchedules);
     }
 
     #endregion
@@ -365,8 +421,7 @@ public sealed class EmployeeGroupTests
     public void ActivateWorkSchedule_SetsScheduleIsActiveTrue()
     {
         var group = CreateGroup();
-        var dto = CreateScheduleDto(group.Id);
-        group.AddWorkSchedule(dto);
+        AddDefaultSchedule(group);
         var schedule = group.WorkSchedules.Single();
 
         group.ActivateWorkSchedule(schedule);
@@ -378,8 +433,7 @@ public sealed class EmployeeGroupTests
     public void ActivateWorkSchedule_RaisesActivatedDomainEvent()
     {
         var group = CreateGroup();
-        var dto = CreateScheduleDto(group.Id);
-        group.AddWorkSchedule(dto);
+        AddDefaultSchedule(group);
         var schedule = group.WorkSchedules.Single();
 
         group.ActivateWorkSchedule(schedule);
@@ -397,8 +451,10 @@ public sealed class EmployeeGroupTests
     {
         var group = CreateGroup();
         var otherGroup = CreateGroup(name: "Other");
-        var dto = CreateScheduleDto(otherGroup.Id);
-        otherGroup.AddWorkSchedule(dto);
+        otherGroup.AddWorkSchedule(
+            new TimeOnly(8, 0), new TimeOnly(16, 0),
+            new TimeOnly(12, 0), new TimeOnly(13, 0),
+            0, 0, 0);
         var scheduleFromOther = otherGroup.WorkSchedules.Single();
 
         var exception = Assert.Throws<DomainException>(() => group.ActivateWorkSchedule(scheduleFromOther));
@@ -415,8 +471,7 @@ public sealed class EmployeeGroupTests
     public void DeactivateWorkSchedule_SetsScheduleIsActiveFalse()
     {
         var group = CreateGroup();
-        var dto = CreateScheduleDto(group.Id);
-        group.AddWorkSchedule(dto);
+        AddDefaultSchedule(group);
         var schedule = group.WorkSchedules.Single();
         group.ActivateWorkSchedule(schedule);
 
@@ -429,12 +484,11 @@ public sealed class EmployeeGroupTests
     public void DeactivateWorkSchedule_RaisesDeactivatedDomainEvent()
     {
         var group = CreateGroup();
-        var dto = CreateScheduleDto(group.Id);
-        group.AddWorkSchedule(dto);
+        AddDefaultSchedule(group);
         var schedule = group.WorkSchedules.Single();
         group.ActivateWorkSchedule(schedule);
-
         schedule.ClearDomainEvent();
+
         group.DeactivateWorkSchedule(schedule);
 
         var domainEvent = schedule.DomainEvents
@@ -450,8 +504,10 @@ public sealed class EmployeeGroupTests
     {
         var group = CreateGroup();
         var otherGroup = CreateGroup(name: "Other");
-        var dto = CreateScheduleDto(otherGroup.Id);
-        otherGroup.AddWorkSchedule(dto);
+        otherGroup.AddWorkSchedule(
+            new TimeOnly(8, 0), new TimeOnly(16, 0),
+            new TimeOnly(12, 0), new TimeOnly(13, 0),
+            0, 0, 0);
         otherGroup.ActivateWorkSchedule(otherGroup.WorkSchedules.Single());
         var scheduleFromOther = otherGroup.WorkSchedules.Single();
 
@@ -463,31 +519,216 @@ public sealed class EmployeeGroupTests
 
     #endregion
 
-    #region DoesTheGroupWork
+    #region AddWorkRotation / AddRestRotation
 
     [Fact]
-    public void DoesTheGroupWork_WithNoRotationEntries_ThrowsDivideByZeroException()
+    public void AddWorkRotation_AddsToRotationEntries()
+    {
+        var group = CreateGroup();
+        AddDefaultSchedule(group);
+        var scheduleId = group.WorkSchedules.Single().Id;
+
+        group.AddWorkRotation(1, scheduleId);
+
+        Assert.Single(group.RotationEntries);
+        Assert.Equal(1, group.RotationEntries.Single().Position);
+        Assert.Equal(RotationStatus.Work, group.RotationEntries.Single().Status);
+    }
+
+    [Fact]
+    public void AddWorkRotation_IncrementsNumberOfRotations()
+    {
+        var group = CreateGroup();
+        AddDefaultSchedule(group);
+        var scheduleId = group.WorkSchedules.Single().Id;
+
+        group.AddWorkRotation(1, scheduleId);
+
+        Assert.Equal(1, group.NumberOfRotations);
+    }
+
+    [Fact]
+    public void AddRestRotation_AddsToRotationEntries()
     {
         var group = CreateGroup();
 
-        Assert.Throws<DivideByZeroException>(() => group.DoesTheGroupWork(DateOnly.FromDateTime(DateTime.UtcNow)));
+        group.AddRestRotation(1);
+
+        Assert.Single(group.RotationEntries);
+        Assert.Equal(1, group.RotationEntries.Single().Position);
+        Assert.Equal(RotationStatus.Rest, group.RotationEntries.Single().Status);
+    }
+
+    [Fact]
+    public void AddWorkRotation_MultiplePositions_AllAdded()
+    {
+        var group = CreateGroup();
+        AddDefaultSchedule(group);
+        var scheduleId = group.WorkSchedules.Single().Id;
+
+        group.AddWorkRotation(1, scheduleId);
+        group.AddRestRotation(2);
+        group.AddWorkRotation(3, scheduleId);
+
+        Assert.Equal(3, group.NumberOfRotations);
+    }
+
+    [Fact]
+    public void AddWorkRotation_PositionLessThan1_ThrowsDomainException()
+    {
+        var group = CreateGroup();
+        AddDefaultSchedule(group);
+        var scheduleId = group.WorkSchedules.Single().Id;
+
+        var exception = Assert.Throws<DomainException>(() =>
+            group.AddWorkRotation(0, scheduleId));
+
+        Assert.Equal(RotationEntryErrors.InvalidPosition.Code, exception.Error.Code);
+    }
+
+    [Fact]
+    public void AddWorkRotation_DuplicatePosition_ThrowsDomainException()
+    {
+        var group = CreateGroup();
+        AddDefaultSchedule(group);
+        var scheduleId = group.WorkSchedules.Single().Id;
+        group.AddWorkRotation(1, scheduleId);
+
+        var exception = Assert.Throws<DomainException>(() =>
+            group.AddWorkRotation(1, scheduleId));
+
+        Assert.Equal(EmployeeGroupErrors.RotationPositionAlreadyExists.Code, exception.Error.Code);
+        Assert.Single(group.RotationEntries);
     }
 
     #endregion
 
-    #region GetRotation
+    #region UpdateRotation
 
     [Fact]
-    public void GetRotation_WhenDateBeforeStart_ThrowsDomainException()
+    public void UpdateRotation_ChangesRotationEntry()
+    {
+        var group = CreateGroup();
+        AddDefaultSchedule(group);
+        var scheduleId = group.WorkSchedules.Single().Id;
+        group.AddWorkRotation(1, scheduleId);
+
+        group.UpdateRotation(1, null);
+
+        Assert.Equal(RotationStatus.Rest, group.RotationEntries.Single().Status);
+    }
+
+    [Fact]
+    public void UpdateRotation_NotFound_ThrowsDomainException()
     {
         var group = CreateGroup();
 
-        var method = typeof(EmployeeGroup).GetMethod("GetRotation",
-            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+        var exception = Assert.Throws<DomainException>(() =>
+            group.UpdateRotation(99, null));
 
-        Assert.NotNull(method);
-        var pastDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(-10));
-        Assert.ThrowsAny<Exception>(() => method.Invoke(group, [pastDate]));
+        Assert.Equal(EmployeeGroupErrors.RotationNotFound.Code, exception.Error.Code);
+    }
+
+    #endregion
+
+    #region RemoveRotation
+
+    [Fact]
+    public void RemoveRotation_RemovesFromCollection()
+    {
+        var group = CreateGroup();
+        group.AddRestRotation(1);
+        group.AddRestRotation(2);
+
+        group.RemoveRotation(1);
+
+        Assert.Single(group.RotationEntries);
+        Assert.Equal(2, group.RotationEntries.Single().Position);
+    }
+
+    [Fact]
+    public void RemoveRotation_NotFound_ThrowsDomainException()
+    {
+        var group = CreateGroup();
+
+        var exception = Assert.Throws<DomainException>(() =>
+            group.RemoveRotation(99));
+
+        Assert.Equal(EmployeeGroupErrors.RotationNotFound.Code, exception.Error.Code);
+    }
+
+    #endregion
+
+    #region DoesTheGroupWork
+
+    private static DateOnly GetDeterministicDateForPosition(int position, int totalRotations)
+    {
+        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+        var daysElapsed = today.DayNumber - DateOnly.MinValue.DayNumber;
+        var currentPosition = (daysElapsed % totalRotations) + 1;
+        if (currentPosition == position)
+            return today;
+        var offset = position - currentPosition;
+        if (offset < 0) offset += totalRotations;
+        return today.AddDays(offset);
+    }
+
+    [Fact]
+    public void DoesTheGroupWork_WorkDay_ReturnsTrue()
+    {
+        var group = CreateGroup();
+        AddDefaultSchedule(group);
+        var scheduleId = group.WorkSchedules.Single().Id;
+        group.AddWorkRotation(1, scheduleId);
+        group.AddRestRotation(2);
+        var workDate = GetDeterministicDateForPosition(1, 2);
+
+        var result = group.DoesTheGroupWork(workDate);
+
+        Assert.True(result);
+    }
+
+    [Fact]
+    public void DoesTheGroupWork_RestDay_ReturnsFalse()
+    {
+        var group = CreateGroup();
+        AddDefaultSchedule(group);
+        var scheduleId = group.WorkSchedules.Single().Id;
+        group.AddWorkRotation(1, scheduleId);
+        group.AddRestRotation(2);
+        var restDate = GetDeterministicDateForPosition(2, 2);
+
+        var result = group.DoesTheGroupWork(restDate);
+
+        Assert.False(result);
+    }
+
+    [Fact]
+    public void DoesTheGroupWork_NoRotationEntries_ThrowsDivideByZeroException()
+    {
+        var group = CreateGroup();
+
+        Assert.Throws<DivideByZeroException>(() =>
+            group.DoesTheGroupWork(DateOnly.FromDateTime(DateTime.UtcNow)));
+    }
+
+    [Fact]
+    public void DoesTheGroupWork_ThreeRotations_CyclesCorrectly()
+    {
+        var group = CreateGroup();
+        AddDefaultSchedule(group);
+        var scheduleId = group.WorkSchedules.Single().Id;
+        group.AddWorkRotation(1, scheduleId);
+        group.AddRestRotation(2);
+        group.AddWorkRotation(3, scheduleId);
+
+        var date1 = GetDeterministicDateForPosition(1, 3);
+        var date2 = GetDeterministicDateForPosition(2, 3);
+        var date3 = GetDeterministicDateForPosition(3, 3);
+
+        Assert.True(group.DoesTheGroupWork(date1));
+        Assert.False(group.DoesTheGroupWork(date2));
+        Assert.True(group.DoesTheGroupWork(date3));
     }
 
     #endregion
@@ -495,12 +736,65 @@ public sealed class EmployeeGroupTests
     #region GetGroupWorkScheduleInDateTime
 
     [Fact]
-    public void GetGroupWorkScheduleInDateTime_WithNoRotationEntries_ThrowsDivideByZeroException()
+    public void GetGroupWorkScheduleInDateTime_WorkDay_UsesNavigationProperty_Bug()
+    {
+        var group = CreateGroup();
+        AddDefaultSchedule(group);
+        var scheduleId = group.WorkSchedules.Single().Id;
+        group.AddWorkRotation(1, scheduleId);
+        group.AddRestRotation(2);
+        var workDate = GetDeterministicDateForPosition(1, 2);
+
+        var exception = Assert.Throws<NullReferenceException>(() =>
+            group.GetGroupWorkScheduleInDateTime(workDate));
+
+        Assert.NotNull(exception);
+    }
+
+    [Fact]
+    public void GetGroupWorkScheduleInDateTime_RestDay_NoPrevScheduleOffset_ReturnsNull()
+    {
+        var group = CreateGroup();
+        AddDefaultSchedule(group);
+        var scheduleId = group.WorkSchedules.Single().Id;
+        group.AddRestRotation(1);
+        group.AddWorkRotation(2, scheduleId);
+        var date = GetDeterministicDateForPosition(1, 2);
+
+        var result = group.GetGroupWorkScheduleInDateTime(date);
+
+        Assert.Null(result);
+    }
+
+    [Fact]
+    public void GetGroupWorkScheduleInDateTime_NoRotationEntries_ThrowsDivideByZeroException()
     {
         var group = CreateGroup();
 
         Assert.Throws<DivideByZeroException>(() =>
             group.GetGroupWorkScheduleInDateTime(DateOnly.FromDateTime(DateTime.UtcNow)));
+    }
+
+    [Fact]
+    public void GetGroupWorkScheduleInDateTime_CrossMidnight_WorkDay_UsesNavigationProperty_Bug()
+    {
+        var group = CreateGroup();
+        group.AddWorkSchedule(
+            new TimeOnly(22, 0),
+            new TimeOnly(6, 0),
+            new TimeOnly(23, 0),
+            new TimeOnly(0, 0),
+            0, 0,
+            endDayOffset: 1);
+        var scheduleId = group.WorkSchedules.Single().Id;
+        group.AddWorkRotation(1, scheduleId);
+        group.AddRestRotation(2);
+        var workDate = GetDeterministicDateForPosition(1, 2);
+
+        var exception = Assert.Throws<NullReferenceException>(() =>
+            group.GetGroupWorkScheduleInDateTime(workDate));
+
+        Assert.NotNull(exception);
     }
 
     #endregion

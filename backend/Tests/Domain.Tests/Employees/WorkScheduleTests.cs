@@ -401,6 +401,109 @@ public sealed class WorkScheduleTests
 
     #endregion
 
+    #region Update
+
+    [Fact]
+    public void Update_UpdatesAllProperties()
+    {
+        var schedule = CreateSchedule();
+
+        schedule.Update(
+            new TimeOnly(9, 0),
+            new TimeOnly(17, 0),
+            new TimeOnly(12, 0),
+            new TimeOnly(13, 0),
+            10, 10, 0);
+
+        Assert.Equal(new TimeOnly(9, 0), schedule.ShiftStartTime);
+        Assert.Equal(new TimeOnly(17, 0), schedule.ShiftEndTime);
+        Assert.Equal(new TimeOnly(12, 0), schedule.BreakStartTime);
+        Assert.Equal(new TimeOnly(13, 0), schedule.BreakEndTime);
+        Assert.Equal(10, schedule.AllowedCheckInLatenessMinutes);
+        Assert.Equal(10, schedule.AllowedCheckOutEarlinessMinutes);
+        Assert.Equal(0, schedule.EndDayOffset);
+    }
+
+    [Fact]
+    public void Update_NegativeLateness_ThrowsDomainException()
+    {
+        var schedule = CreateSchedule();
+
+        var exception = Assert.Throws<DomainException>(() =>
+            schedule.Update(
+                new TimeOnly(9, 0),
+                new TimeOnly(17, 0),
+                new TimeOnly(12, 0),
+                new TimeOnly(13, 0),
+                -1, 0, 0));
+
+        Assert.Equal(WorkScheduleErrors.InvalidCheckInLateness.Code, exception.Error.Code);
+    }
+
+    [Fact]
+    public void Update_NegativeEarliness_ThrowsDomainException()
+    {
+        var schedule = CreateSchedule();
+
+        var exception = Assert.Throws<DomainException>(() =>
+            schedule.Update(
+                new TimeOnly(9, 0),
+                new TimeOnly(17, 0),
+                new TimeOnly(12, 0),
+                new TimeOnly(13, 0),
+                0, -1, 0));
+
+        Assert.Equal(WorkScheduleErrors.InvalidCheckOutEarliness.Code, exception.Error.Code);
+    }
+
+    [Fact]
+    public void Update_NegativeEndDayOffset_ThrowsDomainException()
+    {
+        var schedule = CreateSchedule();
+
+        var exception = Assert.Throws<DomainException>(() =>
+            schedule.Update(
+                new TimeOnly(9, 0),
+                new TimeOnly(17, 0),
+                new TimeOnly(12, 0),
+                new TimeOnly(13, 0),
+                0, 0, -1));
+
+        Assert.Equal(WorkScheduleErrors.InvalidEndDayOffset.Code, exception.Error.Code);
+    }
+
+    [Fact]
+    public void Update_EndDayOffsetZero_Succeeds()
+    {
+        var schedule = CreateSchedule();
+
+        schedule.Update(
+            new TimeOnly(9, 0),
+            new TimeOnly(17, 0),
+            new TimeOnly(12, 0),
+            new TimeOnly(13, 0),
+            0, 0, 0);
+
+        Assert.Equal(0, schedule.EndDayOffset);
+    }
+
+    [Fact]
+    public void Update_EndDayOffsetPositive_Succeeds()
+    {
+        var schedule = CreateSchedule();
+
+        schedule.Update(
+            new TimeOnly(22, 0),
+            new TimeOnly(6, 0),
+            new TimeOnly(23, 0),
+            new TimeOnly(0, 0),
+            0, 0, 1);
+
+        Assert.Equal(1, schedule.EndDayOffset);
+    }
+
+    #endregion
+
     #region WorkTime
 
     [Fact]
