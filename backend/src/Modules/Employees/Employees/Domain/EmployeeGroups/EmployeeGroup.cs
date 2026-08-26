@@ -57,46 +57,68 @@ public sealed class EmployeeGroup : Entity
     isSecurity,
     description);
     }
+    public void AddWorkSchedule(
+    TimeOnly shiftStartTime,
+    TimeOnly shiftEndTime,
+    TimeOnly breakStartTime,
+    TimeOnly breakEndTime,
+    int allowedCheckInLatenessMinutes,
+    int allowedCheckOutEarlinessMinutes,
+    int endDayOffset)
+    {
+        var workSchedule = WorkSchedule.Create(
+            Id,
+            shiftStartTime,
+            shiftEndTime,
+            breakStartTime,
+            breakEndTime,
+            allowedCheckInLatenessMinutes,
+            allowedCheckOutEarlinessMinutes,
+            endDayOffset);
 
-    public void AddWorkSchedule(CreateWorkScheduleDto schedule)
-    {
-        if (schedule.EmployeeGroupId != Id)
-        {
-            throw new DomainException(EmployeeGroupErrors.WorkScheduleBelongsToAnotherGroup);
-        }
-        var newSchedule = WorkSchedule.Create(
-            schedule.EmployeeGroupId,
-            schedule.ShiftStartTime,
-            schedule.ShiftEndTime,
-            schedule.BreakStartTime,
-            schedule.BreakEndTime,
-            schedule.AllowedCheckInLatenessMinutes,
-            schedule.AllowedCheckOutEarlinessMinutes,
-            schedule.EndDayOffset);
+        _workSchedules.Add(workSchedule);
+    }
 
-        _workSchedules.Add(newSchedule);
-    }
-    public void UpdateWorkSchedule(UpdateWorkScheduleDto schedule)
+    public void UpdateWorkSchedule(
+        WorkScheduleId workScheduleId,
+        TimeOnly shiftStartTime,
+        TimeOnly shiftEndTime,
+        TimeOnly breakStartTime,
+        TimeOnly breakEndTime,
+        int allowedCheckInLatenessMinutes,
+        int allowedCheckOutEarlinessMinutes,
+        int endDayOffset)
     {
-        var existingSchedule = _workSchedules.First(ws => ws.Id == schedule.Id);
-        _workSchedules.Remove(existingSchedule);
-        _workSchedules.Add(WorkSchedule.Create(
-            schedule.EmployeeGroupId,
-            schedule.ShiftStartTime,
-            schedule.ShiftEndTime,
-            schedule.BreakStartTime,
-            schedule.BreakEndTime,
-            schedule.AllowedCheckInLatenessMinutes,
-            schedule.AllowedCheckOutEarlinessMinutes,
-            schedule.EndDayOffset));
+        var workSchedule = FindWorkSchedule(workScheduleId);
+
+        workSchedule.Update(
+            shiftStartTime,
+            shiftEndTime,
+            breakStartTime,
+            breakEndTime,
+            allowedCheckInLatenessMinutes,
+            allowedCheckOutEarlinessMinutes,
+            endDayOffset);
     }
-    public void RemoveWorkSchedule(WorkSchedule schedule)
+
+    public void RemoveWorkSchedule(WorkScheduleId workScheduleId)
     {
-        if (schedule.EmployeeGroupId != Id)
+        var workSchedule = FindWorkSchedule(workScheduleId);
+
+        if (_rotationEntries.Any(x => x.WorkScheduleId == workScheduleId))
         {
-            throw new DomainException(EmployeeGroupErrors.WorkScheduleBelongsToAnotherGroup);
+            throw new DomainException(
+                EmployeeGroupErrors.WorkScheduleUsedByRotation);
         }
-        _workSchedules.Remove(schedule);
+
+        _workSchedules.Remove(workSchedule);
+    }
+
+    private WorkSchedule FindWorkSchedule(WorkScheduleId workScheduleId)
+    {
+        return _workSchedules.SingleOrDefault(x => x.Id == workScheduleId)
+            ?? throw new DomainException(
+                EmployeeGroupErrors.WorkScheduleBelongsToAnotherGroup);
     }
     public void ActivateWorkSchedule(WorkSchedule schedule)
     {
@@ -114,12 +136,80 @@ public sealed class EmployeeGroup : Entity
         }
         schedule.Deactivate();
     }
+    public void AddWorkRotation(
+           int position,
+           WorkScheduleId workScheduleId)
+    {
+        AddRotation(position, workScheduleId);
+    }
+
+    public void AddRestRotation(int position)
+    {
+        AddRotation(position, null);
+    }
+
+    public void UpdateRotation(
+        int position,
+        WorkScheduleId? workScheduleId)
+    {
+        var existingRotation = FindRotation(position);
+
+        _rotationEntries.Remove(existingRotation);
+
+        var replacement = RotationEntry.Create(
+            Id,
+            position,
+            workScheduleId);
+
+        _rotationEntries.Add(replacement);
+    }
+
+    public void RemoveRotation(int position)
+    {
+        var rotation = FindRotation(position);
+
+        _rotationEntries.Remove(rotation);
+    }
+
+    private void AddRotation(
+        int position,
+        WorkScheduleId? workScheduleId)
+    {
+        EnsurePositionAvailable(position);
+
+        var rotation = RotationEntry.Create(
+            Id,
+            position,
+            workScheduleId);
+
+        _rotationEntries.Add(rotation);
+    }
+
+    private RotationEntry FindRotation(int position)
+    {
+        return _rotationEntries.SingleOrDefault(x => x.Position == position)
+            ?? throw new DomainException(
+                EmployeeGroupErrors.RotationNotFound);
+    }
+
+    private void EnsurePositionAvailable(int position)
+    {
+        if (position < 1)
+            throw new DomainException(
+                RotationEntryErrors.InvalidPosition);
+
+        if (_rotationEntries.Any(x => x.Position == position))
+            throw new DomainException(
+                EmployeeGroupErrors.RotationPositionAlreadyExists);
+    }
+
 
     public bool DoesTheGroupWork(DateOnly date)
     {
         var rotation = GetRotation(date);
         return rotation?.Status is RotationStatus.Work ? true : false;
     }
+
     private RotationEntry? GetRotation(DateOnly date)
     {
         if (date < RotationStartDate)

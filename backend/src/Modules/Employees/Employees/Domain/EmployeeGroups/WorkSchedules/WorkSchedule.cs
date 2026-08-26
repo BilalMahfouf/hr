@@ -110,4 +110,34 @@ public sealed class WorkSchedule : Entity
         var workTime = today.Add(ShiftEndTime.ToTimeSpan()).AddDays(EndDayOffset) - today.Add(ShiftStartTime.ToTimeSpan());
         return workTime;
     }
+    public void Update(
+    TimeOnly shiftStartTime,
+    TimeOnly shiftEndTime,
+    TimeOnly breakStartTime,
+    TimeOnly breakEndTime,
+    int allowedCheckInLatenessMinutes,
+    int allowedCheckOutEarlinessMinutes,
+    int endDayOffset)
+    {
+        if (allowedCheckInLatenessMinutes < 0)
+            throw new DomainException(
+                WorkScheduleErrors.InvalidCheckInLateness);
+
+        if (allowedCheckOutEarlinessMinutes < 0)
+            throw new DomainException(
+                WorkScheduleErrors.InvalidCheckOutEarliness);
+
+        if (endDayOffset < 0)
+            throw new DomainException(
+                WorkScheduleErrors.InvalidEndDayOffset);
+
+        ShiftStartTime = shiftStartTime;
+        ShiftEndTime = shiftEndTime;
+        BreakStartTime = breakStartTime;
+        BreakEndTime = breakEndTime;
+        AllowedCheckInLatenessMinutes = allowedCheckInLatenessMinutes;
+        AllowedCheckOutEarlinessMinutes = allowedCheckOutEarlinessMinutes;
+        EndDayOffset = endDayOffset;
+    }
+
 }
