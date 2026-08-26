@@ -41,7 +41,7 @@ public class Entity : IEntity, ISoftDelete
 
     public Entity()
     {
-        Id = Guid.NewGuid();
+        Id = Guid.CreateVersion7();
         CreatedOnUtc = DateTime.UtcNow;
         IsDeleted = false;
     }
