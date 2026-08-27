@@ -9,6 +9,6 @@ public static  class RotationEntryErrors
 {
     public static Error InvalidPosition=>
         Error.Conflict(
-            code: "InvalidPosition",
+            code: $"{nameof(RotationEntry)}.{nameof(InvalidPosition)}",
             description: "Position must be greater than 0.");
 }

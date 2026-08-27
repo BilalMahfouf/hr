@@ -39,7 +39,7 @@ public sealed class EmployeeApi(IEmployeeRepository employeeRepo) : IEmployeeApi
         => AttendanceTime.DeviceLocalToUtc(
             DateTime.SpecifyKind(todayUtc.AddHours(localHour), DateTimeKind.Unspecified));
 
-    public async Task<Result<EmployeeResponse>> GetEmployeeByBadgeAsync(int badge, CancellationToken ct = default)
+    public async Task<Result<EmployeeResponse>> GetEmployeeByBadgeAsync(int badge,DateOnly punchDate, CancellationToken ct = default)
     {
         var employee = await employeeRepo.GetEmployeeByBgdeAsync(badge.ToString(), ct);
         if (employee is null)
@@ -110,3 +110,4 @@ public sealed class EmployeeApi(IEmployeeRepository employeeRepo) : IEmployeeApi
         throw new NotImplementedException();
     }
 }
+
