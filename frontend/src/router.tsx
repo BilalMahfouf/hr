@@ -18,11 +18,15 @@ import MachinesPage from './features/machines/MachinesPage';
 import CreateMachinePage from './features/machines/CreateMachinePage';
 import EditMachinePage from './features/machines/EditMachinePage';
 import ViewMachinePage from './features/machines/ViewMachinePage';
-import AttendancePage from './features/attendance/AttendancePage';
+import PunchesPage from './features/attendance/punches-page';
+import AttendanceRecordsPage from './features/attendance/attendance-records-page';
 import ViewPunchPage from './features/attendance/ViewPunchPage';
 import ViewAttendanceRecordPage from './features/attendance/ViewAttendanceRecordPage';
 import EmployeesPage from './features/employees/employees-page';
 import ViewEmployeePage from './features/employees/view-employee-page';
+import EmployeeGroupsPage from './features/employees/employee-groups-page';
+import CreateEmployeeGroupPage from './features/employees/create-employee-group-page';
+import EditEmployeeGroupPage from './features/employees/edit-employee-group-page';
 
 export const router = createBrowserRouter([
     {
@@ -124,11 +128,19 @@ export const router = createBrowserRouter([
         },
         {
             path: '/attendance',
-            element: <AttendancePage />,
+            element: <Navigate to="/attendance/punches" replace />,
+        },
+        {
+            path: '/attendance/punches',
+            element: <PunchesPage />,
         },
         {
             path: '/attendance/punches/:punchId',
             element: <ViewPunchPage />,
+        },
+        {
+            path: '/attendance/records',
+            element: <AttendanceRecordsPage />,
         },
         {
             path: '/attendance/records/:attendanceRecordId',
@@ -141,6 +153,18 @@ export const router = createBrowserRouter([
         {
             path: '/employees/:id',
             element: <ViewEmployeePage />,
+        },
+        {
+            path: '/employee-groups',
+            element: <EmployeeGroupsPage />,
+        },
+        {
+            path: '/employee-groups/new',
+            element: <CreateEmployeeGroupPage />,
+        },
+        {
+            path: '/employee-groups/:id',
+            element: <EditEmployeeGroupPage />,
         },
         {
             path: '/settings',

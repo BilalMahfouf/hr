@@ -93,17 +93,14 @@
     "deleteDialog": {},
     "attendance": {
         "title": "Attendance",
-        "description": "Monitor attendance punches and records",
-        "tabs": {
-            "punches": "Punches",
-            "records": "Attendance Records"
-        },
         "status": {
             "present": "Present",
             "absent": "Absent",
             "open": "Open"
         },
         "punches": {
+            "title": "Punches",
+            "description": "Monitor raw attendance punches captured from machines.",
             "empty": "No punches found.",
             "notFound": "Punch Not Found",
             "notFoundDesc": "The selected punch could not be found.",
@@ -125,6 +122,8 @@
             }
         },
         "records": {
+            "title": "Attendance Records",
+            "description": "Review computed attendance records per employee.",
             "empty": "No attendance records found.",
             "notFound": "Attendance Record Not Found",
             "notFoundDesc": "The selected attendance record could not be found.",
@@ -319,6 +318,109 @@
             "phone": "Phone"
         }
     },
+    "employeeGroups": {
+        "title": "Employee Groups",
+        "description": "Manage work schedules and rotation groups for your employees",
+        "addTitle": "New Group",
+        "addDescription": "Define group info, work schedules and the rotation cycle.",
+        "editTitle": "Edit Employee Group",
+        "editDescription": "Group metadata is read-only. Manage schedules and rotations below.",
+        "list": {
+            "name": "Name",
+            "isSecurity": "Security",
+            "rotationStartDate": "Rotation Start",
+            "schedulesCount": "Schedules",
+            "rotationsCount": "Rotations",
+            "created": "Created"
+        },
+        "form": {
+            "name": "Name",
+            "namePlaceholder": "e.g. Nurses - Shift A",
+            "isSecurity": "Is Security Group",
+            "description": "Description",
+            "descriptionPlaceholder": "Optional description of this group",
+            "rotationStartDate": "Rotation Start Date",
+            "rotationStartDatePlaceholder": "",
+            "workSchedules": "Work Schedules",
+            "addSchedule": "Add Schedule",
+            "rotations": "Rotations",
+            "addRotation": "Add Rotation",
+            "addWorkRotation": "Add Work",
+            "addRestRotation": "Add Rest",
+            "schedule": {
+                "shiftStartTime": "Shift Start",
+                "shiftEndTime": "Shift End",
+                "breakStartTime": "Break Start",
+                "breakEndTime": "Break End",
+                "endDayOffset": "End Day Offset",
+                "allowedCheckInLatenessMinutes": "Late Allowance (min)",
+                "allowedCheckOutEarlinessMinutes": "Early Leave Allowance (min)",
+                "isActive": "Active",
+                "actions": "Schedule",
+                "activate": "Activate",
+                "deactivate": "Deactivate",
+                "delete": "Delete"
+            },
+            "rotation": {
+                "position": "Position",
+                "type": "Type",
+                "work": "Work",
+                "rest": "Rest",
+                "workSchedule": "Schedule",
+                "selectSchedule": "Select schedule",
+                "actions": "Actions",
+                "delete": "Delete"
+            },
+            "validation": {
+                "nameRequired": "Name is required.",
+                "nameMaxLength": "Name must be at most 100 characters.",
+                "rotationStartDateRequired": "Rotation start date is required.",
+                "rotationStartDatePast": "Rotation start date cannot be in the past.",
+                "shiftStartBeforeEnd": "Shift start must be before shift end.",
+                "breakStartBeforeEnd": "Break start must be before break end.",
+                "breakWithinShift": "Break must be within the shift times.",
+                "endDayOffsetMin": "End day offset must be 0 or more.",
+                "latenessMin": "Lateness allowance must be 0 or more.",
+                "earlinessMin": "Earliness allowance must be 0 or more.",
+                "uniquePosition": "Positions must be unique.",
+                "scheduleReference": "A work rotation must reference a schedule.",
+                "atLeastOneSchedule": "Add at least one work schedule.",
+                "atLeastOneRotation": "Add at least one rotation entry."
+            }
+        },
+        "tabs": {
+            "schedules": "Schedules",
+            "rotations": "Rotations"
+        },
+        "toast": {
+            "added": "Group Created",
+            "addedDesc": "The employee group has been created successfully.",
+            "updated": "Changes Saved",
+            "updatedDesc": "Schedules and rotations have been updated successfully.",
+            "deleted": "Group Deleted",
+            "deletedDesc": "The employee group has been deleted.",
+            "error": "Something went wrong. Please try again.",
+            "scheduleActivated": "Schedule activated.",
+            "scheduleDeactivated": "Schedule deactivated.",
+            "scheduleDeleted": "Schedule deleted.",
+            "rotationAdded": "Rotation entry added.",
+            "rotationDeleted": "Rotation entry removed."
+        },
+        "confirm": {
+            "deleteTitle": "Delete this group?",
+            "deleteDescription": "This will permanently delete the employee group and all its schedules and rotations. This action cannot be undone.",
+            "deleteScheduleTitle": "Delete this schedule?",
+            "deleteScheduleDescription": "This schedule will be permanently deleted.",
+            "deleteRotationTitle": "Remove this rotation?",
+            "deleteRotationDescription": "The rotation entry will be removed and positions renumbered."
+        },
+        "notFound": "Group Not Found",
+        "notFoundDesc": "The requested employee group could not be found.",
+        "genericError": "Something went wrong while managing employee groups.",
+        "loadError": "Failed to load employee groups.",
+        "empty": "No employee groups yet.",
+        "scheduleInUse": "Cannot delete: this schedule is used by rotation entries."
+    },
     "toast": {
         "subscriptionPlan": {
             "added": "Plan Added",
@@ -440,6 +542,16 @@
             "pushFailed": "Push Failed",
             "pushFailedDesc": "Unable to enable desktop notifications. Please try again.",
             "pushBlocked": "Notifications Blocked"
+        },
+        "employeeGroup": {
+            "fetchEmployeeGroups": "Failed to fetch employee groups",
+            "fetchEmployeeGroup": "Failed to fetch the employee group",
+            "notFound": "Employee Group Not Found",
+            "notFoundDesc": "The selected employee group could not be found.",
+            "alreadyExists": "Name Already Exists",
+            "alreadyExistsDesc": "An employee group with this name already exists.",
+            "scheduleInUse": "Schedule In Use",
+            "scheduleInUseDesc": "This schedule is referenced by rotation entries and cannot be deleted."
         }
     },
     "dashboardPage": {
@@ -575,8 +687,8 @@
                 "description": "Plan changes will be enabled once backend actions are available",
                 "upgrade": "Upgrade",
                 "downgrade": "Downgrade",
-"cancel": "Cancel",
-        "back": "Back",
+                "cancel": "Cancel",
+                "back": "Back",
                 "renew": "Renew",
                 "comingSoon": "These actions are coming soon."
             },

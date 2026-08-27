@@ -27,8 +27,10 @@ public sealed class EmployeeGroupConfiguration
             .HasColumnName("name")
             .IsRequired();
 
-        builder.Property(x => x.NumberOfRotations)
-            .HasColumnName("number_of_rotations")
+        builder.Ignore(x => x.NumberOfRotations);
+
+        builder.Property(x => x.RotationStartDate)
+            .HasColumnName("rotation_start_date")
             .IsRequired();
 
         builder.Property(x => x.IsSecurity)
@@ -47,6 +49,9 @@ public sealed class EmployeeGroupConfiguration
             .HasDatabaseName("ix_employee_groups_name");
 
         builder.Navigation(x => x.WorkSchedules)
+            .UsePropertyAccessMode(PropertyAccessMode.Field);
+
+        builder.Navigation(x => x.RotationEntries)
             .UsePropertyAccessMode(PropertyAccessMode.Field);
     }
 }
