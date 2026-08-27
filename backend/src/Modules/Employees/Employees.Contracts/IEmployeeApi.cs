@@ -6,7 +6,7 @@ namespace Modules.Employees.Contracts;
 
 public interface IEmployeeApi
 {
-    Task<Result<EmployeeResponse>> GetEmployeeByBadgeAsync(int badge, CancellationToken ct = default);
+    Task<Result<EmployeeResponse>> GetEmployeeByBadgeAsync(int badge, DateOnly punchDate, CancellationToken ct = default);
     Task<Result<EmployeeResponse>> GetEmployeeByIdAsync(string id, CancellationToken ct = default);
     Task<Result<IReadOnlyList<EmployeeResponse>>> GetEmployeesByBadgesAsync(
         IReadOnlyCollection<int> badges,
@@ -37,5 +37,15 @@ public sealed record WorkScheduleReadDto(
     TimeOnly BreakEndTime,
     int AllowedCheckInLatenessMinutes,
     int AllowedCheckOutEarlinessMinutes,
-    bool IsActive
+    bool IsActive,
+    DateTime ShiftStartDateTime,
+    DateTime ShiftEndtDateTime,
+    DateTime BreakStartDateTime,
+    DateTime BreakEndDateTime,
+    EmployeeWorkStatus WorkStatus
 );
+public enum EmployeeWorkStatus
+{
+    Work = 1,
+    Rest = 2
+};

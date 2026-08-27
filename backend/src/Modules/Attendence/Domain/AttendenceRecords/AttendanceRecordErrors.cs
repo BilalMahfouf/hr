@@ -7,6 +7,9 @@ namespace Modules.Attendence.Domain.AttendenceRecords;
 
 public static class AttendanceRecordErrors
 {
+    public static Error EmployeeIsOnRestDay =>
+        Error.Conflict($"{nameof(AttendanceRecord)}.${nameof(EmployeeIsOnRestDay)}",
+            "Employee is on a rest day.");
     public static Error InvalidAttendanceTimeRange =>
         Error.Conflict($"{nameof(AttendanceRecord)}.${nameof(InvalidAttendanceTimeRange)}",
             "Check-out time must be after check-in time.");
