@@ -108,7 +108,7 @@ public sealed class EmployeeGroup : Entity
         _workSchedules.Add(newSchedule);
     }
 
-    public void UpdateWorkSchedule(UpdateWorkScheduleDto schedule)
+    public WorkSchedule UpdateWorkSchedule(UpdateWorkScheduleDto schedule)
     {
         var existingSchedule = _workSchedules.FirstOrDefault(ws => ws.Id == schedule.Id);
         if (existingSchedule is null)
@@ -121,8 +121,14 @@ public sealed class EmployeeGroup : Entity
             throw new DomainException(EmployeeGroupErrors.WorkScheduleBelongsToAnotherGroup);
         }
 
+        var isReferenced = _rotationEntries.Any(re => re.WorkScheduleId == schedule.Id);
+        if (isReferenced)
+        {
+            throw new DomainException(EmployeeGroupErrors.WorkScheduleInUse);
+        }
+
         _workSchedules.Remove(existingSchedule);
-        _workSchedules.Add(WorkSchedule.Create(
+        var updated = WorkSchedule.Create(
             schedule.EmployeeGroupId,
             schedule.ShiftStartTime,
             schedule.ShiftEndTime,
@@ -130,7 +136,9 @@ public sealed class EmployeeGroup : Entity
             schedule.BreakEndTime,
             schedule.AllowedCheckInLatenessMinutes,
             schedule.AllowedCheckOutEarlinessMinutes,
-            schedule.EndDayOffset));
+            schedule.EndDayOffset);
+        _workSchedules.Add(updated);
+        return updated;
     }
 
     public void RemoveWorkSchedule(WorkScheduleId scheduleId)
@@ -215,6 +223,31 @@ public sealed class EmployeeGroup : Entity
         _rotationEntries.Remove(entry);
     }
 
+    public RotationEntry ReplaceRotationEntry(int position, int newPosition, WorkScheduleId? workScheduleId)
+    {
+        if (newPosition < 1)
+            throw new DomainException(RotationEntryErrors.InvalidPosition);
+
+        var entry = _rotationEntries.FirstOrDefault(re => re.Position == position);
+        if (entry is null)
+            throw new DomainException(EmployeeGroupErrors.RotationEntryNotFound);
+
+        if (newPosition != position && _rotationEntries.Any(re => re.Position == newPosition))
+            throw new DomainException(EmployeeGroupErrors.DuplicateRotationPosition);
+
+        if (workScheduleId.HasValue)
+        {
+            var schedule = _workSchedules.FirstOrDefault(ws => ws.Id == workScheduleId.Value);
+            if (schedule is null)
+                throw new DomainException(EmployeeGroupErrors.WorkScheduleNotFound);
+        }
+
+        _rotationEntries.Remove(entry);
+        var newEntry = RotationEntry.Create(Id, newPosition, workScheduleId);
+        _rotationEntries.Add(newEntry);
+        return newEntry;
+    }
+
     public void ReplaceRotationEntries(IReadOnlyList<(int Position, WorkScheduleId? WorkScheduleId)> entries)
     {
         if (entries.Count == 0)
@@ -239,6 +272,42 @@ public sealed class EmployeeGroup : Entity
         {
             var entry = RotationEntry.Create(Id, position, workScheduleId);
             _rotationEntries.Add(entry);
+        }
+    }
+
+    public void ReplaceSchedulesAndRotations(
+        IReadOnlyList<CreateWorkScheduleDto> schedules,
+        IReadOnlyList<(int Position, int? WorkScheduleIndex)> rotationEntries)
+    {
+        if (rotationEntries.Count == 0)
+            throw new DomainException(EmployeeGroupErrors.InvalidRotationCount);
+
+        var positions = rotationEntries.Select(e => e.Position).ToList();
+        if (positions.Distinct().Count() != positions.Count)
+            throw new DomainException(EmployeeGroupErrors.DuplicateRotationPosition);
+
+        // Validate schedule indices before mutating any state.
+        foreach (var (_, scheduleIndex) in rotationEntries)
+        {
+            if (scheduleIndex.HasValue && (scheduleIndex.Value < 0 || scheduleIndex.Value >= schedules.Count))
+                throw new DomainException(EmployeeGroupErrors.WorkScheduleNotFound);
+        }
+
+        _rotationEntries.Clear();
+        _workSchedules.Clear();
+
+        foreach (var schedule in schedules)
+        {
+            AddWorkSchedule(schedule);
+        }
+
+        var createdSchedules = _workSchedules.ToList();
+        foreach (var (position, scheduleIndex) in rotationEntries)
+        {
+            var workScheduleId = scheduleIndex.HasValue
+                ? createdSchedules[scheduleIndex.Value].Id
+                : (WorkScheduleId?)null;
+            _rotationEntries.Add(RotationEntry.Create(Id, position, workScheduleId));
         }
     }
 

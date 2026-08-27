@@ -13,6 +13,11 @@ public static class EmployeeGroupErrors
             $"{nameof(EmployeeGroup)}.{nameof(InvalidName)}",
             "Employee group name cannot be null, empty or whitespace.");
 
+    public static Error NameAlreadyExists =>
+        Error.Conflict(
+            $"{nameof(EmployeeGroup)}.{nameof(NameAlreadyExists)}",
+            "An employee group with this name already exists.");
+
     public static Error InvalidNumberOfRotations =>
         Error.Validation(
             $"{nameof(EmployeeGroup)}.{nameof(InvalidNumberOfRotations)}",

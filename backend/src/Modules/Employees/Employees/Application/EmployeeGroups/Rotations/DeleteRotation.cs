@@ -1,12 +1,13 @@
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
 using Modules.Employees.Application.Abstractions;
 using Modules.Employees.Domain.EmployeeGroups;
-using Modules.Employees.Domain.EmployeeGroups.Rotation;
 using Modules.Shared.CQRS;
 using Modules.Shared.Endpoints;
 using Modules.Shared.Results;
-using PublicApi.Features.EmployeeGroups;
 
-namespace PublicApi.Features.EmployeeGroups.Rotations;
+namespace Modules.Employees.Application.EmployeeGroups.Rotations;
 
 public static class DeleteRotation
 {
@@ -19,13 +20,15 @@ public static class DeleteRotation
             DeleteRotationCommand command,
             CancellationToken cancellationToken = default)
         {
-            var group = await repository.GetByIdWithDetailsAsync(new EmployeeGroupId(command.EmployeeGroupId), cancellationToken);
+            var group = await repository.GetByIdWithDetailsAsync(
+                new EmployeeGroupId(command.EmployeeGroupId), cancellationToken);
             if (group is null)
             {
                 return Result.Failure(EmployeeGroupErrors.NotFound);
             }
 
-            var entry = group.RotationEntries.FirstOrDefault(re => re.Position == command.Position);
+            var entry = group.RotationEntries
+                .FirstOrDefault(re => re.Position == command.Position);
             if (entry is null)
             {
                 return Result.Failure(EmployeeGroupErrors.RotationEntryNotFound);

@@ -1,12 +1,14 @@
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
 using Modules.Employees.Application.Abstractions;
 using Modules.Employees.Domain.EmployeeGroups;
 using Modules.Employees.Domain.EmployeeGroups.WorkSchedules;
 using Modules.Shared.CQRS;
 using Modules.Shared.Endpoints;
 using Modules.Shared.Results;
-using PublicApi.Features.EmployeeGroups;
 
-namespace PublicApi.Features.EmployeeGroups.WorkSchedules;
+namespace Modules.Employees.Application.EmployeeGroups.WorkSchedules;
 
 public static class DeleteWorkSchedule
 {
@@ -19,19 +21,20 @@ public static class DeleteWorkSchedule
             DeleteWorkScheduleCommand command,
             CancellationToken cancellationToken = default)
         {
-            var group = await repository.GetByIdWithDetailsAsync(new EmployeeGroupId(command.EmployeeGroupId), cancellationToken);
+            var group = await repository.GetByIdWithDetailsAsync(
+                new EmployeeGroupId(command.EmployeeGroupId), cancellationToken);
             if (group is null)
             {
                 return Result.Failure(EmployeeGroupErrors.NotFound);
             }
 
-            var schedule = group.WorkSchedules.FirstOrDefault(ws => ws.Id == new WorkScheduleId(command.ScheduleId));
+            var schedule = group.WorkSchedules
+                .FirstOrDefault(ws => ws.Id == new WorkScheduleId(command.ScheduleId));
             if (schedule is null)
             {
                 return Result.Failure(EmployeeGroupErrors.WorkScheduleNotFound);
             }
 
-            // Check if schedule is referenced by rotation
             var isReferenced = group.RotationEntries.Any(re => re.WorkScheduleId == schedule.Id);
             if (isReferenced)
             {
@@ -62,7 +65,7 @@ public static class DeleteWorkSchedule
             .RequireAuthorization()
             .WithTags("EmployeeGroups")
             .WithSummary("Delete work schedule")
-            .WithDescription("Deletes a work schedule. Cannot delete if schedule is referenced by rotation entries.")
+            .WithDescription("Deletes a work schedule. Cannot delete if the schedule is referenced by rotation entries.")
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status409Conflict)

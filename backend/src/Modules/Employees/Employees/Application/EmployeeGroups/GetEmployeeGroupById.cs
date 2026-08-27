@@ -1,11 +1,13 @@
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
 using Modules.Employees.Application.Abstractions;
 using Modules.Employees.Domain.EmployeeGroups;
 using Modules.Shared.CQRS;
 using Modules.Shared.Endpoints;
 using Modules.Shared.Results;
-using PublicApi.Features.EmployeeGroups;
 
-namespace PublicApi.Features.EmployeeGroups;
+namespace Modules.Employees.Application.EmployeeGroups;
 
 public static class GetEmployeeGroupById
 {
@@ -22,42 +24,7 @@ public static class GetEmployeeGroupById
                 return Result<EmployeeGroupResponse>.Failure(EmployeeGroupErrors.NotFound);
             }
 
-            var response = MapToResponse(group);
-            return Result<EmployeeGroupResponse>.Success(response);
-        }
-
-        private static EmployeeGroupResponse MapToResponse(EmployeeGroup group)
-        {
-            var workSchedules = group.WorkSchedules.Select(ws => new WorkScheduleResponse(
-                ws.Id.Value,
-                ws.EmployeeGroupId.Value,
-                ws.ShiftStartTime,
-                ws.ShiftEndTime,
-                ws.BreakStartTime,
-                ws.BreakEndTime,
-                ws.EndDayOffset,
-                ws.AllowedCheckInLatenessMinutes,
-                ws.AllowedCheckOutEarlinessMinutes,
-                ws.IsActive,
-                ws.CreatedOnUtc)).ToList();
-
-            var rotationEntries = group.RotationEntries.Select(re => new RotationEntryResponse(
-                re.Id.Value,
-                re.EmployeeGroupId.Value,
-                re.Position,
-                re.WorkScheduleId?.Value,
-                re.Status.ToString())).ToList();
-
-            return new EmployeeGroupResponse(
-                group.Id.Value,
-                group.Name,
-                group.IsSecurity,
-                group.Description,
-                group.RotationStartDate,
-                group.NumberOfRotations,
-                workSchedules,
-                rotationEntries,
-                group.CreatedOnUtc);
+            return Result<EmployeeGroupResponse>.Success(EmployeeGroupMapper.ToResponse(group));
         }
     }
 

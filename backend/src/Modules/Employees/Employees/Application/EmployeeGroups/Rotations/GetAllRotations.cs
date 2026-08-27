@@ -1,12 +1,13 @@
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
 using Modules.Employees.Application.Abstractions;
 using Modules.Employees.Domain.EmployeeGroups;
-using Modules.Employees.Domain.EmployeeGroups.Rotation;
 using Modules.Shared.CQRS;
 using Modules.Shared.Endpoints;
 using Modules.Shared.Results;
-using PublicApi.Features.EmployeeGroups;
 
-namespace PublicApi.Features.EmployeeGroups.Rotations;
+namespace Modules.Employees.Application.EmployeeGroups.Rotations;
 
 public static class GetAllRotations
 {
@@ -17,20 +18,17 @@ public static class GetAllRotations
             GetAllRotationsQuery query,
             CancellationToken cancellationToken = default)
         {
-            var group = await repository.GetByIdAsync(new EmployeeGroupId(query.EmployeeGroupId), cancellationToken);
+            var group = await repository.GetByIdWithDetailsAsync(
+                new EmployeeGroupId(query.EmployeeGroupId), cancellationToken);
             if (group is null)
             {
                 return Result<IReadOnlyList<RotationEntryResponse>>.Failure(EmployeeGroupErrors.NotFound);
             }
 
-            var rotations = await repository.GetRotationEntriesByGroupIdAsync(new EmployeeGroupId(query.EmployeeGroupId), cancellationToken);
-
-            var response = rotations.Select(re => new RotationEntryResponse(
-                re.Id.Value,
-                re.EmployeeGroupId.Value,
-                re.Position,
-                re.WorkScheduleId?.Value,
-                re.Status.ToString())).ToList();
+            var response = group.RotationEntries
+                .OrderBy(re => re.Position)
+                .Select(EmployeeGroupMapper.ToResponse)
+                .ToList();
 
             return Result<IReadOnlyList<RotationEntryResponse>>.Success(response);
         }

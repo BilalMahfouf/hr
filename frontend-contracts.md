@@ -80,17 +80,19 @@ interface CreateWorkScheduleRequest {
 
 interface CreateRotationEntryRequest {
   position: number;                     // Required, >= 1, unique within group
-  workScheduleId: string | null;        // Guid of schedule in workSchedules[], or null for Rest
+  workScheduleIndex: number | null;     // 0-based index into workSchedules[], or null for Rest
 }
 ```
+
+**IMPORTANT — index-based references:** Schedules get their GUIDs generated server-side, so when creating a group (or replacing schedules+rotations) rotation entries reference schedules by **index** in the `workSchedules` array (0-based). The API resolves each index to the created schedule's real ID. A `null` index means a Rest day.
 
 **Validation Rules (enforced by API):**
 - `shiftStartTime < shiftEndTime` (unless `endDayOffset > 0`)
 - `breakStartTime < breakEndTime` (unless `endDayOffset > 0`)
 - `breakStartTime >= shiftStartTime` && `breakEndTime <= shiftEndTime`
 - `rotationEntries[position]` must be unique
-- `rotationEntries[].workScheduleId` must reference a schedule in `workSchedules[]` (or be null)
-- `rotationStartDate` cannot be in the past (business rule)
+- `rotationEntries[].workScheduleIndex` must be a valid index into `workSchedules[]` (or null)
+- At least one rotation entry is required
 
 ---
 
@@ -136,7 +138,7 @@ interface UpdateWorkScheduleRequest {
 // POST /rotations/work
 interface CreateWorkRotationRequest {
   position: number;                     // >= 1, unique
-  workScheduleId: string;               // Required, must exist in group
+  workScheduleId: string;               // Required Guid, must exist in group
 }
 
 // POST /rotations/rest
@@ -144,12 +146,14 @@ interface CreateRestRotationRequest {
   position: number;                     // >= 1, unique
 }
 
-// PUT /rotations/{position}
+// PUT /rotations/{position} — full replacement semantics
 interface UpdateRotationRequest {
-  newPosition?: number;                 // Optional, >= 1, unique if changed
-  workScheduleId?: string | null;       // Optional, Guid or null (null = Rest)
+  newPosition?: number;                 // Optional, >= 1; omitted = keep current position
+  workScheduleId?: string | null;       // Guid = work day; null/omitted = rest day
 }
 ```
+
+> **PUT semantics:** `workScheduleId` is a full-replacement field. Send a Guid to make the entry a work day (referencing an existing schedule in the group), or `null`/omit it to make it a rest day. `newPosition` is optional and defaults to the current position.
 
 ---
 
@@ -242,11 +246,11 @@ Authorization: Bearer <token>
     }
   ],
   "rotationEntries": [
-    { "position": 1, "workScheduleId": "<schedule-1-id>" },
-    { "position": 2, "workScheduleId": "<schedule-2-id>" },
-    { "position": 3, "workScheduleId": "<schedule-3-id>" },
-    { "position": 4, "workScheduleId": null },
-    { "position": 5, "workScheduleId": null }
+    { "position": 1, "workScheduleIndex": 0 },
+    { "position": 2, "workScheduleIndex": 1 },
+    { "position": 3, "workScheduleIndex": 2 },
+    { "position": 4, "workScheduleIndex": null },
+    { "position": 5, "workScheduleIndex": null }
   ]
 }
 ```
@@ -307,7 +311,7 @@ Authorization: Bearer <token>
 └─────────────────────────────────────────────────────────────┘
 ```
 - **Single submit** → `POST /employee-groups` with full payload
-- Validate client-side: times, unique positions, workScheduleId references
+- Validate client-side: times, unique positions, workScheduleIndex bounds
 - Show inline errors from 400 response
 
 ---
@@ -438,8 +442,8 @@ interface CreateWorkScheduleRequest {
 }
 
 interface CreateRotationEntryRequest {
-  position: number;
-  workScheduleId: Guid | null;
+  position: number;                     // >= 1, unique
+  workScheduleIndex: number | null;     // 0-based index into workSchedules[], null = Rest
 }
 
 interface UpdateEmployeeGroupRequest {

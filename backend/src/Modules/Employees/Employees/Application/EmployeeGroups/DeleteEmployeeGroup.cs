@@ -1,11 +1,13 @@
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
 using Modules.Employees.Application.Abstractions;
 using Modules.Employees.Domain.EmployeeGroups;
 using Modules.Shared.CQRS;
 using Modules.Shared.Endpoints;
 using Modules.Shared.Results;
-using PublicApi.Features.EmployeeGroups;
 
-namespace PublicApi.Features.EmployeeGroups;
+namespace Modules.Employees.Application.EmployeeGroups;
 
 public static class DeleteEmployeeGroup
 {
@@ -18,7 +20,7 @@ public static class DeleteEmployeeGroup
             DeleteEmployeeGroupCommand command,
             CancellationToken cancellationToken = default)
         {
-            var group = await repository.GetByIdAsync(new EmployeeGroupId(command.Id), cancellationToken);
+            var group = await repository.GetByIdWithDetailsAsync(new EmployeeGroupId(command.Id), cancellationToken);
             if (group is null)
             {
                 return Result.Failure(EmployeeGroupErrors.NotFound);

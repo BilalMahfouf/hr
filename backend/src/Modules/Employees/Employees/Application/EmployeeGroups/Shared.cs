@@ -2,11 +2,8 @@ using Modules.Employees.Domain.EmployeeGroups;
 using Modules.Employees.Domain.EmployeeGroups.Rotation;
 using Modules.Employees.Domain.EmployeeGroups.WorkSchedules;
 using Modules.Shared.CQRS;
-using Modules.Shared.Results;
-using System;
-using System.Collections.Generic;
 
-namespace PublicApi.Features.EmployeeGroups;
+namespace Modules.Employees.Application.EmployeeGroups;
 
 public sealed record EmployeeGroupResponse(
     Guid Id,
@@ -39,14 +36,6 @@ public sealed record RotationEntryResponse(
     Guid? WorkScheduleId,
     string Status);
 
-public sealed record CreateEmployeeGroupRequest(
-    string Name,
-    bool IsSecurity,
-    string? Description,
-    DateOnly RotationStartDate,
-    IReadOnlyList<CreateWorkScheduleRequest> WorkSchedules,
-    IReadOnlyList<CreateRotationEntryRequest> RotationEntries);
-
 public sealed record CreateWorkScheduleRequest(
     TimeOnly ShiftStartTime,
     TimeOnly ShiftEndTime,
@@ -54,11 +43,19 @@ public sealed record CreateWorkScheduleRequest(
     TimeOnly BreakEndTime,
     int EndDayOffset,
     int AllowedCheckInLatenessMinutes,
-    int AllowedCheckOutEarlinessMinutes);
+    int AllowedCheckOutEarlinessMinutes) : IWorkSchedulePayload;
 
 public sealed record CreateRotationEntryRequest(
     int Position,
-    Guid? WorkScheduleId);
+    int? WorkScheduleIndex);
+
+public sealed record CreateEmployeeGroupRequest(
+    string Name,
+    bool IsSecurity,
+    string? Description,
+    DateOnly RotationStartDate,
+    IReadOnlyList<CreateWorkScheduleRequest> WorkSchedules,
+    IReadOnlyList<CreateRotationEntryRequest> RotationEntries);
 
 public sealed record UpdateEmployeeGroupRequest(
     string? Name,
@@ -76,7 +73,7 @@ public sealed record UpdateWorkScheduleRequest(
     TimeOnly BreakEndTime,
     int EndDayOffset,
     int AllowedCheckInLatenessMinutes,
-    int AllowedCheckOutEarlinessMinutes);
+    int AllowedCheckOutEarlinessMinutes) : IWorkSchedulePayload;
 
 public sealed record CreateWorkRotationRequest(
     int Position,
@@ -89,7 +86,6 @@ public sealed record UpdateRotationRequest(
     int? NewPosition,
     Guid? WorkScheduleId);
 
-// Commands/Queries
 public sealed record CreateEmployeeGroupCommand(
     string Name,
     bool IsSecurity,
@@ -123,7 +119,8 @@ public sealed record CreateWorkScheduleCommand(
     TimeOnly BreakEndTime,
     int EndDayOffset,
     int AllowedCheckInLatenessMinutes,
-    int AllowedCheckOutEarlinessMinutes) : ICommand<WorkScheduleResponse>;
+    int AllowedCheckOutEarlinessMinutes)
+    : IWorkSchedulePayload, ICommand<WorkScheduleResponse>;
 
 public sealed record GetWorkScheduleByIdQuery(Guid EmployeeGroupId, Guid ScheduleId) : IQuery<WorkScheduleResponse>;
 
@@ -136,7 +133,8 @@ public sealed record UpdateWorkScheduleCommand(
     TimeOnly BreakEndTime,
     int EndDayOffset,
     int AllowedCheckInLatenessMinutes,
-    int AllowedCheckOutEarlinessMinutes) : ICommand<WorkScheduleResponse>;
+    int AllowedCheckOutEarlinessMinutes)
+    : IWorkSchedulePayload, ICommand<WorkScheduleResponse>;
 
 public sealed record DeleteWorkScheduleCommand(Guid EmployeeGroupId, Guid ScheduleId) : ICommand;
 
@@ -162,3 +160,40 @@ public sealed record UpdateRotationCommand(
     Guid? WorkScheduleId) : ICommand<RotationEntryResponse>;
 
 public sealed record DeleteRotationCommand(Guid EmployeeGroupId, int Position) : ICommand;
+
+public static class EmployeeGroupMapper
+{
+    public static EmployeeGroupResponse ToResponse(EmployeeGroup group) =>
+        new(
+            group.Id.Value,
+            group.Name,
+            group.IsSecurity,
+            group.Description,
+            group.RotationStartDate,
+            group.NumberOfRotations,
+            group.WorkSchedules.Select(ToResponse).ToList(),
+            group.RotationEntries.Select(ToResponse).ToList(),
+            group.CreatedOnUtc);
+
+    public static WorkScheduleResponse ToResponse(WorkSchedule ws) =>
+        new(
+            ws.Id.Value,
+            ws.EmployeeGroupId.Value,
+            ws.ShiftStartTime,
+            ws.ShiftEndTime,
+            ws.BreakStartTime,
+            ws.BreakEndTime,
+            ws.EndDayOffset,
+            ws.AllowedCheckInLatenessMinutes,
+            ws.AllowedCheckOutEarlinessMinutes,
+            ws.IsActive,
+            ws.CreatedOnUtc);
+
+    public static RotationEntryResponse ToResponse(RotationEntry re) =>
+        new(
+            re.Id.Value,
+            re.EmployeeGroupId.Value,
+            re.Position,
+            re.WorkScheduleId?.Value,
+            re.Status.ToString());
+}

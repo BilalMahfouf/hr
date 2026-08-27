@@ -1,12 +1,14 @@
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
 using Modules.Employees.Application.Abstractions;
 using Modules.Employees.Domain.EmployeeGroups;
 using Modules.Employees.Domain.EmployeeGroups.WorkSchedules;
 using Modules.Shared.CQRS;
 using Modules.Shared.Endpoints;
 using Modules.Shared.Results;
-using PublicApi.Features.EmployeeGroups;
 
-namespace PublicApi.Features.EmployeeGroups.WorkSchedules;
+namespace Modules.Employees.Application.EmployeeGroups.WorkSchedules;
 
 public static class ActivateWorkSchedule
 {
@@ -19,13 +21,15 @@ public static class ActivateWorkSchedule
             ActivateWorkScheduleCommand command,
             CancellationToken cancellationToken = default)
         {
-            var group = await repository.GetByIdWithDetailsAsync(new EmployeeGroupId(command.EmployeeGroupId), cancellationToken);
+            var group = await repository.GetByIdWithDetailsAsync(
+                new EmployeeGroupId(command.EmployeeGroupId), cancellationToken);
             if (group is null)
             {
                 return Result<WorkScheduleResponse>.Failure(EmployeeGroupErrors.NotFound);
             }
 
-            var schedule = group.WorkSchedules.FirstOrDefault(ws => ws.Id == new WorkScheduleId(command.ScheduleId));
+            var schedule = group.WorkSchedules
+                .FirstOrDefault(ws => ws.Id == new WorkScheduleId(command.ScheduleId));
             if (schedule is null)
             {
                 return Result<WorkScheduleResponse>.Failure(EmployeeGroupErrors.WorkScheduleNotFound);
@@ -35,24 +39,7 @@ public static class ActivateWorkSchedule
 
             await dbContext.SaveChangesAsync(cancellationToken);
 
-            var response = MapToResponse(schedule);
-            return Result<WorkScheduleResponse>.Success(response);
-        }
-
-        private static WorkScheduleResponse MapToResponse(WorkSchedule ws)
-        {
-            return new WorkScheduleResponse(
-                ws.Id.Value,
-                ws.EmployeeGroupId.Value,
-                ws.ShiftStartTime,
-                ws.ShiftEndTime,
-                ws.BreakStartTime,
-                ws.BreakEndTime,
-                ws.EndDayOffset,
-                ws.AllowedCheckInLatenessMinutes,
-                ws.AllowedCheckOutEarlinessMinutes,
-                ws.IsActive,
-                ws.CreatedOnUtc);
+            return Result<WorkScheduleResponse>.Success(EmployeeGroupMapper.ToResponse(schedule));
         }
     }
 
