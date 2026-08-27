@@ -93,17 +93,14 @@
     "deleteDialog": {},
     "attendance": {
         "title": "Attendance",
-        "description": "Monitor attendance punches and records",
-        "tabs": {
-            "punches": "Punches",
-            "records": "Attendance Records"
-        },
         "status": {
             "present": "Present",
             "absent": "Absent",
             "open": "Open"
         },
         "punches": {
+            "title": "Punches",
+            "description": "Monitor raw attendance punches captured from machines.",
             "empty": "No punches found.",
             "notFound": "Punch Not Found",
             "notFoundDesc": "The selected punch could not be found.",
@@ -125,6 +122,8 @@
             }
         },
         "records": {
+            "title": "Attendance Records",
+            "description": "Review computed attendance records per employee.",
             "empty": "No attendance records found.",
             "notFound": "Attendance Record Not Found",
             "notFoundDesc": "The selected attendance record could not be found.",

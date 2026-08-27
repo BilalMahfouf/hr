@@ -93,17 +93,14 @@
     "deleteDialog": {},
     "attendance": {
         "title": "Présences",
-        "description": "Consultez les pointeuses et les relevés de présence",
-        "tabs": {
-            "punches": "Pointeuses",
-            "records": "Relevés de présence"
-        },
         "status": {
             "present": "Présent",
             "absent": "Absent",
             "open": "Ouvert"
         },
         "punches": {
+            "title": "Pointeuses",
+            "description": "Consultez les pointeuses brutes capturées par les machines.",
             "empty": "Aucune pointeuse trouvée.",
             "notFound": "Pointeuse introuvable",
             "notFoundDesc": "La pointeuse sélectionnée est introuvable.",
@@ -125,6 +122,8 @@
             }
         },
         "records": {
+            "title": "Relevés de présence",
+            "description": "Consultez les relevés de présence calculés par employé.",
             "empty": "Aucun relevé de présence trouvé.",
             "notFound": "Relevé de présence introuvable",
             "notFoundDesc": "Le relevé de présence sélectionné est introuvable.",

@@ -18,7 +18,8 @@ import MachinesPage from './features/machines/MachinesPage';
 import CreateMachinePage from './features/machines/CreateMachinePage';
 import EditMachinePage from './features/machines/EditMachinePage';
 import ViewMachinePage from './features/machines/ViewMachinePage';
-import AttendancePage from './features/attendance/AttendancePage';
+import PunchesPage from './features/attendance/punches-page';
+import AttendanceRecordsPage from './features/attendance/attendance-records-page';
 import ViewPunchPage from './features/attendance/ViewPunchPage';
 import ViewAttendanceRecordPage from './features/attendance/ViewAttendanceRecordPage';
 import EmployeesPage from './features/employees/employees-page';
@@ -127,11 +128,19 @@ export const router = createBrowserRouter([
         },
         {
             path: '/attendance',
-            element: <AttendancePage />,
+            element: <Navigate to="/attendance/punches" replace />,
+        },
+        {
+            path: '/attendance/punches',
+            element: <PunchesPage />,
         },
         {
             path: '/attendance/punches/:punchId',
             element: <ViewPunchPage />,
+        },
+        {
+            path: '/attendance/records',
+            element: <AttendanceRecordsPage />,
         },
         {
             path: '/attendance/records/:attendanceRecordId',

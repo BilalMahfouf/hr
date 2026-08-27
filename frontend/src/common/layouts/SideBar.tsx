@@ -38,9 +38,14 @@ const navigationItems: (NavLinkItem | CollapsibleItem)[] = [
   { pathname: "/users", key: i18nKeyContainer.staff.title, icon: Shield, requiresAdmin: true },
   { pathname: "/subscription-plans", key: i18nKeyContainer.subscriptionPlansNav, icon: CreditCard, requiresAdmin: true },
   { pathname: "/machines", key: i18nKeyContainer.machines.title, icon: ScanLine, requiresAdmin: true },
-  // Note: Attendance & Settings use internal tabs (no sub-URLs yet).
-  // Switch them to CollapsibleSideBarItem when dedicated routes exist.
-  { pathname: "/attendance", key: i18nKeyContainer.attendance.title, icon: CalendarClock },
+  {
+    labelKey: i18nKeyContainer.attendance.title,
+    icon: CalendarClock,
+    children: [
+      { pathname: "/attendance/punches", key: i18nKeyContainer.attendance.punches.title },
+      { pathname: "/attendance/records", key: i18nKeyContainer.attendance.records.title },
+    ],
+  },
   {
     labelKey: i18nKeyContainer.employees.title,
     icon: Users,

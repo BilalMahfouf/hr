@@ -121,7 +121,7 @@ export default function ViewPunchPage() {
         <Button
           variant="outline"
           className="h-10 cursor-pointer border-slate-200 bg-white hover:bg-slate-50"
-          onClick={() => navigate("/attendance")}
+          onClick={() => navigate("/attendance/punches")}
         >
           <ArrowLeft className="h-4 w-4 rtl:rotate-180" />
           {t(i18nKeyContainer.common.back)}

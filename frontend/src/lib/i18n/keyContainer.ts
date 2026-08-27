@@ -648,17 +648,14 @@ const i18nKeyContainer = {
     deleteDialog: {},
     attendance: {
         title: 'attendance.title',
-        description: 'attendance.description',
-        tabs: {
-            punches: 'attendance.tabs.punches',
-            records: 'attendance.tabs.records',
-        },
         status: {
             present: 'attendance.status.present',
             absent: 'attendance.status.absent',
             open: 'attendance.status.open',
         },
         punches: {
+            title: 'attendance.punches.title',
+            description: 'attendance.punches.description',
             empty: 'attendance.punches.empty',
             notFound: 'attendance.punches.notFound',
             notFoundDesc: 'attendance.punches.notFoundDesc',
@@ -680,6 +677,8 @@ const i18nKeyContainer = {
             },
         },
         records: {
+            title: 'attendance.records.title',
+            description: 'attendance.records.description',
             empty: 'attendance.records.empty',
             notFound: 'attendance.records.notFound',
             notFoundDesc: 'attendance.records.notFoundDesc',
