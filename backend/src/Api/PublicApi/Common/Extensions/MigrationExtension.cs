@@ -23,7 +23,7 @@ public static class MigrationExtension
         attendanceDb.Database.Migrate();
 
         var employeesDb = scope.ServiceProvider.GetRequiredService<EmployeeDbContext>();
-        employeesDb.Database.Migrate();
+        //employeesDb.Database.Migrate();
 
         using ApplicationDbContext dbContext =
             scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();

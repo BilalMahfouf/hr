@@ -22,7 +22,7 @@ namespace PublicApi.Features
 
                 app.MapGet("/employees/Bdg", async (IEmployeeApi api, CancellationToken ct = default) =>
                               {
-                                  var employee =await  api.GetEmployeeByBadgeAsync(82);
+                                  var employee =await  api.GetEmployeeByBadgeAsync(82,DateOnly.MinValue);
                                   if (employee is null)
                                   {
                                       return Results.NotFound("hola, no found ");

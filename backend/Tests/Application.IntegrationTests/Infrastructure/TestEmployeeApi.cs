@@ -12,6 +12,7 @@ public sealed class TestEmployeeApi : IEmployeeApi
 
     public Task<Result<EmployeeResponse>> GetEmployeeByBadgeAsync(
         int badge,
+        DateOnly punchDate,
         CancellationToken ct = default)
     {
         return Task.FromResult(Response);

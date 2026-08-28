@@ -317,11 +317,11 @@ public sealed class EmployeeGroup : Entity
         return rotation?.Status is RotationStatus.Work ? true : false;
     }
 
-    private RotationEntry? GetRotation(DateOnly date)
+    public RotationEntry? GetRotation(DateOnly date)
     {
         if (date < RotationStartDate)
         {
-            throw new DomainException();
+            return null;
         }
         var daysElapsed = date.DayNumber - RotationStartDate.DayNumber;
         var position = (daysElapsed % NumberOfRotations) + 1;

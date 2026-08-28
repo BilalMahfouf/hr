@@ -34,6 +34,16 @@ public sealed class EmployeeGroupRepository : IEmployeeGroupRepository
             .FirstOrDefaultAsync(g => g.Name.ToLower() == name.ToLower(), ct);
     }
 
+    public async Task<EmployeeGroup?> GetByNameWithDetailsAsync(string name, CancellationToken ct = default)
+    {
+        return await _dbContext.EmployeeGroups
+            .AsNoTracking()
+            .Include(g => g.WorkSchedules)
+            .Include(g => g.RotationEntries)
+                .ThenInclude(re => re.WorkSchedule)
+            .FirstOrDefaultAsync(g => g.Name.ToLower() == name.ToLower(), ct);
+    }
+
     public async Task<IReadOnlyList<EmployeeGroup>> GetAllAsync(CancellationToken ct = default)
     {
         return await _dbContext.EmployeeGroups

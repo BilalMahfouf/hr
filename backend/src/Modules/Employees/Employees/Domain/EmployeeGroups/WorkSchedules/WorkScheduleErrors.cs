@@ -28,4 +28,8 @@ public static class WorkScheduleErrors
         Error.Validation(
             $"{nameof(WorkSchedule)}.{nameof(InvalidCheckOutEarliness)}",
             "Allowed check-out earliness minutes cannot be negative.");
+ public static Error InvalidEndDayOffset =>
+        Error.Validation(
+            code: $"{nameof(WorkSchedule)}.{nameof(InvalidEndDayOffset)}",
+            description: "End day offset must be greater than or equal to zero.");
 }

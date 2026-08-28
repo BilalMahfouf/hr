@@ -20,23 +20,35 @@ public static class CreateAttendenceRecord
 
     public sealed class CommandHandler(IEmployeeApi employeeApi, IAttendanceDbContext db) : ICommandHandler<Command>
     {
+
+
         public async Task<Result> Handle(Command command, CancellationToken cancellationToken = default)
         {
-            var employee = await employeeApi.GetEmployeeByBadgeAsync(command.EmployeeBadge, cancellationToken);
+            var employee = await employeeApi.GetEmployeeByBadgeAsync(
+                command.EmployeeBadge,
+                DateOnly.FromDateTime(command.PunchOccurredAt),
+                cancellationToken);
             if (!employee.IsSuccess)
             {
                 return Result.Failure(EmployeeErrors.NotFound);
             }
+            if (employee.Value.Schedule.WorkStatus == EmployeeWorkStatus.Rest)
+            {
+                return await HandleRestDay(command, employee.Value, cancellationToken);
+            }
+            var workSchedule = employee.Value.Schedule;
 
             var punches = await db.Punches
                .Where(e => e.EmployeeBadge == command.EmployeeBadge &&
-                       e.PunchOccurredAt.Date == command.PunchOccurredAt.Date)
+                       e.PunchOccurredAt.Date >= workSchedule.ShiftStartDateTime.Date &&
+                       e.PunchOccurredAt.Date <= workSchedule.ShiftEndtDateTime.Date)
                .OrderBy(e => e.PunchOccurredAt)
                .ToListAsync(cancellationToken);
 
             var attendanceRecords = await db.AttendanceRecords
                 .Where(e => e.EmployeeId == employee.Value.EmployeeId &&
-                        e.CheckInAt.Date == command.PunchOccurredAt.Date)
+                        e.CheckInAt.Date >= workSchedule.ShiftStartDateTime.Date &&
+                        e.CheckInAt.Date <= workSchedule.ShiftEndtDateTime.Date)
                 .OrderBy(e => e.CheckInAt)
                 .ToListAsync(cancellationToken);
             if (attendanceRecords.Any())
@@ -55,17 +67,9 @@ public static class CreateAttendenceRecord
                     var newRecord = AttendanceRecord.Create(command.MachineId, employee.Value.EmployeeId);
                     try
                     {
-                        var expectedCheckInTime = employee
-                            .Value
-                            .Schedule
-                            .ShiftStartTime
-                            .AddMinutes(employee.Value.Schedule.AllowedCheckInLatenessMinutes);
-
-                        var expectedCheckInDateTime = punch.PunchOccurredAt.Date.Add(expectedCheckInTime.ToTimeSpan());
-                        newRecord.RegisterCheckIn(
-                            punch.PunchOccurredAt,
-                            expectedCheckInDateTime,
-                            lastRecord);
+                        newRecord.RegisterCheckIn(punch.PunchOccurredAt,
+                                                   workSchedule.ShiftStartDateTime,
+                                                   lastRecord);
                     }
                     catch (DomainException)
                     {
@@ -74,20 +78,9 @@ public static class CreateAttendenceRecord
                     newAttendanceRecords.Add(newRecord);
                     continue;
                 }
-                var expectedCheckOutTime = employee
-                    .Value
-                    .Schedule
-                    .ShiftEndTime
-                    .AddMinutes(-employee.Value.Schedule.AllowedCheckOutEarlinessMinutes);
-
-                var expectedCheckOutDateTime = lastRecord.CheckInAt.Date
-                    .Add(expectedCheckOutTime.ToTimeSpan())
-                    .AddDays(employee.Value.Schedule.EndDayOffset);
-
-
                 var schedule = new Modules.Attendence.Domain.AttendenceRecords.WorkSchedule(
-                    employee.Value.Schedule.WorkTime,
-                    expectedCheckOutDateTime);
+                             workSchedule.WorkTime,
+                            workSchedule.ShiftEndtDateTime);
 
                 try
                 {
@@ -102,5 +95,63 @@ public static class CreateAttendenceRecord
             await db.SaveChangesAsync(cancellationToken);
             return Result.Success;
         }
+        private async Task<Result> HandleRestDay(Command command, EmployeeResponse employee, CancellationToken cancellationToken)
+        {
+            var punches = await db.Punches
+                   .Where(e => e.EmployeeBadge == command.EmployeeBadge &&
+                           e.PunchOccurredAt.Date == command.PunchOccurredAt.Date)
+                   .OrderBy(e => e.PunchOccurredAt)
+                   .ToListAsync(cancellationToken);
+
+            var attendanceRecords = await db.AttendanceRecords
+                .Where(e => e.EmployeeId == employee.EmployeeId &&
+                        e.CheckInAt.Date == command.PunchOccurredAt.Date)
+                .OrderBy(e => e.CheckInAt)
+                .ToListAsync(cancellationToken);
+            foreach (var punch in punches)
+            {
+                var lastRecord = attendanceRecords
+                   .OrderBy(e => e.CheckInAt)
+                   .LastOrDefault();
+                // here we assume that the expected check-in and check-out times are both at 8 AM on the punch date,
+                // since it's a rest day and we don't have a work schedule to refer to.
+                var expectedCheckInDate = punch.PunchOccurredAt.Date.AddHours(8);
+                var expectedCheckOutDate = punch.PunchOccurredAt.Date.AddHours(8);
+                if (lastRecord is null || lastRecord.CheckOutAt.HasValue)
+                {
+                    var newRecord = AttendanceRecord.Create(command.MachineId, employee.EmployeeId);
+                    try
+                    {
+                        newRecord.RegisterCheckIn(punch.PunchOccurredAt,
+                                                   expectedCheckInDate,
+                                                   lastRecord);
+                    }
+                    catch (DomainException)
+                    {
+                        continue;
+                    }
+                    attendanceRecords.Add(newRecord);
+                    continue;
+                }
+                // here we assume standared work is 0 hours since today is rest day 
+                var schedule = new Modules.Attendence.Domain.AttendenceRecords.WorkSchedule(
+                             new TimeSpan(0),
+                            expectedCheckOutDate);
+
+                try
+                {
+                    lastRecord.RegisterCheckOut(punch.PunchOccurredAt, schedule);
+                }
+                catch (DomainException)
+                {
+                    continue;
+                }
+            }
+            db.AttendanceRecords.AddRange(attendanceRecords);
+            await db.SaveChangesAsync(cancellationToken);
+            return Result.Success;
+        }
+
+
     }
 }

@@ -59,8 +59,9 @@ public static class GetPunchById
                 .FirstOrDefaultAsync(cancellationToken);
 
             EmployeeResponse? employee = null;
+            // to do refactor this to use new method instead of this .
             var employeeResult = await employeeApi.GetEmployeeByBadgeAsync(
-                punch.EmployeeBadge,
+                punch.EmployeeBadge, DateOnly.MinValue,
                 cancellationToken);
             if (employeeResult.IsSuccess)
             {

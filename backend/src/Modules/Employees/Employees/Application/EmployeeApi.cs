@@ -1,45 +1,20 @@
 ﻿using Modules.Employees.Application.Abstractions;
 using Modules.Employees.Contracts;
+using Modules.Employees.Domain.EmployeeGroups;
+using Modules.Employees.Domain.EmployeeGroups.Rotation;
+using Modules.Employees.Domain.EmployeeGroups.WorkSchedules;
 using Modules.Shared.Results;
-using Modules.Shared.Util;
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 
 namespace Modules.Employees.Application;
 
-public sealed class EmployeeApi(IEmployeeRepository employeeRepo) : IEmployeeApi
+public sealed class EmployeeApi(
+    IEmployeeRepository employeeRepo,
+    IEmployeeGroupRepository employeeGroupRepo) : IEmployeeApi
 {
-    private WorkSchedule GetEmployeeWorkSchedule(string? employeeGroup)
-    {
-        var todayUtc = DateTime.UtcNow.Date;
-
-        return employeeGroup switch
-        {
-            "1" => new WorkSchedule(
-                TimeSpan.FromHours(8),
-                ShiftTimeUtc(todayUtc, 16),
-                ShiftTimeUtc(todayUtc, 8)),
-            "2" => new WorkSchedule(
-                TimeSpan.FromHours(7),
-                ShiftTimeUtc(todayUtc, 16),
-                ShiftTimeUtc(todayUtc, 9)),
-            "3" => new WorkSchedule(
-                TimeSpan.FromHours(6),
-                ShiftTimeUtc(todayUtc, 15),
-                ShiftTimeUtc(todayUtc, 9)),
-            _ => new WorkSchedule(
-                TimeSpan.FromHours(6),
-                ShiftTimeUtc(todayUtc, 15),
-                ShiftTimeUtc(todayUtc, 9))
-        };
-    }
-
-    private static DateTime ShiftTimeUtc(DateTime todayUtc, int localHour)
-        => AttendanceTime.DeviceLocalToUtc(
-            DateTime.SpecifyKind(todayUtc.AddHours(localHour), DateTimeKind.Unspecified));
-
-    public async Task<Result<EmployeeResponse>> GetEmployeeByBadgeAsync(int badge, CancellationToken ct = default)
+    public async Task<Result<EmployeeResponse>> GetEmployeeByBadgeAsync(int badge, DateOnly punchDate, CancellationToken ct = default)
     {
         var employee = await employeeRepo.GetEmployeeByBgdeAsync(badge.ToString(), ct);
         if (employee is null)
@@ -47,7 +22,7 @@ public sealed class EmployeeApi(IEmployeeRepository employeeRepo) : IEmployeeApi
             return Result<EmployeeResponse>.Failure(EmployeeErrors.NotFound);
         }
 
-        return Result<EmployeeResponse>.Success(MapToResponse(employee));
+        return Result<EmployeeResponse>.Success(MapToResponse(employee, punchDate));
     }
 
     public async Task<Result<EmployeeResponse>> GetEmployeeByIdAsync(string id, CancellationToken ct = default)
@@ -58,7 +33,7 @@ public sealed class EmployeeApi(IEmployeeRepository employeeRepo) : IEmployeeApi
             return Result<EmployeeResponse>.Failure(EmployeeErrors.NotFound);
         }
 
-        return Result<EmployeeResponse>.Success(MapToResponse(employee));
+        return Result<EmployeeResponse>.Success(MapToResponse(employee, DateOnly.FromDateTime(DateTime.UtcNow)));
     }
 
     public async Task<Result<IReadOnlyList<EmployeeResponse>>> GetEmployeesByBadgesAsync(
@@ -72,9 +47,10 @@ public sealed class EmployeeApi(IEmployeeRepository employeeRepo) : IEmployeeApi
         var stringBadges = badges.Select(b => b.ToString()).ToList();
 
         var employees = await employeeRepo.GetEmployeesByBgdesAsync(stringBadges, ct);
+        var currentDate = DateOnly.FromDateTime(DateTime.UtcNow);
 
         return Result<IReadOnlyList<EmployeeResponse>>.Success(
-            employees.Select(MapToResponse).ToList());
+            employees.Select(e => MapToResponse(e, currentDate)).ToList());
     }
 
     public async Task<Result<IReadOnlyList<EmployeeResponse>>> GetEmployeesByIdsAsync(
@@ -87,26 +63,114 @@ public sealed class EmployeeApi(IEmployeeRepository employeeRepo) : IEmployeeApi
         }
 
         var employees = await employeeRepo.GetEmployeesByIdsAsync(ids, ct);
+        var currentDate = DateOnly.FromDateTime(DateTime.UtcNow);
 
         return Result<IReadOnlyList<EmployeeResponse>>.Success(
-            employees.Select(MapToResponse).ToList());
+            employees.Select(e => MapToResponse(e, currentDate)).ToList());
     }
 
-    private EmployeeResponse MapToResponse(EmployeeDto employee)
+    private EmployeeResponse MapToResponse(EmployeeDto employee, DateOnly punchDate)
     {
-        //var workSchedule = GetEmployeeWorkSchedule(employee.EmployeeGroup);
-        //int.TryParse(employee.Bdge, out int bdg);
+        var badge = int.TryParse(employee.Bdge, out int parsedBadge) ? parsedBadge : 0;
 
-        //return new EmployeeResponse(
-        //    employee.EmployeeId,
-        //    bdg,
-        //    employee.FullName,
-        //    workSchedule);
-        throw new NotImplementedException();
+        if (string.IsNullOrWhiteSpace(employee.EmployeeGroup))
+        {
+            return new EmployeeResponse(
+                employee.EmployeeId,
+                badge,
+                employee.FullName,
+                null);
+        }
+
+        var group = employeeGroupRepo.GetByNameWithDetailsAsync(employee.EmployeeGroup, CancellationToken.None).Result;
+        if (group is null)
+        {
+            return new EmployeeResponse(
+                employee.EmployeeId,
+                badge,
+                employee.FullName,
+                null);
+        }
+
+        var scheduleDto = BuildWorkScheduleReadDto(group, punchDate);
+        return new EmployeeResponse(
+            employee.EmployeeId,
+            badge,
+            employee.FullName,
+            scheduleDto);
     }
 
-    public Task<Result<WorkScheduleReadDto>> GetEmployeeWorkSchedule(Guid employeeGroupId, CancellationToken ct = default)
+    private WorkScheduleReadDto? BuildWorkScheduleReadDto(EmployeeGroup group, DateOnly punchDate)
     {
-        throw new NotImplementedException();
+        var scheduleResponse = group.GetGroupWorkScheduleInDateTime(punchDate);
+        if (scheduleResponse is null)
+        {
+            return null;
+        }
+
+        var rotation = group.RotationEntries
+            .FirstOrDefault(re => re.Position == group.GetRotation(punchDate)?.Position);
+
+        var workSchedule = rotation?.WorkSchedule;
+        if (workSchedule is null)
+        {
+            return new WorkScheduleReadDto(
+                Guid.Empty,
+                group.Id.Value,
+                default,
+                default,
+                TimeSpan.Zero,
+                0,
+                default,
+                default,
+                0,
+                0,
+                false,
+                scheduleResponse.ExpectedCheckInAt,
+                scheduleResponse.ExpectedCheckoutAt,
+                default,
+                default,
+                EmployeeWorkStatus.Rest);
+        }
+
+        var workStatus = rotation?.Status == RotationStatus.Work ? EmployeeWorkStatus.Work : EmployeeWorkStatus.Rest;
+        var breakStartDateTime = punchDate.ToDateTime(workSchedule.BreakStartTime);
+        var breakEndDateTime = punchDate.ToDateTime(workSchedule.BreakEndTime);
+
+        return new WorkScheduleReadDto(
+            workSchedule.Id.Value,
+            group.Id.Value,
+            workSchedule.ShiftStartTime,
+            workSchedule.ShiftEndTime,
+            workSchedule.WorkTime,
+            workSchedule.EndDayOffset,
+            workSchedule.BreakStartTime,
+            workSchedule.BreakEndTime,
+            workSchedule.AllowedCheckInLatenessMinutes,
+            workSchedule.AllowedCheckOutEarlinessMinutes,
+            workSchedule.IsActive,
+            scheduleResponse.ExpectedCheckInAt,
+            scheduleResponse.ExpectedCheckoutAt,
+            breakStartDateTime,
+            breakEndDateTime,
+            workStatus);
+    }
+
+    public async Task<Result<WorkScheduleReadDto>> GetEmployeeWorkSchedule(Guid employeeGroupId, CancellationToken ct = default)
+    {
+        var group = await employeeGroupRepo.GetByIdWithDetailsAsync(new EmployeeGroupId(employeeGroupId), ct);
+        if (group is null)
+        {
+            return Result<WorkScheduleReadDto>.Failure(EmployeeGroupErrors.NotFound);
+        }
+
+        var punchDate = DateOnly.FromDateTime(DateTime.UtcNow);
+        var scheduleDto = BuildWorkScheduleReadDto(group, punchDate);
+        if (scheduleDto is null)
+        {
+            return Result<WorkScheduleReadDto>.Failure(EmployeeGroupErrors.RotationEntryNotFound);
+        }
+
+        return Result<WorkScheduleReadDto>.Success(scheduleDto);
     }
 }
