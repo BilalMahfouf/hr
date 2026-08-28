@@ -508,16 +508,14 @@ public sealed class EmployeeGroupTests
     #region GetRotation
 
     [Fact]
-    public void GetRotation_WhenDateBeforeStart_ThrowsDomainException()
+    public void GetRotation_WhenDateBeforeStart_ReturnsNull()
     {
         var group = CreateGroup();
 
-        var method = typeof(EmployeeGroup).GetMethod("GetRotation",
-            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-
-        Assert.NotNull(method);
         var pastDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(-10));
-        Assert.ThrowsAny<Exception>(() => method.Invoke(group, [pastDate]));
+        var rotation = group.GetRotation(pastDate);
+
+        Assert.Null(rotation);
     }
 
     #endregion
