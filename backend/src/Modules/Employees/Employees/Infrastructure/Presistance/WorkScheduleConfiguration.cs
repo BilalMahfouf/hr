@@ -71,7 +71,7 @@ public sealed class WorkScheduleConfiguration
         builder.HasOne(x => x.EmployeeGroup)
             .WithMany(x => x.WorkSchedules)
             .HasForeignKey(x => x.EmployeeGroupId)
-            .OnDelete(DeleteBehavior.Restrict)
+            .OnDelete(DeleteBehavior.Cascade)
             .HasConstraintName("fk_work_schedules_employee_groups_employee_group_id");
     }
 }

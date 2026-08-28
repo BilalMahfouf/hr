@@ -112,8 +112,9 @@ public sealed class WorkScheduleCrudTests : EmployeeGroupsTestBase
         Assert.Equal(TimeOnly.FromTimeSpan(TimeSpan.FromHours(14)), result.Value.ShiftEndTime);
 
         var saved = await db.WorkSchedules.AsNoTracking()
-            .SingleAsync(s => s.Id == schedule.Id);
+            .SingleAsync(s => s.EmployeeGroupId == group.Id);
         Assert.Equal(TimeOnly.FromTimeSpan(TimeSpan.FromHours(6)), saved.ShiftStartTime);
+        Assert.Equal(TimeOnly.FromTimeSpan(TimeSpan.FromHours(14)), saved.ShiftEndTime);
     }
 
     [Fact]
