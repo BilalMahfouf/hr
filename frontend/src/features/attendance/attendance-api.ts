@@ -24,6 +24,22 @@ export type AttendanceRecord = {
   isAbsent: boolean;
 };
 
+export type PunchPollingSettings = {
+  isEnabled: boolean;
+  intervalMinutes: number;
+  updatedAt: string;
+};
+
+export type UpdatePunchPollingSettingsRequest = {
+  isEnabled: boolean;
+  intervalMinutes: number;
+};
+
+export type PullNowResponse = {
+  machineCount: number;
+  punchCount: number;
+};
+
 const attendanceApi = {
   getAllPunches: async (request: TableRequest): Promise<PagedList<PunchRecord>> => {
     const params = getTableRequsestParams(request);
@@ -62,6 +78,34 @@ const attendanceApi = {
 
     if (result.status !== 200) {
       throw new Error(i18n.t(i18nKeyContainer.errors.attendance.fetchRecord));
+    }
+
+    return result.data;
+  },
+
+  getPunchPollingSettings: async (): Promise<PunchPollingSettings> => {
+    const result = await api.get<PunchPollingSettings>("/attendance/punch-polling");
+
+    if (result.status !== 200) {
+      throw new Error(i18n.t(i18nKeyContainer.errors.attendance.fetchPollingSettings));
+    }
+
+    return result.data;
+  },
+
+  updatePunchPollingSettings: async (data: UpdatePunchPollingSettingsRequest): Promise<void> => {
+    const result = await api.put("/attendance/punch-polling", data);
+
+    if (result.status !== 204) {
+      throw new Error(i18n.t(i18nKeyContainer.errors.attendance.updatePollingSettings));
+    }
+  },
+
+  runPunchPollingNow: async (): Promise<PullNowResponse> => {
+    const result = await api.post<PullNowResponse>("/attendance/punch-polling/run");
+
+    if (result.status !== 200) {
+      throw new Error(i18n.t(i18nKeyContainer.errors.attendance.runPollingNow));
     }
 
     return result.data;

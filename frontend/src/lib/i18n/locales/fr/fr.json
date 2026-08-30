@@ -145,6 +145,20 @@
                 "workedTime": "Temps de travail",
                 "status": "Statut"
             }
+        },
+        "punchPolling": {
+            "title": "Sondage des pointeuses",
+            "description": "Configurez la collecte automatique des pointages depuis les machines de présence.",
+            "cardTitle": "Collecte automatique des pointages",
+            "cardDescription": "Configurez le système pour récupérer automatiquement les pointages des machines de présence à intervalles réguliers.",
+            "enabled": "Activé",
+            "enabledDescription": "Activez la collecte automatique des pointages de toutes les machines actives.",
+            "interval": "Intervalle de sondage",
+            "intervalDescription": "Fréquence à laquelle le système doit récupérer les pointages des machines.",
+            "minutes": "minutes",
+            "allowedRange": "Plage autorisée : 10-60 minutes",
+            "pullNow": "Récupérer maintenant",
+            "genericError": "Échec de la mise à jour des paramètres de sondage des pointeuses"
         }
     },
     "table": {
@@ -450,6 +464,11 @@
             "pushEnabled": "Notifications bureau activées.",
             "pushDisabled": "Notifications bureau désactivées."
         },
+        "punchPolling": {
+            "updated": "Paramètres mis à jour",
+            "updatedDesc": "Les paramètres de sondage des pointeuses ont été mis à jour avec succès.",
+            "pullCompleted": "Récupération terminée"
+        },
         "auth": {
             "resetLinkSent": "Email de réinitialisation en file d'attente",
             "resetLinkSentDesc": "Si un compte existe avec cet email, le lien de réinitialisation sera envoyé dans les 1 à 2 prochaines minutes.",
@@ -496,7 +515,10 @@
             "fetchPunches": "Échec du chargement des pointages",
             "fetchPunch": "Échec du chargement du pointage",
             "fetchRecords": "Échec du chargement des relevés de présence",
-            "fetchRecord": "Échec du chargement du relevé de présence"
+            "fetchRecord": "Échec du chargement du relevé de présence",
+            "fetchPollingSettings": "Échec du chargement des paramètres de sondage",
+            "updatePollingSettings": "Échec de la mise à jour des paramètres de sondage",
+            "runPollingNow": "Échec du déclenchement du sondage"
         },
         "employee": {
             "fetchEmployees": "Échec de la récupération des employés",

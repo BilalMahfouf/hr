@@ -22,6 +22,7 @@ import PunchesPage from './features/attendance/punches-page';
 import AttendanceRecordsPage from './features/attendance/attendance-records-page';
 import ViewPunchPage from './features/attendance/ViewPunchPage';
 import ViewAttendanceRecordPage from './features/attendance/ViewAttendanceRecordPage';
+import PunchPollingSettingsPage from './features/attendance/punch-polling-settings-page';
 import EmployeesPage from './features/employees/employees-page';
 import ViewEmployeePage from './features/employees/view-employee-page';
 import EmployeeGroupsPage from './features/employees/employee-groups-page';
@@ -145,6 +146,14 @@ export const router = createBrowserRouter([
         {
             path: '/attendance/records/:attendanceRecordId',
             element: <ViewAttendanceRecordPage />,
+        },
+        {
+            path: '/attendance/punch-polling',
+            element: (
+                <RoleGuard requiredRole="admin">
+                    <PunchPollingSettingsPage />
+                </RoleGuard>
+            ),
         },
         {
             path: '/employees',

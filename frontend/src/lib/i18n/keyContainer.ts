@@ -189,6 +189,9 @@ const i18nKeyContainer = {
             fetchPunch: 'errors.attendance.fetchPunch',
             fetchRecords: 'errors.attendance.fetchRecords',
             fetchRecord: 'errors.attendance.fetchRecord',
+            fetchPollingSettings: 'errors.attendance.fetchPollingSettings',
+            updatePollingSettings: 'errors.attendance.updatePollingSettings',
+            runPollingNow: 'errors.attendance.runPollingNow',
         },
         employee: {
             fetchEmployees: 'errors.employee.fetchEmployees',
@@ -701,6 +704,20 @@ const i18nKeyContainer = {
                 status: 'attendance.records.view.status',
             },
         },
+        punchPolling: {
+            title: 'attendance.punchPolling.title',
+            description: 'attendance.punchPolling.description',
+            cardTitle: 'attendance.punchPolling.cardTitle',
+            cardDescription: 'attendance.punchPolling.cardDescription',
+            enabled: 'attendance.punchPolling.enabled',
+            enabledDescription: 'attendance.punchPolling.enabledDescription',
+            interval: 'attendance.punchPolling.interval',
+            intervalDescription: 'attendance.punchPolling.intervalDescription',
+            minutes: 'attendance.punchPolling.minutes',
+            allowedRange: 'attendance.punchPolling.allowedRange',
+            pullNow: 'attendance.punchPolling.pullNow',
+            genericError: 'attendance.punchPolling.genericError',
+        },
     },
     table: {
         search: 'table.search',
@@ -740,6 +757,11 @@ const i18nKeyContainer = {
             markedAllAsReadDesc: 'toast.notification.markedAllAsReadDesc',
             pushEnabled: 'toast.notification.pushEnabled',
             pushDisabled: 'toast.notification.pushDisabled',
+        },
+        punchPolling: {
+            updated: 'toast.punchPolling.updated',
+            updatedDesc: 'toast.punchPolling.updatedDesc',
+            pullCompleted: 'toast.punchPolling.pullCompleted',
         },
         auth: {
             resetLinkSent: 'toast.auth.resetLinkSent',
