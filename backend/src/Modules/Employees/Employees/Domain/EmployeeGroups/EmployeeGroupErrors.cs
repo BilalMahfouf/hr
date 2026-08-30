@@ -8,6 +8,16 @@ public static class EmployeeGroupErrors
         Error.NotFound(
             $"{nameof(EmployeeGroup)}.{nameof(NotFound)}",
             "Employee group not found.");
+    public static Error InvalidEmployeeGroupNumber =>
+        Error.Validation(
+            $"{nameof(EmployeeGroup)}.{nameof(InvalidEmployeeGroupNumber)}",
+            "Employee group number cannot be null, empty or whitespace.");
+
+    public static Error EmployeeGroupNumberAlreadyExists =>
+        Error.Conflict(
+            $"{nameof(EmployeeGroup)}.{nameof(EmployeeGroupNumberAlreadyExists)}",
+            "An employee group with this number already exists.");
+
     public static Error InvalidName =>
         Error.Validation(
             $"{nameof(EmployeeGroup)}.{nameof(InvalidName)}",

@@ -2,6 +2,7 @@ using FluentValidation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.EntityFrameworkCore;
 using Modules.Employees.Application.Abstractions;
 using Modules.Employees.Domain.EmployeeGroups;
 using Modules.Shared.CQRS;
@@ -16,6 +17,10 @@ public static class CreateEmployeeGroup
     {
         public Validator()
         {
+            RuleFor(x => x.EmployeeGroupNumber)
+                .NotEmpty()
+                .MaximumLength(100);
+
             RuleFor(x => x.Name)
                 .NotEmpty()
                 .MaximumLength(100);
@@ -64,7 +69,6 @@ public static class CreateEmployeeGroup
     }
 
     public sealed class Handler(
-        IEmployeeGroupRepository repository,
         IEmployeeDbContext dbContext,
         IValidator<CreateEmployeeGroupCommand> validator)
         : ICommandHandler<CreateEmployeeGroupCommand, EmployeeGroupResponse>
@@ -75,13 +79,22 @@ public static class CreateEmployeeGroup
         {
             validator.ValidateAndThrow(command);
 
-            var existing = await repository.GetByNameAsync(command.Name, cancellationToken);
-            if (existing is not null)
+            var existing = await dbContext.EmployeeGroups
+                .AnyAsync(g => g.EmployeeGroupNumber == command.EmployeeGroupNumber, cancellationToken);
+            if (existing)
+            {
+                return Result<EmployeeGroupResponse>.Failure(EmployeeGroupErrors.EmployeeGroupNumberAlreadyExists);
+            }
+
+            var nameTaken = await dbContext.EmployeeGroups
+                .AnyAsync(g => g.Name == command.Name, cancellationToken);
+            if (nameTaken)
             {
                 return Result<EmployeeGroupResponse>.Failure(EmployeeGroupErrors.NameAlreadyExists);
             }
 
             var group = EmployeeGroup.Create(
+                command.EmployeeGroupNumber,
                 command.Name,
                 command.IsSecurity,
                 command.RotationStartDate,
@@ -93,7 +106,7 @@ public static class CreateEmployeeGroup
                     .Select(r => (r.Position, r.WorkScheduleIndex))
                     .ToList());
 
-            repository.Add(group);
+            dbContext.EmployeeGroups.Add(group);
             await dbContext.SaveChangesAsync(cancellationToken);
 
             return Result<EmployeeGroupResponse>.Success(EmployeeGroupMapper.ToResponse(group));
@@ -110,6 +123,7 @@ public static class CreateEmployeeGroup
                 CancellationToken ct) =>
             {
                 var command = new CreateEmployeeGroupCommand(
+                    request.EmployeeGroupNumber,
                     request.Name,
                     request.IsSecurity,
                     request.Description,

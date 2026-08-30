@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.EntityFrameworkCore;
 using Modules.Employees.Application.Abstractions;
 using Modules.Shared.CQRS;
 using Modules.Shared.Endpoints;
@@ -10,14 +11,19 @@ namespace Modules.Employees.Application.EmployeeGroups;
 
 public static class GetAllEmployeeGroups
 {
-    public sealed class Handler(IEmployeeGroupRepository repository)
+    public sealed class Handler(IEmployeeDbContext dbContext)
         : IQueryHandler<GetAllEmployeeGroupsQuery, IReadOnlyList<EmployeeGroupResponse>>
     {
         public async Task<Result<IReadOnlyList<EmployeeGroupResponse>>> Handle(
             GetAllEmployeeGroupsQuery query,
             CancellationToken cancellationToken = default)
         {
-            var groups = await repository.GetAllAsync(cancellationToken);
+            var groups = await dbContext.EmployeeGroups
+                .AsNoTracking()
+                .Include(g => g.WorkSchedules)
+                .Include(g => g.RotationEntries)
+                .OrderBy(g => g.Name)
+                .ToListAsync(cancellationToken);
 
             var response = groups.Select(EmployeeGroupMapper.ToResponse).ToList();
             return Result<IReadOnlyList<EmployeeGroupResponse>>.Success(response);

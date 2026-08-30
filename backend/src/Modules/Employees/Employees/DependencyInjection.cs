@@ -35,7 +35,6 @@ public static class DependencyInjection
 
         services.AddScoped<ISqlConnectionFactory, SqlConnectionFactory>();
         services.AddScoped<IEmployeeRepository, EnapRepository>();
-        services.AddScoped<IEmployeeGroupRepository, EmployeeGroupRepository>();
         services.AddScoped<Contracts.IEmployeeApi, Application.EmployeeApi>();
 
         return services;

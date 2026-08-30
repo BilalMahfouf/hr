@@ -1,4 +1,5 @@
-﻿using Modules.Employees.Application.Abstractions;
+﻿using Microsoft.EntityFrameworkCore;
+using Modules.Employees.Application.Abstractions;
 using Modules.Employees.Contracts;
 using Modules.Employees.Domain.EmployeeGroups;
 using Modules.Employees.Domain.EmployeeGroups.Rotation;
@@ -12,7 +13,7 @@ namespace Modules.Employees.Application;
 
 public sealed class EmployeeApi(
     IEmployeeRepository employeeRepo,
-    IEmployeeGroupRepository employeeGroupRepo) : IEmployeeApi
+    IEmployeeDbContext dbContext) : IEmployeeApi
 {
     public async Task<Result<EmployeeResponse>> GetEmployeeByBadgeAsync(int badge, DateOnly punchDate, CancellationToken ct = default)
     {
@@ -22,7 +23,7 @@ public sealed class EmployeeApi(
             return Result<EmployeeResponse>.Failure(EmployeeErrors.NotFound);
         }
 
-        return Result<EmployeeResponse>.Success(MapToResponse(employee, punchDate));
+        return Result<EmployeeResponse>.Success(await MapToResponse(employee, punchDate));
     }
 
     public async Task<Result<EmployeeResponse>> GetEmployeeByIdAsync(string id, CancellationToken ct = default)
@@ -33,7 +34,7 @@ public sealed class EmployeeApi(
             return Result<EmployeeResponse>.Failure(EmployeeErrors.NotFound);
         }
 
-        return Result<EmployeeResponse>.Success(MapToResponse(employee, DateOnly.FromDateTime(DateTime.UtcNow)));
+        return Result<EmployeeResponse>.Success(await MapToResponse(employee, DateOnly.FromDateTime(DateTime.UtcNow)));
     }
 
     public async Task<Result<IReadOnlyList<EmployeeResponse>>> GetEmployeesByBadgesAsync(
@@ -49,8 +50,12 @@ public sealed class EmployeeApi(
         var employees = await employeeRepo.GetEmployeesByBgdesAsync(stringBadges, ct);
         var currentDate = DateOnly.FromDateTime(DateTime.UtcNow);
 
-        return Result<IReadOnlyList<EmployeeResponse>>.Success(
-            employees.Select(e => MapToResponse(e, currentDate)).ToList());
+        var responses = new List<EmployeeResponse>();
+        foreach (var e in employees)
+        {
+            responses.Add(await MapToResponse(e, currentDate));
+        }
+        return Result<IReadOnlyList<EmployeeResponse>>.Success(responses);
     }
 
     public async Task<Result<IReadOnlyList<EmployeeResponse>>> GetEmployeesByIdsAsync(
@@ -65,11 +70,15 @@ public sealed class EmployeeApi(
         var employees = await employeeRepo.GetEmployeesByIdsAsync(ids, ct);
         var currentDate = DateOnly.FromDateTime(DateTime.UtcNow);
 
-        return Result<IReadOnlyList<EmployeeResponse>>.Success(
-            employees.Select(e => MapToResponse(e, currentDate)).ToList());
+        var responses = new List<EmployeeResponse>();
+        foreach (var e in employees)
+        {
+            responses.Add(await MapToResponse(e, currentDate));
+        }
+        return Result<IReadOnlyList<EmployeeResponse>>.Success(responses);
     }
 
-    private EmployeeResponse MapToResponse(EmployeeDto employee, DateOnly punchDate)
+    private async Task<EmployeeResponse> MapToResponse(EmployeeDto employee, DateOnly punchDate)
     {
         var badge = int.TryParse(employee.Bdge, out int parsedBadge) ? parsedBadge : 0;
 
@@ -82,7 +91,12 @@ public sealed class EmployeeApi(
                 null);
         }
 
-        var group = employeeGroupRepo.GetByNameWithDetailsAsync(employee.EmployeeGroup, CancellationToken.None).Result;
+        var group = await dbContext.EmployeeGroups
+            .AsNoTracking()
+            .Include(g => g.WorkSchedules)
+            .Include(g => g.RotationEntries)
+                .ThenInclude(re => re.WorkSchedule)
+            .FirstOrDefaultAsync(g => g.EmployeeGroupNumber == employee.EmployeeGroup, CancellationToken.None);
         if (group is null)
         {
             return new EmployeeResponse(
@@ -158,7 +172,11 @@ public sealed class EmployeeApi(
 
     public async Task<Result<WorkScheduleReadDto>> GetEmployeeWorkSchedule(Guid employeeGroupId, CancellationToken ct = default)
     {
-        var group = await employeeGroupRepo.GetByIdWithDetailsAsync(new EmployeeGroupId(employeeGroupId), ct);
+        var group = await dbContext.EmployeeGroups
+            .Include(g => g.WorkSchedules)
+            .Include(g => g.RotationEntries)
+                .ThenInclude(re => re.WorkSchedule)
+            .FirstOrDefaultAsync(g => g.Id == new EmployeeGroupId(employeeGroupId), ct);
         if (group is null)
         {
             return Result<WorkScheduleReadDto>.Failure(EmployeeGroupErrors.NotFound);

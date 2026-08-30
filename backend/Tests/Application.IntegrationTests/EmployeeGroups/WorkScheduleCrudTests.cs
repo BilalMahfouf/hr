@@ -21,9 +21,8 @@ public sealed class WorkScheduleCrudTests : EmployeeGroupsTestBase
     public async Task CreateWorkSchedule_ValidCommand_PersistsAndReturnsSchedule()
     {
         using var scope = CreateScope();
-        var repo = scope.ServiceProvider.GetRequiredService<IEmployeeGroupRepository>();
         var db = scope.ServiceProvider.GetRequiredService<IEmployeeDbContext>();
-        var group = await SeedGroupAsync(repo, db);
+        var group = await SeedGroupAsync(db);
 
         var handler = CreateWorkScheduleHandler(scope.ServiceProvider);
         var command = new CreateWorkScheduleCommand(
@@ -70,9 +69,8 @@ public sealed class WorkScheduleCrudTests : EmployeeGroupsTestBase
     public async Task CreateWorkSchedule_InvalidShift_ThrowsValidationException()
     {
         using var scope = CreateScope();
-        var repo = scope.ServiceProvider.GetRequiredService<IEmployeeGroupRepository>();
         var db = scope.ServiceProvider.GetRequiredService<IEmployeeDbContext>();
-        var group = await SeedGroupAsync(repo, db);
+        var group = await SeedGroupAsync(db);
 
         var handler = CreateWorkScheduleHandler(scope.ServiceProvider);
         var command = new CreateWorkScheduleCommand(
@@ -91,9 +89,8 @@ public sealed class WorkScheduleCrudTests : EmployeeGroupsTestBase
     public async Task UpdateWorkSchedule_NotReferenced_UpdatesAndPersists()
     {
         using var scope = CreateScope();
-        var repo = scope.ServiceProvider.GetRequiredService<IEmployeeGroupRepository>();
         var db = scope.ServiceProvider.GetRequiredService<IEmployeeDbContext>();
-        var (group, schedule) = await SeedGroupWithScheduleReturnScheduleAsync(repo, db);
+        var (group, schedule) = await SeedGroupWithScheduleReturnScheduleAsync(db);
 
         var handler = CreateUpdateWorkScheduleHandler(scope.ServiceProvider);
         var command = new UpdateWorkScheduleCommand(
@@ -121,9 +118,8 @@ public sealed class WorkScheduleCrudTests : EmployeeGroupsTestBase
     public async Task UpdateWorkSchedule_ReferencedByRotation_ReturnsWorkScheduleInUse()
     {
         using var scope = CreateScope();
-        var repo = scope.ServiceProvider.GetRequiredService<IEmployeeGroupRepository>();
         var db = scope.ServiceProvider.GetRequiredService<IEmployeeDbContext>();
-        var group = await SeedGroupWithScheduleAndRotationAsync(repo, db);
+        var group = await SeedGroupWithScheduleAndRotationAsync(db);
         var schedule = group.WorkSchedules.First();
 
         var handler = CreateUpdateWorkScheduleHandler(scope.ServiceProvider);
@@ -146,9 +142,8 @@ public sealed class WorkScheduleCrudTests : EmployeeGroupsTestBase
     public async Task UpdateWorkSchedule_NonExistentSchedule_ReturnsNotFound()
     {
         using var scope = CreateScope();
-        var repo = scope.ServiceProvider.GetRequiredService<IEmployeeGroupRepository>();
         var db = scope.ServiceProvider.GetRequiredService<IEmployeeDbContext>();
-        var group = await SeedGroupAsync(repo, db);
+        var group = await SeedGroupAsync(db);
 
         var handler = CreateUpdateWorkScheduleHandler(scope.ServiceProvider);
         var command = new UpdateWorkScheduleCommand(
@@ -170,9 +165,8 @@ public sealed class WorkScheduleCrudTests : EmployeeGroupsTestBase
     public async Task DeleteWorkSchedule_NotReferenced_RemovesAndPersists()
     {
         using var scope = CreateScope();
-        var repo = scope.ServiceProvider.GetRequiredService<IEmployeeGroupRepository>();
         var db = scope.ServiceProvider.GetRequiredService<IEmployeeDbContext>();
-        var (group, schedule) = await SeedGroupWithScheduleReturnScheduleAsync(repo, db);
+        var (group, schedule) = await SeedGroupWithScheduleReturnScheduleAsync(db);
 
         var handler = CreateDeleteWorkScheduleHandler(scope.ServiceProvider);
         var result = await handler.Handle(
@@ -190,9 +184,8 @@ public sealed class WorkScheduleCrudTests : EmployeeGroupsTestBase
     public async Task DeleteWorkSchedule_ReferencedByRotation_ReturnsWorkScheduleInUse()
     {
         using var scope = CreateScope();
-        var repo = scope.ServiceProvider.GetRequiredService<IEmployeeGroupRepository>();
         var db = scope.ServiceProvider.GetRequiredService<IEmployeeDbContext>();
-        var group = await SeedGroupWithScheduleAndRotationAsync(repo, db);
+        var group = await SeedGroupWithScheduleAndRotationAsync(db);
         var schedule = group.WorkSchedules.First();
 
         var handler = CreateDeleteWorkScheduleHandler(scope.ServiceProvider);
@@ -208,9 +201,8 @@ public sealed class WorkScheduleCrudTests : EmployeeGroupsTestBase
     public async Task DeleteWorkSchedule_NonExistentSchedule_ReturnsNotFound()
     {
         using var scope = CreateScope();
-        var repo = scope.ServiceProvider.GetRequiredService<IEmployeeGroupRepository>();
         var db = scope.ServiceProvider.GetRequiredService<IEmployeeDbContext>();
-        var group = await SeedGroupAsync(repo, db);
+        var group = await SeedGroupAsync(db);
 
         var handler = CreateDeleteWorkScheduleHandler(scope.ServiceProvider);
         var result = await handler.Handle(
@@ -225,9 +217,8 @@ public sealed class WorkScheduleCrudTests : EmployeeGroupsTestBase
     public async Task GetWorkScheduleById_ExistingSchedule_ReturnsSchedule()
     {
         using var scope = CreateScope();
-        var repo = scope.ServiceProvider.GetRequiredService<IEmployeeGroupRepository>();
         var db = scope.ServiceProvider.GetRequiredService<IEmployeeDbContext>();
-        var (group, schedule) = await SeedGroupWithScheduleReturnScheduleAsync(repo, db);
+        var (group, schedule) = await SeedGroupWithScheduleReturnScheduleAsync(db);
 
         var handler = CreateGetWorkScheduleByIdHandler(scope.ServiceProvider);
         var result = await handler.Handle(
@@ -258,9 +249,8 @@ public sealed class WorkScheduleCrudTests : EmployeeGroupsTestBase
     public async Task GetWorkScheduleById_NonExistentSchedule_ReturnsNotFound()
     {
         using var scope = CreateScope();
-        var repo = scope.ServiceProvider.GetRequiredService<IEmployeeGroupRepository>();
         var db = scope.ServiceProvider.GetRequiredService<IEmployeeDbContext>();
-        var group = await SeedGroupAsync(repo, db);
+        var group = await SeedGroupAsync(db);
 
         var handler = CreateGetWorkScheduleByIdHandler(scope.ServiceProvider);
         var result = await handler.Handle(
@@ -275,9 +265,8 @@ public sealed class WorkScheduleCrudTests : EmployeeGroupsTestBase
     public async Task ActivateWorkSchedule_DeactivatedSchedule_ActivatesAndPersists()
     {
         using var scope = CreateScope();
-        var repo = scope.ServiceProvider.GetRequiredService<IEmployeeGroupRepository>();
         var db = scope.ServiceProvider.GetRequiredService<IEmployeeDbContext>();
-        var (group, schedule) = await SeedGroupWithScheduleReturnScheduleAsync(repo, db);
+        var (group, schedule) = await SeedGroupWithScheduleReturnScheduleAsync(db);
 
         Assert.False(schedule.IsActive);
 
@@ -312,9 +301,8 @@ public sealed class WorkScheduleCrudTests : EmployeeGroupsTestBase
     public async Task ActivateWorkSchedule_NonExistentSchedule_ReturnsNotFound()
     {
         using var scope = CreateScope();
-        var repo = scope.ServiceProvider.GetRequiredService<IEmployeeGroupRepository>();
         var db = scope.ServiceProvider.GetRequiredService<IEmployeeDbContext>();
-        var group = await SeedGroupAsync(repo, db);
+        var group = await SeedGroupAsync(db);
 
         var handler = CreateActivateWorkScheduleHandler(scope.ServiceProvider);
         var result = await handler.Handle(
@@ -329,9 +317,8 @@ public sealed class WorkScheduleCrudTests : EmployeeGroupsTestBase
     public async Task DeactivateWorkSchedule_ActiveSchedule_DeactivatesAndPersists()
     {
         using var scope = CreateScope();
-        var repo = scope.ServiceProvider.GetRequiredService<IEmployeeGroupRepository>();
         var db = scope.ServiceProvider.GetRequiredService<IEmployeeDbContext>();
-        var (group, schedule) = await SeedGroupWithScheduleReturnScheduleAsync(repo, db);
+        var (group, schedule) = await SeedGroupWithScheduleReturnScheduleAsync(db);
 
         var activateHandler = CreateActivateWorkScheduleHandler(scope.ServiceProvider);
         await activateHandler.Handle(
@@ -369,9 +356,8 @@ public sealed class WorkScheduleCrudTests : EmployeeGroupsTestBase
     public async Task DeactivateWorkSchedule_NonExistentSchedule_ReturnsNotFound()
     {
         using var scope = CreateScope();
-        var repo = scope.ServiceProvider.GetRequiredService<IEmployeeGroupRepository>();
         var db = scope.ServiceProvider.GetRequiredService<IEmployeeDbContext>();
-        var group = await SeedGroupAsync(repo, db);
+        var group = await SeedGroupAsync(db);
 
         var handler = CreateDeactivateWorkScheduleHandler(scope.ServiceProvider);
         var result = await handler.Handle(
