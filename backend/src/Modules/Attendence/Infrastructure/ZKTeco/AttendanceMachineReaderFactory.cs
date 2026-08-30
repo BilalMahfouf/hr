@@ -3,7 +3,7 @@ using Modules.Attendence.Domain.Machines;
 
 namespace Modules.Attendence.Infrastructure.ZKTeco;
 
-internal sealed class AttendanceMachineReaderFactory(
+public sealed class AttendanceMachineReaderFactory(
     ZKTecoAttendanceMachineReader sdkReader,
     ZKTecoGatwayMachineReader gatewayReader) : IAttendanceMachineReaderFactory
 {

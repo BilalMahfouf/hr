@@ -2,6 +2,6 @@ namespace Modules.Attendence.Domain.Machines;
 
 public enum MachineType
 {
-    ZKTecoSdk,
-    ZKTecoGateway
+    ZKTecoSdk=1,
+    ZKTecoGateway=2
 }
