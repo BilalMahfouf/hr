@@ -26,7 +26,7 @@ public sealed class UpdateMachineTests
     public async Task Handle_WhenMachineExists_UpdatesIpAddressAndPort()
     {
         var (handler, db) = Arrange();
-        var machine = AttendenceMachine.Create(MachineId.New(), "192.168.3.205", 1);
+        var machine = AttendenceMachine.Create(MachineId.New(), "192.168.3.205", 1, MachineType.ZKTecoGateway);
         db.Machines.Add(machine);
         await db.SaveChangesAsync();
 
@@ -64,7 +64,7 @@ public sealed class UpdateMachineTests
         int port)
     {
         var (handler, db) = Arrange();
-        var machine = AttendenceMachine.Create(MachineId.New(), "192.168.3.205", 1);
+        var machine = AttendenceMachine.Create(MachineId.New(), "192.168.3.205", 1, MachineType.ZKTecoGateway);
         db.Machines.Add(machine);
         await db.SaveChangesAsync();
 

@@ -1,6 +1,7 @@
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Modules.Attendence.Application.Machines;
+using Modules.Attendence.Domain.Machines;
 using Modules.Attendence.Infrastructure.Presistance;
 
 namespace Application.Tests.Attendence;
@@ -27,7 +28,7 @@ public sealed class CreateMachineTests
         var (handler, db) = Arrange();
 
         var result = await handler.Handle(
-            new CreateMachine.Command("192.168.3.205", 1, null));
+            new CreateMachine.Command("192.168.3.205", 1, MachineType.ZKTecoGateway, null));
 
         Assert.True(result.IsSuccess);
         Assert.NotEqual(Guid.Empty, result.Value.MachineId);
@@ -36,6 +37,7 @@ public sealed class CreateMachineTests
         Assert.Equal("192.168.3.205", machine.IpAddress);
         Assert.Equal(1, machine.MachineNumber);
         Assert.Equal(4370, machine.Port);
+        Assert.Equal(MachineType.ZKTecoGateway, machine.Type);
         Assert.True(machine.IsActive);
     }
 
@@ -45,11 +47,12 @@ public sealed class CreateMachineTests
         var (handler, db) = Arrange();
 
         var result = await handler.Handle(
-            new CreateMachine.Command("192.168.3.206", 2, 8080));
+            new CreateMachine.Command("192.168.3.206", 2, MachineType.ZKTecoSdk, 8080));
 
         Assert.True(result.IsSuccess);
         var machine = Assert.Single(db.Machines);
         Assert.Equal(8080, machine.Port);
+        Assert.Equal(MachineType.ZKTecoSdk, machine.Type);
     }
 
     [Theory]
@@ -67,7 +70,19 @@ public sealed class CreateMachineTests
 
         await Assert.ThrowsAsync<ValidationException>(() =>
             handler.Handle(
-                new CreateMachine.Command(ipAddress, machineNumber, port)));
+                new CreateMachine.Command(ipAddress, machineNumber, MachineType.ZKTecoGateway, port)));
+
+        Assert.Empty(db.Machines);
+    }
+
+    [Fact]
+    public async Task Handle_WithInvalidType_ThrowsValidationException()
+    {
+        var (handler, db) = Arrange();
+
+        await Assert.ThrowsAsync<ValidationException>(() =>
+            handler.Handle(
+                new CreateMachine.Command("192.168.3.205", 1, (MachineType)999, null)));
 
         Assert.Empty(db.Machines);
     }

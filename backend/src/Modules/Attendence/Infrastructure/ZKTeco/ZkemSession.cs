@@ -2,12 +2,12 @@ using zkemkeeper;
 
 namespace Modules.Attendence.Infrastructure.ZKTeco;
 
-internal sealed class ZkemSessionFactory : IZKemSessionFactory
+public sealed class ZkemSessionFactory : IZKemSessionFactory
 {
     public IZKemSession Create() => new ZkemSession();
 }
 
-internal sealed class ZkemSession : IZKemSession
+public sealed class ZkemSession : IZKemSession
 {
     private readonly CZKEM _zk = new();
 

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Modules.Attendence.Application.Shared;
+using Modules.Attendence.Domain.Machines;
 using Modules.Shared.CQRS;
 using Modules.Shared.Endpoints;
 using Modules.Shared.Results;
@@ -16,6 +17,7 @@ public static class GetAllMachines
         int MachineNumber,
         string IpAddress,
         int Port,
+        MachineType Type,
         bool IsActive,
         DateTime CreatedOnUtc);
 
@@ -38,6 +40,7 @@ public static class GetAllMachines
                     m.MachineNumber,
                     m.IpAddress,
                     m.Port,
+                    m.Type,
                     m.IsActive,
                     m.CreatedOnUtc));
 

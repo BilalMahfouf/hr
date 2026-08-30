@@ -9,6 +9,7 @@ public sealed class AttendenceMachine : Entity
     public int MachineNumber { get; private set; }
     public string IpAddress { get; private set; } = null!;
     public int Port { get; private set; }
+    public MachineType Type { get; private set; }
 
     public bool IsActive { get; private set; }
 
@@ -20,6 +21,7 @@ public sealed class AttendenceMachine : Entity
         MachineId id,
         string ipAddress,
         int machineNumber,
+        MachineType type,
         int? port = null)
     {
         var machine = new AttendenceMachine
@@ -27,6 +29,7 @@ public sealed class AttendenceMachine : Entity
             Id = id,
             IpAddress = ipAddress,
             MachineNumber = machineNumber,
+            Type = type,
             Port = port ?? 4370,
             IsActive = true
         };

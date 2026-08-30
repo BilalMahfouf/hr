@@ -30,7 +30,7 @@ public sealed class ImportAttendanceLogsTests
             DeviceSerialNumber: "SN-1",
             machineNumber);
 
-    private static (ImportAttendanceLogs.CommandHandler handler, AttendanceDbContext db, Mock<IAttendanceMachineReader> reader) Arrange(
+    private static (ImportAttendanceLogs.CommandHandler handler, AttendanceDbContext db, Mock<IAttendanceMachineReaderFactory> factoryMock) Arrange(
         params AttendenceMachine[] machines)
     {
         var options = new DbContextOptionsBuilder<AttendanceDbContext>()
@@ -41,36 +41,47 @@ public sealed class ImportAttendanceLogsTests
         db.Machines.AddRange(machines);
         db.SaveChanges();
 
-        var reader = new Mock<IAttendanceMachineReader>();
+        var factoryMock = new Mock<IAttendanceMachineReaderFactory>();
 
         var handler = new ImportAttendanceLogs.CommandHandler(
             db,
-            reader.Object,
+            factoryMock.Object,
             new ImportAttendanceLogs.Validator(),
             NullLogger<ImportAttendanceLogs.CommandHandler>.Instance);
 
-        return (handler, db, reader);
+        return (handler, db, factoryMock);
+    }
+
+    private static void SetupReader(
+        Mock<IAttendanceMachineReaderFactory> factoryMock,
+        AttendenceMachine machine,
+        IReadOnlyList<RawAttendanceLog> logs)
+    {
+        var reader = new Mock<IAttendanceMachineReader>();
+        reader
+            .Setup(r => r.GetLogsAsync(
+                It.Is<AttendenceMachine>(m => m.MachineNumber == machine.MachineNumber),
+                It.IsAny<DateOnly>(),
+                It.IsAny<DateOnly>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(logs);
+
+        factoryMock
+            .Setup(f => f.Create(It.Is<AttendenceMachine>(m => m.MachineNumber == machine.MachineNumber)))
+            .Returns(reader.Object);
     }
 
     [Fact]
     public async Task Handle_ReadsAllActiveMachinesAndPersistsPunches()
     {
-        var machine1 = AttendenceMachine.Create(MachineId.New(), "192.168.3.205", 1);
-        var machine2 = AttendenceMachine.Create(MachineId.New(), "192.168.3.206", 2);
+        var machine1 = AttendenceMachine.Create(MachineId.New(), "192.168.3.205", 1, MachineType.ZKTecoGateway);
+        var machine2 = AttendenceMachine.Create(MachineId.New(), "192.168.3.206", 2, MachineType.ZKTecoGateway);
 
-        var (handler, db, reader) = Arrange(machine1, machine2);
+        var (handler, db, factoryMock) = Arrange(machine1, machine2);
 
         var ts = new DateTime(2026, 8, 17, 9, 0, 0);
-        reader
-            .Setup(r => r.GetLogsAsync(
-                It.Is<AttendenceMachine>(m => m.MachineNumber == 1),
-                From, To, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<RawAttendanceLog> { Log(machine1, "100", ts, 1) });
-        reader
-            .Setup(r => r.GetLogsAsync(
-                It.Is<AttendenceMachine>(m => m.MachineNumber == 2),
-                From, To, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<RawAttendanceLog> { Log(machine2, "101", ts, 2) });
+        SetupReader(factoryMock, machine1, new List<RawAttendanceLog> { Log(machine1, "100", ts, 1) });
+        SetupReader(factoryMock, machine2, new List<RawAttendanceLog> { Log(machine2, "101", ts, 2) });
 
         var result = await handler.Handle(new ImportAttendanceLogs.Command(From, To));
 
@@ -85,52 +96,48 @@ public sealed class ImportAttendanceLogsTests
     [Fact]
     public async Task Handle_SkipsInactiveMachines()
     {
-        var active = AttendenceMachine.Create(MachineId.New(), "192.168.3.205", 1);
-        var inactive = AttendenceMachine.Create(MachineId.New(), "192.168.3.206", 2);
+        var active = AttendenceMachine.Create(MachineId.New(), "192.168.3.205", 1, MachineType.ZKTecoGateway);
+        var inactive = AttendenceMachine.Create(MachineId.New(), "192.168.3.206", 2, MachineType.ZKTecoGateway);
         inactive.Deactivate();
 
-        var (handler, db, reader) = Arrange(active, inactive);
+        var (handler, db, factoryMock) = Arrange(active, inactive);
 
         var ts = new DateTime(2026, 8, 17, 9, 0, 0);
-        reader
-            .Setup(r => r.GetLogsAsync(
-                It.IsAny<AttendenceMachine>(),
-                From, To, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<RawAttendanceLog> { Log(active, "100", ts, 1) });
+        SetupReader(factoryMock, active, new List<RawAttendanceLog> { Log(active, "100", ts, 1) });
 
         var result = await handler.Handle(new ImportAttendanceLogs.Command(From, To));
 
         Assert.True(result.IsSuccess);
         Assert.Equal(1, result.Value.PunchCount);
         Assert.Single(await db.Punches.ToListAsync());
-        reader.Verify(
-            r => r.GetLogsAsync(
-                It.Is<AttendenceMachine>(m => m.MachineNumber == 2),
-                It.IsAny<DateOnly>(),
-                It.IsAny<DateOnly>(),
-                It.IsAny<CancellationToken>()),
+        factoryMock.Verify(
+            f => f.Create(It.Is<AttendenceMachine>(m => m.MachineNumber == 2)),
             Times.Never);
     }
 
     [Fact]
     public async Task Handle_WhenMachineReadFails_ContinuesWithOtherMachines()
     {
-        var machine1 = AttendenceMachine.Create(MachineId.New(), "192.168.3.205", 1);
-        var machine2 = AttendenceMachine.Create(MachineId.New(), "192.168.3.206", 2);
+        var machine1 = AttendenceMachine.Create(MachineId.New(), "192.168.3.205", 1, MachineType.ZKTecoGateway);
+        var machine2 = AttendenceMachine.Create(MachineId.New(), "192.168.3.206", 2, MachineType.ZKTecoGateway);
 
-        var (handler, db, reader) = Arrange(machine1, machine2);
+        var (handler, db, factoryMock) = Arrange(machine1, machine2);
 
         var ts = new DateTime(2026, 8, 17, 9, 0, 0);
-        reader
+
+        var failingReader = new Mock<IAttendanceMachineReader>();
+        failingReader
             .Setup(r => r.GetLogsAsync(
-                It.Is<AttendenceMachine>(m => m.MachineNumber == 1),
-                From, To, It.IsAny<CancellationToken>()))
+                It.IsAny<AttendenceMachine>(),
+                It.IsAny<DateOnly>(),
+                It.IsAny<DateOnly>(),
+                It.IsAny<CancellationToken>()))
             .ThrowsAsync(new InvalidOperationException("connection failed"));
-        reader
-            .Setup(r => r.GetLogsAsync(
-                It.Is<AttendenceMachine>(m => m.MachineNumber == 2),
-                From, To, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<RawAttendanceLog> { Log(machine2, "100", ts, 2) });
+        factoryMock
+            .Setup(f => f.Create(It.Is<AttendenceMachine>(m => m.MachineNumber == 1)))
+            .Returns(failingReader.Object);
+
+        SetupReader(factoryMock, machine2, new List<RawAttendanceLog> { Log(machine2, "100", ts, 2) });
 
         var result = await handler.Handle(new ImportAttendanceLogs.Command(From, To));
 
@@ -144,16 +151,12 @@ public sealed class ImportAttendanceLogsTests
     [Fact]
     public async Task Handle_SkipsLogWithInvalidEmployeeNumber()
     {
-        var machine = AttendenceMachine.Create(MachineId.New(), "192.168.3.205", 1);
+        var machine = AttendenceMachine.Create(MachineId.New(), "192.168.3.205", 1, MachineType.ZKTecoGateway);
 
-        var (handler, db, reader) = Arrange(machine);
+        var (handler, db, factoryMock) = Arrange(machine);
 
         var ts = new DateTime(2026, 8, 17, 9, 0, 0);
-        reader
-            .Setup(r => r.GetLogsAsync(
-                It.IsAny<AttendenceMachine>(),
-                From, To, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<RawAttendanceLog> { Log(machine, "not-a-number", ts, 1) });
+        SetupReader(factoryMock, machine, new List<RawAttendanceLog> { Log(machine, "not-a-number", ts, 1) });
 
         var result = await handler.Handle(new ImportAttendanceLogs.Command(From, To));
 
@@ -165,19 +168,15 @@ public sealed class ImportAttendanceLogsTests
     [Fact]
     public async Task Handle_DeduplicatesExistingPunches()
     {
-        var machine = AttendenceMachine.Create(MachineId.New(), "192.168.3.205", 1);
+        var machine = AttendenceMachine.Create(MachineId.New(), "192.168.3.205", 1, MachineType.ZKTecoGateway);
 
-        var (handler, db, reader) = Arrange(machine);
+        var (handler, db, factoryMock) = Arrange(machine);
 
         var ts = new DateTime(2026, 8, 17, 9, 0, 0);
         db.Punches.Add(Punch.Create(machine.Id, 100, ts, DateTime.UtcNow));
         db.SaveChanges();
 
-        reader
-            .Setup(r => r.GetLogsAsync(
-                It.IsAny<AttendenceMachine>(),
-                From, To, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<RawAttendanceLog> { Log(machine, "100", ts, 1) });
+        SetupReader(factoryMock, machine, new List<RawAttendanceLog> { Log(machine, "100", ts, 1) });
 
         var result = await handler.Handle(new ImportAttendanceLogs.Command(From, To));
 

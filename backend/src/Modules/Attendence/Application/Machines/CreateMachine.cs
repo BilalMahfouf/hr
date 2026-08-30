@@ -18,6 +18,7 @@ public static class CreateMachine
     public sealed record Command(
         string IpAddress,
         int MachineNumber,
+        MachineType Type,
         int? Port) : ICommand<Response>;
 
     public sealed record Response(
@@ -31,6 +32,8 @@ public static class CreateMachine
                 .NotEmpty();
             RuleFor(x => x.MachineNumber)
                 .GreaterThan(0);
+            RuleFor(x => x.Type)
+                .IsInEnum();
             RuleFor(x => x.Port)
                 .GreaterThan(0)
                 .When(x => x.Port.HasValue);
@@ -60,6 +63,7 @@ public static class CreateMachine
                 MachineId.New(),
                 command.IpAddress,
                 command.MachineNumber,
+                command.Type,
                 command.Port);
 
             db.Machines.Add(machine);

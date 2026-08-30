@@ -6,7 +6,7 @@ namespace Modules.Attendence.Infrastructure.ZKTeco;
 
 public sealed class ZKTecoAttendanceMachineReader : IAttendanceMachineReader
 {
-    internal ZKTecoAttendanceMachineReader(IZKemSessionFactory sessionFactory)
+    public ZKTecoAttendanceMachineReader(IZKemSessionFactory sessionFactory)
     {
         _sessionFactory = sessionFactory;
     }

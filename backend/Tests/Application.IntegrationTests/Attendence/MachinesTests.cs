@@ -17,7 +17,7 @@ namespace Application.IntegrationTests.Attendence;
 
 public sealed class MachinesTests : AttendenceTestBase
 {
-    private readonly Mock<IAttendanceMachineReader> _reader = new();
+    private readonly Mock<IAttendanceMachineReaderFactory> _factoryMock = new();
 
     public MachinesTests(PostgresFixture fixture) : base(fixture)
     {
@@ -26,7 +26,7 @@ public sealed class MachinesTests : AttendenceTestBase
     protected override void ConfigureServices(IServiceCollection services)
     {
         base.ConfigureServices(services);
-        services.AddSingleton<IAttendanceMachineReader>(_reader.Object);
+        services.AddSingleton<IAttendanceMachineReaderFactory>(_factoryMock.Object);
         services.AddSingleton<IValidator<ImportAttendanceLogs.Command>>(
             new ImportAttendanceLogs.Validator());
     }
@@ -37,9 +37,25 @@ public sealed class MachinesTests : AttendenceTestBase
     {
         return new ImportAttendanceLogs.CommandHandler(
             db,
-            services.GetRequiredService<IAttendanceMachineReader>(),
+            services.GetRequiredService<IAttendanceMachineReaderFactory>(),
             services.GetRequiredService<IValidator<ImportAttendanceLogs.Command>>(),
             services.GetRequiredService<ILogger<ImportAttendanceLogs.CommandHandler>>());
+    }
+
+    private void SetupReader(AttendenceMachine machine, IReadOnlyList<RawAttendanceLog> logs)
+    {
+        var reader = new Mock<IAttendanceMachineReader>();
+        reader
+            .Setup(r => r.GetLogsAsync(
+                It.IsAny<AttendenceMachine>(),
+                It.IsAny<DateOnly>(),
+                It.IsAny<DateOnly>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(logs);
+
+        _factoryMock
+            .Setup(f => f.Create(It.Is<AttendenceMachine>(m => m.MachineNumber == machine.MachineNumber)))
+            .Returns(reader.Object);
     }
 
     [Fact]
@@ -48,7 +64,7 @@ public sealed class MachinesTests : AttendenceTestBase
         using var scope = CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<IAttendanceDbContext>();
 
-        var machine = AttendenceMachine.Create(MachineId.New(), "192.168.3.205", 1);
+        var machine = AttendenceMachine.Create(MachineId.New(), "192.168.3.205", 1, MachineType.ZKTecoGateway);
         db.Machines.Add(machine);
         await db.SaveChangesAsync();
 
@@ -56,6 +72,7 @@ public sealed class MachinesTests : AttendenceTestBase
         Assert.Equal("192.168.3.205", saved.IpAddress);
         Assert.Equal(1, saved.MachineNumber);
         Assert.Equal(4370, saved.Port);
+        Assert.Equal(MachineType.ZKTecoGateway, saved.Type);
         Assert.True(saved.IsActive);
     }
 
@@ -65,21 +82,17 @@ public sealed class MachinesTests : AttendenceTestBase
         using var scope = CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<IAttendanceDbContext>();
 
-        var machine = AttendenceMachine.Create(MachineId.New(), "192.168.3.205", 1);
+        var machine = AttendenceMachine.Create(MachineId.New(), "192.168.3.205", 1, MachineType.ZKTecoGateway);
         db.Machines.Add(machine);
         await db.SaveChangesAsync();
 
         var date = new DateOnly(2026, 8, 17);
         var timestamp = new DateTime(2026, 8, 17, 9, 0, 0);
 
-        _reader
-            .Setup(r => r.GetLogsAsync(
-                It.Is<AttendenceMachine>(m => m.MachineNumber == 1),
-                date, date, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<RawAttendanceLog>
-            {
-                new(machine.Id, "100", timestamp, 1, 0, 0, "SN-1", 1)
-            });
+        SetupReader(machine, new List<RawAttendanceLog>
+        {
+            new(machine.Id, "100", timestamp, 1, 0, 0, "SN-1", 1)
+        });
 
         var handler = CreateHandler(scope.ServiceProvider, db);
         var result = await handler.Handle(
@@ -112,26 +125,29 @@ public sealed class MachinesTests : AttendenceTestBase
         using var scope = CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<IAttendanceDbContext>();
 
-        var machine1 = AttendenceMachine.Create(MachineId.New(), "192.168.3.205", 1);
-        var machine2 = AttendenceMachine.Create(MachineId.New(), "192.168.3.206", 2);
+        var machine1 = AttendenceMachine.Create(MachineId.New(), "192.168.3.205", 1, MachineType.ZKTecoGateway);
+        var machine2 = AttendenceMachine.Create(MachineId.New(), "192.168.3.206", 2, MachineType.ZKTecoGateway);
         db.Machines.AddRange(machine1, machine2);
         await db.SaveChangesAsync();
 
         var date = new DateOnly(2026, 8, 17);
 
-        _reader
+        var failingReader = new Mock<IAttendanceMachineReader>();
+        failingReader
             .Setup(r => r.GetLogsAsync(
-                It.Is<AttendenceMachine>(m => m.MachineNumber == 1),
-                date, date, It.IsAny<CancellationToken>()))
+                It.IsAny<AttendenceMachine>(),
+                It.IsAny<DateOnly>(),
+                It.IsAny<DateOnly>(),
+                It.IsAny<CancellationToken>()))
             .ThrowsAsync(new InvalidOperationException("connection failed"));
-        _reader
-            .Setup(r => r.GetLogsAsync(
-                It.Is<AttendenceMachine>(m => m.MachineNumber == 2),
-                date, date, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<RawAttendanceLog>
-            {
-                new(machine2.Id, "100", new DateTime(2026, 8, 17, 9, 0, 0), 1, 0, 0, "SN-2", 2)
-            });
+        _factoryMock
+            .Setup(f => f.Create(It.Is<AttendenceMachine>(m => m.MachineNumber == 1)))
+            .Returns(failingReader.Object);
+
+        SetupReader(machine2, new List<RawAttendanceLog>
+        {
+            new(machine2.Id, "100", new DateTime(2026, 8, 17, 9, 0, 0), 1, 0, 0, "SN-2", 2)
+        });
 
         var handler = CreateHandler(scope.ServiceProvider, db);
         var result = await handler.Handle(

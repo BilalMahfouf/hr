@@ -33,7 +33,7 @@ public static class ImportAttendanceLogs
     }
     public sealed class CommandHandler(
         IAttendanceDbContext db,
-        IAttendanceMachineReader reader,
+        IAttendanceMachineReaderFactory readerFactory,
         IValidator<Command> validator,
         ILogger<CommandHandler> logger)
         : ICommandHandler<Command, Response>
@@ -74,6 +74,8 @@ public static class ImportAttendanceLogs
 
                 try
                 {
+                    var reader = readerFactory.Create(machine);
+
                     logs = await reader.GetLogsAsync(
                         machine,
                         command.From,

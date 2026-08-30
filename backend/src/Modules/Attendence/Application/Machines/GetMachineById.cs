@@ -17,6 +17,7 @@ public static class GetMachineById
         int MachineNumber,
         string IpAddress,
         int Port,
+        MachineType Type,
         bool IsActive,
         DateTime CreatedOnUtc);
 
@@ -45,6 +46,7 @@ public static class GetMachineById
                     m.MachineNumber,
                     m.IpAddress,
                     m.Port,
+                    m.Type,
                     m.IsActive,
                     m.CreatedOnUtc))
                 .FirstOrDefaultAsync(cancellationToken);
