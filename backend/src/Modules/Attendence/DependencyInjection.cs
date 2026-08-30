@@ -1,10 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Modules.Attendence.Application.Abstractions;
+using Modules.Attendence.Application.PunchPolling;
 using Modules.Attendence.Application.Shared;
+using Modules.Attendence.Domain.PunchPolling;
 using Modules.Attendence.Infrastructure.Presistance;
+using Modules.Attendence.Infrastructure.Quartz;
 using Modules.Attendence.Infrastructure.ZKTeco;
 using Modules.Shared;
 using Modules.Shared.Infrastructure.Outbox;
@@ -52,6 +56,10 @@ public static class DependencyInjection
         services.AddScoped<ZKTecoAttendanceMachineReader>();
         services.AddScoped<ZKTecoGatwayMachineReader>();
         services.AddScoped<IAttendanceMachineReaderFactory, AttendanceMachineReaderFactory>();
+
+        // Punch polling scheduler (Quartz)
+        services.AddSingleton<IPunchPollingScheduler, QuartzPunchPollingScheduler>();
+        services.AddHostedService<PunchPollingStartupService>();
 
         services.AddSharedModule(typeof(DependencyInjection).Assembly);
 
