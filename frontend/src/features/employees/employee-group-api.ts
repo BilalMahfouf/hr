@@ -64,7 +64,7 @@ export type CreateWorkScheduleRequest = {
 
 export type CreateRotationEntryRequest = {
   position: number;
-  workScheduleId: Guid | null;
+  workScheduleIndex: number | null;
 };
 
 export type UpdateEmployeeGroupRequest = {

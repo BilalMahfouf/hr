@@ -10,7 +10,7 @@ public sealed class ZKTecoAttendanceMachineReaderTests
     private static readonly DateOnly To = new(2026, 8, 17);
 
     private static AttendenceMachine Machine()
-        => AttendenceMachine.Create(MachineId.New(), "192.168.3.205", 1);
+        => AttendenceMachine.Create(MachineId.New(), "192.168.3.205", 1, MachineType.ZKTecoSdk);
 
     private sealed record Log(
         string Enroll,

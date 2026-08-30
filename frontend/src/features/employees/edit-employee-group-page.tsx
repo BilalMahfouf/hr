@@ -92,7 +92,9 @@ export default function EditEmployeeGroupPage() {
           key: r.id,
           position: r.position,
           type: r.status,
-          workScheduleId: r.workScheduleId ?? "",
+          workScheduleId: r.workScheduleId
+            ? String(group.workSchedules.findIndex((ws) => ws.id === r.workScheduleId))
+            : "",
         })),
     );
     setHydrated(true);
@@ -162,9 +164,9 @@ export default function EditEmployeeGroupPage() {
         })),
         rotationEntries: rotations.map((r, index) => ({
           position: index + 1,
-          workScheduleId:
+          workScheduleIndex:
             r.type === "Work"
-              ? (schedules[Number(r.workScheduleId)]?.id ?? null)
+              ? Number(r.workScheduleId)
               : null,
         })),
       }),

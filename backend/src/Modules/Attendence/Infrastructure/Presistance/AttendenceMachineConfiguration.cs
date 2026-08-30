@@ -33,5 +33,9 @@ public sealed class AttendenceMachineConfiguration
 
         builder.Property(x => x.IsActive)
             .IsRequired();
+
+        builder.Property(x => x.Type)
+            .IsRequired()
+            .HasMaxLength(50);
     }
 }

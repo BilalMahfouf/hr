@@ -21,7 +21,7 @@ public sealed class GetMachineByIdTests
     public async Task Handle_WhenMachineExists_ReturnsMappedResponse()
     {
         var (handler, db) = Arrange();
-        var machine = AttendenceMachine.Create(MachineId.New(), "192.168.3.205", 1, 8080);
+        var machine = AttendenceMachine.Create(MachineId.New(), "192.168.3.205", 1, MachineType.ZKTecoGateway, 8080);
         db.Machines.Add(machine);
         await db.SaveChangesAsync();
 
@@ -33,6 +33,7 @@ public sealed class GetMachineByIdTests
         Assert.Equal(1, result.Value.MachineNumber);
         Assert.Equal("192.168.3.205", result.Value.IpAddress);
         Assert.Equal(8080, result.Value.Port);
+        Assert.Equal(MachineType.ZKTecoGateway, result.Value.Type);
         Assert.True(result.Value.IsActive);
         Assert.Equal(machine.CreatedOnUtc, result.Value.CreatedOnUtc);
     }

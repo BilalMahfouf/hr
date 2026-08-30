@@ -1,6 +1,6 @@
 namespace Modules.Attendence.Infrastructure.ZKTeco;
 
-internal interface IZKemSession : IDisposable
+public interface IZKemSession : IDisposable
 {
     bool ConnectNet(string ipAddress, int port);
 
@@ -24,7 +24,7 @@ internal interface IZKemSession : IDisposable
         ref int workCode);
 }
 
-internal interface IZKemSessionFactory
+public interface IZKemSessionFactory
 {
     IZKemSession Create();
 }

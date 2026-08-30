@@ -173,7 +173,7 @@ export default function CreateEmployeeGroupPage() {
       })),
       rotationEntries: rotations.map((r) => ({
         position: Number(r.position),
-        workScheduleId: r.type === "Work" ? r.workScheduleId : null,
+        workScheduleIndex: r.type === "Work" ? Number(r.workScheduleId) : null,
       })),
     };
 

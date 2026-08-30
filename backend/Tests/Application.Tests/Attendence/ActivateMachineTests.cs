@@ -21,7 +21,7 @@ public sealed class ActivateMachineTests
     public async Task Handle_WhenMachineExistsAndInactive_ActivatesMachine()
     {
         var (handler, db) = Arrange();
-        var machine = AttendenceMachine.Create(MachineId.New(), "192.168.3.205", 1);
+        var machine = AttendenceMachine.Create(MachineId.New(), "192.168.3.205", 1, MachineType.ZKTecoGateway);
         machine.Deactivate();
         db.Machines.Add(machine);
         await db.SaveChangesAsync();
@@ -38,7 +38,7 @@ public sealed class ActivateMachineTests
     public async Task Handle_WhenMachineAlreadyActive_IsIdempotent()
     {
         var (handler, db) = Arrange();
-        var machine = AttendenceMachine.Create(MachineId.New(), "192.168.3.205", 1);
+        var machine = AttendenceMachine.Create(MachineId.New(), "192.168.3.205", 1, MachineType.ZKTecoGateway);
         db.Machines.Add(machine);
         await db.SaveChangesAsync();
 

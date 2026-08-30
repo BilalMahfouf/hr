@@ -28,7 +28,7 @@ public sealed class MachineCrudTests : AttendenceTestBase
         IAttendanceDbContext db,
         bool active = true)
     {
-        var machine = AttendenceMachine.Create(MachineId.New(), "192.168.3.205", 1);
+        var machine = AttendenceMachine.Create(MachineId.New(), "192.168.3.205", 1, MachineType.ZKTecoGateway);
         if (!active)
         {
             machine.Deactivate();
