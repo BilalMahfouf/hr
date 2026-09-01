@@ -43,4 +43,12 @@ public sealed class TestEmployeeApi : IEmployeeApi
     {
         throw new NotImplementedException();
     }
+
+    public Result<EmployeeReponseForAttendance> AttendanceResponse { get; set; } =
+        Result<EmployeeReponseForAttendance>.Failure(EmployeeErrors.NotFound);
+
+    public Task<Result<EmployeeReponseForAttendance>> GetEmployeeForAttendance(int badge, DateOnly punchDate, CancellationToken ct = default)
+    {
+        return Task.FromResult(AttendanceResponse);
+    }
 }
