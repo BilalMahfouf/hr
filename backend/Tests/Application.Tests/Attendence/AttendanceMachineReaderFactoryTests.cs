@@ -1,6 +1,8 @@
+using Microsoft.Extensions.Options;
 using Modules.Attendence.Application.Abstractions;
 using Modules.Attendence.Domain.Machines;
 using Modules.Attendence.Infrastructure.ZKTeco;
+using Modules.Attendence.Infrastructure.ZKTeco.Gateway;
 using Moq;
 
 namespace Application.Tests.Attendence;
@@ -8,7 +10,9 @@ namespace Application.Tests.Attendence;
 public sealed class AttendanceMachineReaderFactoryTests
 {
     private static readonly ZKTecoAttendanceMachineReader SdkReader = new(Mock.Of<IZKemSessionFactory>());
-    private static readonly ZKTecoGatwayMachineReader GatewayReader = new(new HttpClient());
+    private static readonly ZKTecoGatwayMachineReader GatewayReader = new(
+        new HttpClient(),
+        Mock.Of<IOptions<ZKTecoGatewayOptions>>());
 
     private static AttendanceMachineReaderFactory CreateFactory()
         => new(SdkReader, GatewayReader);
