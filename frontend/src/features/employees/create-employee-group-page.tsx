@@ -332,7 +332,6 @@ export default function CreateEmployeeGroupPage() {
               </div>
               <Button
                 type="button"
-                variant="secondary"
                 size="sm"
                 onClick={addSchedule}
                 className="gap-1 h-9"
@@ -466,7 +465,6 @@ export default function CreateEmployeeGroupPage() {
               <div className="flex gap-2">
                 <Button
                   type="button"
-                  variant="secondary"
                   size="sm"
                   onClick={() => addRotation("Work")}
                   className="gap-1 h-9"
@@ -476,7 +474,6 @@ export default function CreateEmployeeGroupPage() {
                 </Button>
                 <Button
                   type="button"
-                  variant="secondary"
                   size="sm"
                   onClick={() => addRotation("Rest")}
                   className="gap-1 h-9"

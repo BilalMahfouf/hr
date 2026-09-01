@@ -407,7 +407,7 @@ export default function EditEmployeeGroupPage() {
         {/* Schedules Tab */}
         <TabsContent value="schedules" className="space-y-4 pt-4">
           <div className="flex justify-end">
-            <Button type="button" variant="secondary" size="sm" onClick={addSchedule} className="gap-1">
+            <Button type="button" size="sm" onClick={addSchedule} className="gap-1">
               <Plus className="h-4 w-4" />
               {t(i18nKeyContainer.employeeGroups.form.addSchedule)}
             </Button>
@@ -572,11 +572,11 @@ export default function EditEmployeeGroupPage() {
         {/* Rotations Tab */}
         <TabsContent value="rotations" className="space-y-4 pt-4">
           <div className="flex justify-end gap-2">
-            <Button type="button" variant="secondary" size="sm" onClick={() => addRotation("Work")} className="gap-1">
+            <Button type="button" size="sm" onClick={() => addRotation("Work")} className="gap-1">
               <Plus className="h-4 w-4" />
               {t(i18nKeyContainer.employeeGroups.form.addWorkRotation)}
             </Button>
-            <Button type="button" variant="secondary" size="sm" onClick={() => addRotation("Rest")} className="gap-1">
+            <Button type="button" size="sm" onClick={() => addRotation("Rest")} className="gap-1">
               <Plus className="h-4 w-4" />
               {t(i18nKeyContainer.employeeGroups.form.addRestRotation)}
             </Button>
