@@ -120,7 +120,7 @@ export default function Login() {
               </div>
               <Button 
                 type="submit" 
-                className="w-full cursor-pointer bg-primary text-white h-11 font-bold text-lg shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
+                className="w-full bg-primary text-white h-11 font-bold text-lg shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
                 disabled={mutation.isPending}
               >
                 {mutation.isPending && <Loader2 className="me-2 h-4 w-4 animate-spin" />}

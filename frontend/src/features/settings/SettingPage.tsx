@@ -200,7 +200,7 @@ function MobileNav({
         <Button
           variant="outline"
           size="icon"
-          className="md:hidden cursor-pointer border-transparent bg-transparent hover:bg-slate-100"
+          className="md:hidden border-transparent bg-transparent hover:bg-slate-100"
         >
           <Menu className="h-5 w-5" />
           <span className="sr-only">
@@ -466,7 +466,7 @@ function ProfileSection({
                 <Button
                   type="submit"
                   disabled={!form.formState.isDirty || isSaving}
-                  className="cursor-pointer"
+                  className=""
                 >
                   {isSaving ? (
                     <>
@@ -675,7 +675,7 @@ function NotificationsSection({ t, i18n }: { t: (key: string) => string; i18n: {
                 size="sm"
                 disabled={isPushLoading || pushStatus === "denied"}
                 onClick={handlePushToggle}
-                className="cursor-pointer shrink-0"
+                className="shrink-0"
               >
                 {isPushLoading ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -698,11 +698,11 @@ function NotificationsSection({ t, i18n }: { t: (key: string) => string; i18n: {
                 </p>
               </div>
               <Button
-                variant="outline"
+                variant="white"
                 size="sm"
                 disabled={isTestLoading}
                 onClick={handleTestPush}
-                className="cursor-pointer shrink-0 border-slate-200"
+                className="shrink-0"
               >
                 {isTestLoading ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -833,8 +833,7 @@ function SubscriptionsSection({ t }: { t: (key: string) => string }) {
             </p>
             <Button
               type="button"
-              variant="outline"
-              className="cursor-pointer border-slate-200"
+              variant="white"
               onClick={() => subscriptionQuery.refetch()}
             >
               <RefreshCcw className="me-2 h-4 w-4" />

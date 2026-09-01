@@ -149,7 +149,7 @@ export default function ViewUser({ open, onClose, userId }: ViewUserProps) {
                 </div>
 
                 <div className="pt-2">
-                  <Button onClick={onClose} className="w-full cursor-pointer">
+                  <Button onClick={onClose} className="w-full">
                     {t(i18nKeyContainer.common.close)}
                   </Button>
                 </div>

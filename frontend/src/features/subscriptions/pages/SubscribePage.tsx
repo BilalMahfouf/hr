@@ -191,7 +191,7 @@ export default function SubscribePage() {
 
                           <Button
                             onClick={() => handleStartTrial(plan.id)}
-                            className="w-full h-12 text-base font-semibold shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all hover:scale-[1.02] active:scale-[0.98] mt-auto cursor-pointer"
+                            className="w-full h-12 text-base font-semibold shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all hover:scale-[1.02] active:scale-[0.98] mt-auto"
                             disabled={checkoutMutation.isPending}
                           >
                             {isSubmittingCurrentPlan ? (

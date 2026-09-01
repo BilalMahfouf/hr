@@ -335,7 +335,7 @@ export default function CreateEmployeeGroupPage() {
                 variant="outline"
                 size="sm"
                 onClick={addSchedule}
-                className="cursor-pointer gap-1 h-9"
+                className="gap-1 h-9"
               >
                 <Plus className="h-4 w-4" />
                 {t(i18nKeyContainer.employeeGroups.form.addSchedule)}
@@ -358,7 +358,7 @@ export default function CreateEmployeeGroupPage() {
                       variant="ghost"
                       size="icon"
                       onClick={() => removeSchedule(index)}
-                      className="text-red-600 hover:text-red-700 hover:bg-red-50 cursor-pointer"
+                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -469,7 +469,7 @@ export default function CreateEmployeeGroupPage() {
                   variant="outline"
                   size="sm"
                   onClick={() => addRotation("Work")}
-                  className="cursor-pointer gap-1 h-9"
+                  className="gap-1 h-9"
                 >
                   <Plus className="h-4 w-4" />
                   {t(i18nKeyContainer.employeeGroups.form.addWorkRotation)}
@@ -479,7 +479,7 @@ export default function CreateEmployeeGroupPage() {
                   variant="outline"
                   size="sm"
                   onClick={() => addRotation("Rest")}
-                  className="cursor-pointer gap-1 h-9"
+                  className="gap-1 h-9"
                 >
                   <Plus className="h-4 w-4" />
                   {t(i18nKeyContainer.employeeGroups.form.addRestRotation)}
@@ -525,7 +525,7 @@ export default function CreateEmployeeGroupPage() {
                     variant="ghost"
                     size="icon"
                     onClick={() => removeRotation(index)}
-                    className="text-red-600 hover:text-red-700 hover:bg-red-50 cursor-pointer"
+                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
@@ -557,8 +557,8 @@ export default function CreateEmployeeGroupPage() {
         <div className="flex gap-3 justify-end">
           <Button
             type="button"
-            variant="outline"
-            className="h-11 px-6 cursor-pointer border-slate-200 bg-white hover:bg-slate-50"
+            variant="white"
+            className="h-11 px-6"
             onClick={() => navigate("/employee-groups")}
             disabled={mutation.isPending}
           >
@@ -566,7 +566,7 @@ export default function CreateEmployeeGroupPage() {
           </Button>
           <Button
             type="submit"
-            className="h-11 px-6 cursor-pointer"
+            className="h-11 px-6"
             disabled={mutation.isPending}
           >
             {mutation.isPending

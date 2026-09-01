@@ -192,7 +192,7 @@ export default function ViewSubscriptionPlan({ open, onClose, planId }: ViewSubs
               </div>
 
               <div className="pt-2">
-                <Button onClick={onClose} className="w-full cursor-pointer">
+                <Button onClick={onClose} className="w-full">
                   {t(i18nKeyContainer.common.close)}
                 </Button>
               </div>

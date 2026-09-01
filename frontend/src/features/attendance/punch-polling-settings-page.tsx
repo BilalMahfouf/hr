@@ -172,7 +172,7 @@ export default function PunchPollingSettingsPage() {
             <Button
               onClick={handleSave}
               disabled={updateMutation.isPending}
-              className="cursor-pointer"
+              className=""
             >
               {updateMutation.isPending ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />

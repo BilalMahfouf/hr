@@ -360,7 +360,7 @@ export default function EditEmployeeGroupPage() {
           onClick={() =>
             setConfirmTarget({ kind: "delete-group", id: group.id, name: group.name })
           }
-          className="cursor-pointer border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
+          className="border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
         >
           <Trash2 className="h-4 w-4" />
           {t(i18nKeyContainer.common.delete)}
@@ -407,7 +407,7 @@ export default function EditEmployeeGroupPage() {
         {/* Schedules Tab */}
         <TabsContent value="schedules" className="space-y-4 pt-4">
           <div className="flex justify-end">
-            <Button type="button" variant="outline" size="sm" onClick={addSchedule} className="cursor-pointer gap-1">
+            <Button type="button" variant="outline" size="sm" onClick={addSchedule} className="gap-1">
               <Plus className="h-4 w-4" />
               {t(i18nKeyContainer.employeeGroups.form.addSchedule)}
             </Button>
@@ -442,7 +442,7 @@ export default function EditEmployeeGroupPage() {
                           size="sm"
                           disabled={isConfirmPending}
                           onClick={() => setConfirmTarget({ kind: "toggle-schedule", schedule: serverSchedule })}
-                          className="cursor-pointer gap-1 text-slate-600"
+                          className="gap-1 text-slate-600"
                         >
                           {serverSchedule.isActive ? (
                             <>
@@ -467,7 +467,7 @@ export default function EditEmployeeGroupPage() {
                           }
                           disabled={isConfirmPending}
                           onClick={() => setConfirmTarget({ kind: "delete-schedule", scheduleId: serverSchedule.id })}
-                          className="cursor-pointer text-red-600 hover:text-red-700 hover:bg-red-50"
+                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -479,7 +479,7 @@ export default function EditEmployeeGroupPage() {
                         variant="ghost"
                         size="icon"
                         onClick={() => removeSchedule(schedule.key)}
-                        className="cursor-pointer text-red-600 hover:text-red-700 hover:bg-red-50"
+                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
@@ -572,11 +572,11 @@ export default function EditEmployeeGroupPage() {
         {/* Rotations Tab */}
         <TabsContent value="rotations" className="space-y-4 pt-4">
           <div className="flex justify-end gap-2">
-            <Button type="button" variant="outline" size="sm" onClick={() => addRotation("Work")} className="cursor-pointer gap-1">
+            <Button type="button" variant="outline" size="sm" onClick={() => addRotation("Work")} className="gap-1">
               <Plus className="h-4 w-4" />
               {t(i18nKeyContainer.employeeGroups.form.addWorkRotation)}
             </Button>
-            <Button type="button" variant="outline" size="sm" onClick={() => addRotation("Rest")} className="cursor-pointer gap-1">
+            <Button type="button" variant="outline" size="sm" onClick={() => addRotation("Rest")} className="gap-1">
               <Plus className="h-4 w-4" />
               {t(i18nKeyContainer.employeeGroups.form.addRestRotation)}
             </Button>
@@ -634,7 +634,7 @@ export default function EditEmployeeGroupPage() {
                 variant="ghost"
                 size="icon"
                 onClick={() => setRotationToDelete(index + 1)}
-                className="cursor-pointer text-red-600 hover:text-red-700 hover:bg-red-50"
+                className="text-red-600 hover:text-red-700 hover:bg-red-50"
               >
                 <Trash2 className="h-4 w-4" />
               </Button>
@@ -653,8 +653,8 @@ export default function EditEmployeeGroupPage() {
       <div className="flex gap-3 justify-end pb-4">
         <Button
           type="button"
-          variant="outline"
-          className="h-11 cursor-pointer border-slate-200 bg-white px-6 hover:bg-slate-50"
+          variant="white"
+          className="h-11 px-6"
           onClick={() => navigate("/employee-groups")}
           disabled={saveMutation.isPending}
         >
@@ -662,7 +662,7 @@ export default function EditEmployeeGroupPage() {
         </Button>
         <Button
           type="button"
-          className="h-11 cursor-pointer px-6"
+          className="h-11 px-6"
           onClick={handleSave}
           disabled={saveMutation.isPending}
         >

@@ -287,8 +287,8 @@ export default function AddUpdateSubscriptionPlan({
               <div className="flex gap-3 pt-2">
                 <Button
                   type="button"
-                  variant="outline"
-                  className="h-11 flex-1 cursor-pointer border-slate-200 bg-white hover:bg-slate-50"
+                  variant="white"
+                  className="h-11 flex-1"
                   onClick={handleClose}
                   disabled={mutation.isPending}
                 >
@@ -296,7 +296,7 @@ export default function AddUpdateSubscriptionPlan({
                 </Button>
                 <Button
                   type="submit"
-                  className="h-11 flex-1 cursor-pointer"
+                  className="h-11 flex-1"
                   disabled={mutation.isPending}
                 >
                   {mutation.isPending

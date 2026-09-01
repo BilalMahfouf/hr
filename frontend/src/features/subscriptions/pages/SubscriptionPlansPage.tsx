@@ -86,7 +86,7 @@ export default function SubscriptionPlansPage() {
           <p className="text-slate-500">{t(i18nKeyContainer.subscriptionPlans.description)}</p>
         </div>
 
-        <Button onClick={handleAddPlan} className="cursor-pointer">
+        <Button onClick={handleAddPlan}>
           {t(i18nKeyContainer.subscriptionPlans.addPlan)}
         </Button>
       </div>

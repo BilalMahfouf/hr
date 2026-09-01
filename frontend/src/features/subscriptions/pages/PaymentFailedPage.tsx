@@ -63,7 +63,7 @@ export default function PaymentFailedPage() {
 
               <Button
                 onClick={handleTryAgain}
-                className="w-full h-12 text-base font-semibold shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all cursor-pointer"
+                className="w-full h-12 text-base font-semibold shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all"
               >
                 {t(i18nKeyContainer.onboarding.payment.failed.tryAgain)}
               </Button>
