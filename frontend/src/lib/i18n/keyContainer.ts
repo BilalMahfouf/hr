@@ -577,6 +577,7 @@ const i18nKeyContainer = {
             schedule: {
                 shiftStartTime: 'employeeGroups.form.schedule.shiftStartTime',
                 shiftEndTime: 'employeeGroups.form.schedule.shiftEndTime',
+                hasBreak: 'employeeGroups.form.schedule.hasBreak',
                 breakStartTime: 'employeeGroups.form.schedule.breakStartTime',
                 breakEndTime: 'employeeGroups.form.schedule.breakEndTime',
                 endDayOffset: 'employeeGroups.form.schedule.endDayOffset',

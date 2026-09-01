@@ -37,6 +37,7 @@ export default function TimeInput({
         <Input
           id={id}
           type="time"
+          lang="en-GB"
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}

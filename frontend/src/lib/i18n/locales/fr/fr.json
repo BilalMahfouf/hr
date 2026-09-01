@@ -364,6 +364,7 @@
             "schedule": {
                 "shiftStartTime": "Début du shift",
                 "shiftEndTime": "Fin du shift",
+                "hasBreak": "Pause",
                 "breakStartTime": "Début de pause",
                 "breakEndTime": "Fin de pause",
                 "endDayOffset": "Décalage jour suivant",

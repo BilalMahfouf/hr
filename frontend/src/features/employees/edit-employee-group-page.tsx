@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 import ConfirmActionDialog from "@/components/ui/confirm-action-dialog";
 import ConfirmDeleteDialog from "@/components/ui/confirm-delete-dialog";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -28,6 +30,7 @@ interface ScheduleForm {
   id?: string;
   shiftStartTime: string;
   shiftEndTime: string;
+  hasBreak: boolean;
   breakStartTime: string;
   breakEndTime: string;
   endDayOffset: string;
@@ -51,13 +54,19 @@ function fromTime(value: string): string {
 }
 
 function toForm(schedule: WorkScheduleResponse): ScheduleForm {
+  const hasBreak =
+    schedule.breakStartTime !== null &&
+    schedule.breakEndTime !== null &&
+    fromTime(schedule.breakStartTime) !== "00:00" &&
+    fromTime(schedule.breakEndTime) !== "00:00";
   return {
     key: schedule.id,
     id: schedule.id,
     shiftStartTime: fromTime(schedule.shiftStartTime),
     shiftEndTime: fromTime(schedule.shiftEndTime),
-    breakStartTime: fromTime(schedule.breakStartTime),
-    breakEndTime: fromTime(schedule.breakEndTime),
+    hasBreak,
+    breakStartTime: hasBreak ? fromTime(schedule.breakStartTime) : "",
+    breakEndTime: hasBreak ? fromTime(schedule.breakEndTime) : "",
     endDayOffset: String(schedule.endDayOffset),
     allowedCheckInLatenessMinutes: String(schedule.allowedCheckInLatenessMinutes),
     allowedCheckOutEarlinessMinutes: String(schedule.allowedCheckOutEarlinessMinutes),
@@ -88,14 +97,17 @@ export default function EditEmployeeGroupPage() {
     setRotations(
       [...group.rotationEntries]
         .sort((a, b) => a.position - b.position)
-        .map((r) => ({
-          key: r.id,
-          position: r.position,
-          type: r.status,
-          workScheduleId: r.workScheduleId
-            ? String(group.workSchedules.findIndex((ws) => ws.id === r.workScheduleId))
-            : "",
-        })),
+        .map((r) => {
+          const matchedSchedule = r.workScheduleId
+            ? group.workSchedules.find((ws) => ws.id === r.workScheduleId)
+            : null;
+          return {
+            key: r.id,
+            position: r.position,
+            type: r.status,
+            workScheduleId: matchedSchedule ? matchedSchedule.id : "",
+          };
+        }),
     );
     setHydrated(true);
   }
@@ -156,8 +168,8 @@ export default function EditEmployeeGroupPage() {
         workSchedules: schedules.map((s) => ({
           shiftStartTime: toTime(s.shiftStartTime),
           shiftEndTime: toTime(s.shiftEndTime),
-          breakStartTime: toTime(s.breakStartTime),
-          breakEndTime: toTime(s.breakEndTime),
+          breakStartTime: s.hasBreak ? toTime(s.breakStartTime) : null,
+          breakEndTime: s.hasBreak ? toTime(s.breakEndTime) : null,
           endDayOffset: Number(s.endDayOffset),
           allowedCheckInLatenessMinutes: Number(s.allowedCheckInLatenessMinutes),
           allowedCheckOutEarlinessMinutes: Number(s.allowedCheckOutEarlinessMinutes),
@@ -165,8 +177,8 @@ export default function EditEmployeeGroupPage() {
         rotationEntries: rotations.map((r, index) => ({
           position: index + 1,
           workScheduleIndex:
-            r.type === "Work"
-              ? Number(r.workScheduleId)
+            r.type === "Work" && r.workScheduleId
+              ? schedules.findIndex((s) => s.key === r.workScheduleId)
               : null,
         })),
       }),
@@ -181,7 +193,7 @@ export default function EditEmployeeGroupPage() {
 
   const validateSchedules = (): boolean => {
     for (const s of schedules) {
-      if (!s.shiftStartTime || !s.shiftEndTime || !s.breakStartTime || !s.breakEndTime) {
+      if (!s.shiftStartTime || !s.shiftEndTime) {
         warning(i18nKeyContainer.errors.validation, {
           description: i18nKeyContainer.errors.validationDesc,
         });
@@ -189,12 +201,29 @@ export default function EditEmployeeGroupPage() {
       }
       if (
         s.endDayOffset === "0" &&
-        (s.shiftStartTime >= s.shiftEndTime || s.breakStartTime >= s.breakEndTime)
+        s.shiftStartTime >= s.shiftEndTime
       ) {
         warning(i18nKeyContainer.errors.validation, {
           description: i18nKeyContainer.errors.validationDesc,
         });
         return false;
+      }
+      if (s.hasBreak) {
+        if (!s.breakStartTime || !s.breakEndTime) {
+          warning(i18nKeyContainer.errors.validation, {
+            description: i18nKeyContainer.errors.validationDesc,
+          });
+          return false;
+        }
+        if (
+          s.endDayOffset === "0" &&
+          (s.breakStartTime >= s.breakEndTime)
+        ) {
+          warning(i18nKeyContainer.errors.validation, {
+            description: i18nKeyContainer.errors.validationDesc,
+          });
+          return false;
+        }
       }
     }
     return true;
@@ -218,6 +247,7 @@ export default function EditEmployeeGroupPage() {
         key: `new-${Date.now()}`,
         shiftStartTime: "08:00",
         shiftEndTime: "16:00",
+        hasBreak: true,
         breakStartTime: "12:00",
         breakEndTime: "12:30",
         endDayOffset: "0",
@@ -231,7 +261,7 @@ export default function EditEmployeeGroupPage() {
     setSchedules((prev) => prev.filter((s) => s.key !== key));
     setRotations((prev) =>
       prev.map((r) =>
-        r.type === "Work" && schedules[Number(r.workScheduleId)]?.key === key
+        r.type === "Work" && r.workScheduleId === key
           ? { ...r, workScheduleId: "" }
           : r,
       ),
@@ -244,6 +274,21 @@ export default function EditEmployeeGroupPage() {
     );
   };
 
+  const toggleBreak = (key: string, checked: boolean) => {
+    setSchedules((prev) =>
+      prev.map((s) =>
+        s.key === key
+          ? {
+              ...s,
+              hasBreak: checked,
+              breakStartTime: checked ? "12:00" : "",
+              breakEndTime: checked ? "12:30" : "",
+            }
+          : s,
+      ),
+    );
+  };
+
   const addRotation = (type: "Work" | "Rest") => {
     setRotations((prev) => [
       ...prev,
@@ -251,7 +296,7 @@ export default function EditEmployeeGroupPage() {
         key: `new-${Date.now()}-${Math.random()}`,
         position: prev.length + 1,
         type,
-        workScheduleId: type === "Work" ? "0" : "",
+        workScheduleId: type === "Work" ? (schedules[0]?.key ?? "") : "",
       },
     ]);
   };
@@ -260,8 +305,8 @@ export default function EditEmployeeGroupPage() {
     setRotations((prev) => prev.filter((_, index) => index !== position - 1).map((r, index) => ({ ...r, position: index + 1 })));
   };
 
-  const scheduleOptions = schedules.map((s, index) => ({
-    value: String(index),
+  const scheduleOptions = schedules.map((s) => ({
+    value: s.key,
     label: `${s.shiftStartTime} - ${s.shiftEndTime}${s.endDayOffset !== "0" ? " (+1)" : ""}`,
   }));
 
@@ -457,21 +502,35 @@ export default function EditEmployeeGroupPage() {
                     onChange={(v) => updateSchedule(schedule.key, "shiftEndTime", v)}
                     required
                   />
-                  <TimeInput
-                    id={`edit-schedule-${index}-breakStart`}
-                    label={t(i18nKeyContainer.employeeGroups.form.schedule.breakStartTime)}
-                    value={schedule.breakStartTime}
-                    onChange={(v) => updateSchedule(schedule.key, "breakStartTime", v)}
-                    required
-                  />
-                  <TimeInput
-                    id={`edit-schedule-${index}-breakEnd`}
-                    label={t(i18nKeyContainer.employeeGroups.form.schedule.breakEndTime)}
-                    value={schedule.breakEndTime}
-                    onChange={(v) => updateSchedule(schedule.key, "breakEndTime", v)}
-                    required
-                  />
+                  <div className="space-y-1.5">
+                    <Label className="text-sm font-medium text-slate-700 flex items-center gap-2 cursor-pointer">
+                      <Checkbox
+                        checked={schedule.hasBreak}
+                        onCheckedChange={(checked) => toggleBreak(schedule.key, checked === true)}
+                        className="h-4 w-4 rounded border-slate-300 text-primary focus:ring-primary"
+                      />
+                      {t(i18nKeyContainer.employeeGroups.form.schedule.hasBreak)}
+                    </Label>
+                  </div>
                 </div>
+                {schedule.hasBreak && (
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <TimeInput
+                      id={`edit-schedule-${index}-breakStart`}
+                      label={t(i18nKeyContainer.employeeGroups.form.schedule.breakStartTime)}
+                      value={schedule.breakStartTime}
+                      onChange={(v) => updateSchedule(schedule.key, "breakStartTime", v)}
+                      required
+                    />
+                    <TimeInput
+                      id={`edit-schedule-${index}-breakEnd`}
+                      label={t(i18nKeyContainer.employeeGroups.form.schedule.breakEndTime)}
+                      value={schedule.breakEndTime}
+                      onChange={(v) => updateSchedule(schedule.key, "breakEndTime", v)}
+                      required
+                    />
+                  </div>
+                )}
 
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                   <NumberInput
@@ -540,7 +599,7 @@ export default function EditEmployeeGroupPage() {
                   setRotations((prev) =>
                     prev.map((r, i) =>
                       i === index
-                        ? { ...r, type: v as "Work" | "Rest", workScheduleId: v === "Rest" ? "" : "0" }
+                        ? { ...r, type: v as "Work" | "Rest", workScheduleId: v === "Rest" ? "" : (schedules[0]?.key ?? "") }
                         : r,
                     ),
                   )

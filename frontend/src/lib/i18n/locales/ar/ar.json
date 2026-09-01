@@ -364,6 +364,7 @@
             "schedule": {
                 "shiftStartTime": "بداية الوردية",
                 "shiftEndTime": "نهاية الوردية",
+                "hasBreak": "فترة راحة",
                 "breakStartTime": "بداية الراحة",
                 "breakEndTime": "نهاية الراحة",
                 "endDayOffset": "امتداد لليوم التالي",

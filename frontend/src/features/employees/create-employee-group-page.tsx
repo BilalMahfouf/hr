@@ -20,6 +20,7 @@ import { cn } from "@/lib/utils";
 interface WorkScheduleForm {
   shiftStartTime: string;
   shiftEndTime: string;
+  hasBreak: boolean;
   breakStartTime: string;
   breakEndTime: string;
   endDayOffset: string;
@@ -37,6 +38,7 @@ function getDefaultSchedule(): WorkScheduleForm {
   return {
     shiftStartTime: "07:00",
     shiftEndTime: "15:00",
+    hasBreak: true,
     breakStartTime: "11:00",
     breakEndTime: "11:30",
     endDayOffset: "0",
@@ -45,9 +47,9 @@ function getDefaultSchedule(): WorkScheduleForm {
   };
 }
 
-function getDefaultRotation(schedules: WorkScheduleForm[]): RotationForm {
+function getDefaultRotation(rotationCount: number): RotationForm {
   return {
-    position: String(schedules.length + 1),
+    position: String(rotationCount + 1),
     type: "Work",
     workScheduleId: "",
   };
@@ -107,14 +109,16 @@ export default function CreateEmployeeGroupPage() {
         if (schedule.shiftStartTime >= schedule.shiftEndTime && schedule.endDayOffset === "0") {
           newErrors[`schedule-${index}-shiftStartTime`] = t(i18nKeyContainer.employeeGroups.form.validation.shiftStartBeforeEnd);
         }
-        if (schedule.breakStartTime >= schedule.breakEndTime && schedule.endDayOffset === "0") {
-          newErrors[`schedule-${index}-breakStartTime`] = t(i18nKeyContainer.employeeGroups.form.validation.breakStartBeforeEnd);
-        }
-        if (
-          schedule.breakStartTime < schedule.shiftStartTime ||
-          schedule.breakEndTime > schedule.shiftEndTime
-        ) {
-          newErrors[`schedule-${index}-breakWithinShift`] = t(i18nKeyContainer.employeeGroups.form.validation.breakWithinShift);
+        if (schedule.hasBreak) {
+          if (schedule.breakStartTime >= schedule.breakEndTime && schedule.endDayOffset === "0") {
+            newErrors[`schedule-${index}-breakStartTime`] = t(i18nKeyContainer.employeeGroups.form.validation.breakStartBeforeEnd);
+          }
+          if (
+            schedule.breakStartTime < schedule.shiftStartTime ||
+            schedule.breakEndTime > schedule.shiftEndTime
+          ) {
+            newErrors[`schedule-${index}-breakWithinShift`] = t(i18nKeyContainer.employeeGroups.form.validation.breakWithinShift);
+          }
         }
         if (Number(schedule.endDayOffset) < 0) {
           newErrors[`schedule-${index}-endDayOffset`] = t(i18nKeyContainer.employeeGroups.form.validation.endDayOffsetMin);
@@ -142,11 +146,6 @@ export default function CreateEmployeeGroupPage() {
         }
       });
     }
-    console.log(newErrors);
-    if(!newErrors){
-      return true;
-    }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -169,19 +168,17 @@ export default function CreateEmployeeGroupPage() {
       workSchedules: workSchedules.map((s) => ({
         shiftStartTime: s.shiftStartTime + ":00",
         shiftEndTime: s.shiftEndTime + ":00",
-        breakStartTime: s.breakStartTime + ":00",
-        breakEndTime: s.breakEndTime + ":00",
+        breakStartTime: s.hasBreak ? s.breakStartTime + ":00" : null,
+        breakEndTime: s.hasBreak ? s.breakEndTime + ":00" : null,
         endDayOffset: Number(s.endDayOffset),
         allowedCheckInLatenessMinutes: Number(s.allowedCheckInLatenessMinutes),
         allowedCheckOutEarlinessMinutes: Number(s.allowedCheckOutEarlinessMinutes),
       })),
       rotationEntries: rotations.map((r) => ({
         position: Number(r.position),
-        workScheduleIndex: r.type === "Work" ? Number(r.workScheduleId) : null,
+        workScheduleIndex: r.type === "Work" && r.workScheduleId !== "" ? Number(r.workScheduleId) : null,
       })),
     };
-    console.log(req)
-
     mutation.mutate(request);
   };
 
@@ -192,6 +189,15 @@ export default function CreateEmployeeGroupPage() {
   const removeSchedule = (index: number) => {
     if (workSchedules.length <= 1) return;
     setWorkSchedules(workSchedules.filter((_, i) => i !== index));
+    setRotations((prev) =>
+      prev.map((r) => {
+        if (r.type !== "Work" || r.workScheduleId === "") return r;
+        const idx = Number(r.workScheduleId);
+        if (idx === index) return { ...r, workScheduleId: "" };
+        if (idx > index) return { ...r, workScheduleId: String(idx - 1) };
+        return r;
+      }),
+    );
   };
 
   const updateSchedule = (index: number, field: keyof WorkScheduleForm, value: string) => {
@@ -200,8 +206,23 @@ export default function CreateEmployeeGroupPage() {
     );
   };
 
+  const toggleBreak = (index: number, checked: boolean) => {
+    setWorkSchedules(
+      workSchedules.map((s, i) =>
+        i === index
+          ? {
+              ...s,
+              hasBreak: checked,
+              breakStartTime: checked ? "11:00" : "",
+              breakEndTime: checked ? "11:30" : "",
+            }
+          : s,
+      ),
+    );
+  };
+
   const addRotation = (type: "Work" | "Rest") => {
-    setRotations([...rotations, { ...getDefaultRotation(workSchedules), type }]);
+    setRotations([...rotations, { ...getDefaultRotation(rotations.length), type }]);
   };
 
   const removeRotation = (index: number) => {
@@ -361,23 +382,37 @@ export default function CreateEmployeeGroupPage() {
                     required
                     error={errors[`schedule-${index}-shiftEndTime`]}
                   />
-                  <TimeInput
-                    id={`schedule-${index}-breakStartTime`}
-                    label={t(i18nKeyContainer.employeeGroups.form.schedule.breakStartTime)}
-                    value={schedule.breakStartTime}
-                    onChange={(v) => updateSchedule(index, "breakStartTime", v)}
-                    required
-                    error={errors[`schedule-${index}-breakStartTime`]}
-                  />
-                  <TimeInput
-                    id={`schedule-${index}-breakEndTime`}
-                    label={t(i18nKeyContainer.employeeGroups.form.schedule.breakEndTime)}
-                    value={schedule.breakEndTime}
-                    onChange={(v) => updateSchedule(index, "breakEndTime", v)}
-                    required
-                    error={errors[`schedule-${index}-breakEndTime`]}
-                  />
+                  <div className="space-y-1.5">
+                    <Label className="text-sm font-medium text-slate-700 flex items-center gap-2 cursor-pointer">
+                      <Checkbox
+                        checked={schedule.hasBreak}
+                        onCheckedChange={(checked) => toggleBreak(index, checked === true)}
+                        className="h-4 w-4 rounded border-slate-300 text-primary focus:ring-primary"
+                      />
+                      {t(i18nKeyContainer.employeeGroups.form.schedule.hasBreak)}
+                    </Label>
+                  </div>
                 </div>
+                {schedule.hasBreak && (
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <TimeInput
+                      id={`schedule-${index}-breakStartTime`}
+                      label={t(i18nKeyContainer.employeeGroups.form.schedule.breakStartTime)}
+                      value={schedule.breakStartTime}
+                      onChange={(v) => updateSchedule(index, "breakStartTime", v)}
+                      required
+                      error={errors[`schedule-${index}-breakStartTime`]}
+                    />
+                    <TimeInput
+                      id={`schedule-${index}-breakEndTime`}
+                      label={t(i18nKeyContainer.employeeGroups.form.schedule.breakEndTime)}
+                      value={schedule.breakEndTime}
+                      onChange={(v) => updateSchedule(index, "breakEndTime", v)}
+                      required
+                      error={errors[`schedule-${index}-breakEndTime`]}
+                    />
+                  </div>
+                )}
 
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                   <NumberInput

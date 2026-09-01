@@ -364,6 +364,7 @@
             "schedule": {
                 "shiftStartTime": "Shift Start",
                 "shiftEndTime": "Shift End",
+                "hasBreak": "Has Break",
                 "breakStartTime": "Break Start",
                 "breakEndTime": "Break End",
                 "endDayOffset": "End Day Offset",

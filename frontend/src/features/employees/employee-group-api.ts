@@ -26,8 +26,8 @@ export type WorkScheduleResponse = {
   employeeGroupId: Guid;
   shiftStartTime: TimeOnly;
   shiftEndTime: TimeOnly;
-  breakStartTime: TimeOnly;
-  breakEndTime: TimeOnly;
+  breakStartTime: TimeOnly | null;
+  breakEndTime: TimeOnly | null;
   endDayOffset: number;
   allowedCheckInLatenessMinutes: number;
   allowedCheckOutEarlinessMinutes: number;
@@ -55,8 +55,8 @@ export type CreateEmployeeGroupRequest = {
 export type CreateWorkScheduleRequest = {
   shiftStartTime: TimeOnly;
   shiftEndTime: TimeOnly;
-  breakStartTime: TimeOnly;
-  breakEndTime: TimeOnly;
+  breakStartTime: TimeOnly | null;
+  breakEndTime: TimeOnly | null;
   endDayOffset: number;
   allowedCheckInLatenessMinutes: number;
   allowedCheckOutEarlinessMinutes: number;
@@ -95,8 +95,8 @@ export type UpdateRotationRequest = {
 export type UpdateWorkScheduleRequest = {
   shiftStartTime: TimeOnly;
   shiftEndTime: TimeOnly;
-  breakStartTime: TimeOnly;
-  breakEndTime: TimeOnly;
+  breakStartTime: TimeOnly | null;
+  breakEndTime: TimeOnly | null;
   endDayOffset: number;
   allowedCheckInLatenessMinutes: number;
   allowedCheckOutEarlinessMinutes: number;
