@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
-import { Loader2, Save, Play } from "lucide-react";
+import { Clock, Loader2, Save } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -64,34 +64,25 @@ export default function PunchPollingSettingsPage() {
     },
   });
 
-  const pullNowMutation = useMutation({
-    mutationFn: attendanceApi.runPunchPollingNow,
-    onSuccess: (data) => {
-      success(i18nKeyContainer.toast.punchPolling.pullCompleted, {
-        description: `${data.machineCount} machines, ${data.punchCount} punches`,
-      });
-    },
-    onError: (error) => {
-      handleApiError(error, i18nKeyContainer.attendance.punchPolling.genericError);
-    },
-  });
-
   const handleSave = () => {
     updateMutation.mutate({ isEnabled, intervalMinutes });
-  };
-
-  const handlePullNow = () => {
-    pullNowMutation.mutate();
   };
 
   if (isLoading) {
     return (
       <div dir={isRtl ? "rtl" : "ltr"}>
         <div className="mb-6">
-          <Skeleton className="h-8 w-64" />
-          <Skeleton className="mt-2 h-4 w-96" />
+          <div className="flex items-center gap-3">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+              <Skeleton className="h-6 w-6" />
+            </div>
+            <div>
+              <Skeleton className="h-8 w-64" />
+              <Skeleton className="mt-2 h-4 w-96" />
+            </div>
+          </div>
         </div>
-        <Card>
+        <Card className="border-slate-200 bg-white shadow-sm">
           <CardHeader>
             <Skeleton className="h-6 w-48" />
           </CardHeader>
@@ -107,15 +98,22 @@ export default function PunchPollingSettingsPage() {
   return (
     <div dir={isRtl ? "rtl" : "ltr"}>
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-slate-900">
-          {t(i18nKeyContainer.attendance.punchPolling.title)}
-        </h1>
-        <p className="text-slate-500">
-          {t(i18nKeyContainer.attendance.punchPolling.description)}
-        </p>
+        <div className="flex items-center gap-3">
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+            <Clock className="h-6 w-6 text-primary" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-slate-900">
+              {t(i18nKeyContainer.attendance.punchPolling.title)}
+            </h1>
+            <p className="text-slate-500">
+              {t(i18nKeyContainer.attendance.punchPolling.description)}
+            </p>
+          </div>
+        </div>
       </div>
 
-      <Card>
+      <Card className="border-slate-200 bg-white shadow-sm">
         <CardHeader>
           <CardTitle>{t(i18nKeyContainer.attendance.punchPolling.cardTitle)}</CardTitle>
           <CardDescription>
@@ -152,10 +150,10 @@ export default function PunchPollingSettingsPage() {
               value={intervalMinutes.toString()}
               onValueChange={(value) => setIntervalMinutes(parseInt(value))}
             >
-              <SelectTrigger id="interval" className="w-[200px]">
+              <SelectTrigger id="interval" className="w-[200px] border-slate-200 bg-white">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="border-slate-200 bg-white">
                 {INTERVAL_OPTIONS.map((minutes) => (
                   <SelectItem key={minutes} value={minutes.toString()}>
                     {minutes} {t(i18nKeyContainer.attendance.punchPolling.minutes)}
@@ -182,20 +180,6 @@ export default function PunchPollingSettingsPage() {
                 <Save className="mr-2 h-4 w-4" />
               )}
               {t(i18nKeyContainer.common.save)}
-            </Button>
-
-            <Button
-              variant="outline"
-              onClick={handlePullNow}
-              disabled={pullNowMutation.isPending}
-              className="cursor-pointer"
-            >
-              {pullNowMutation.isPending ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                <Play className="mr-2 h-4 w-4" />
-              )}
-              {t(i18nKeyContainer.attendance.punchPolling.pullNow)}
             </Button>
           </div>
         </CardContent>

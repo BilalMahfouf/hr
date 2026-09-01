@@ -142,6 +142,10 @@ export default function CreateEmployeeGroupPage() {
         }
       });
     }
+    console.log(newErrors);
+    if(!newErrors){
+      return true;
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -176,6 +180,7 @@ export default function CreateEmployeeGroupPage() {
         workScheduleIndex: r.type === "Work" ? Number(r.workScheduleId) : null,
       })),
     };
+    console.log(req)
 
     mutation.mutate(request);
   };
