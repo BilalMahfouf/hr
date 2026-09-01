@@ -1,5 +1,6 @@
 using Modules.Attendence.Application.Abstractions;
 using Modules.Attendence.Domain.Machines;
+using Modules.Attendence.Infrastructure.ZKTeco.Gateway;
 
 namespace Modules.Attendence.Infrastructure.ZKTeco;
 

@@ -9,6 +9,8 @@ public interface IAttendanceMachineReader
         DateOnly from,
         DateOnly to,
         CancellationToken cancellationToken = default);
+
+    public Task ConnectAsync(string ip, int port, CancellationToken ct);
 }
 
 public sealed record RawAttendanceLog(

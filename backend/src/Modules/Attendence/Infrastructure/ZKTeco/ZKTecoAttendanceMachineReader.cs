@@ -158,4 +158,9 @@ public sealed class ZKTecoAttendanceMachineReader : IAttendanceMachineReader
                 MachineNumber: machine.MachineNumber));
         }
     }
+
+    public Task ConnectAsync(string ip, int port, CancellationToken ct)
+    {
+        throw new NotImplementedException();
+    }
 }

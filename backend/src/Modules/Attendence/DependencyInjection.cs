@@ -10,6 +10,7 @@ using Modules.Attendence.Domain.PunchPolling;
 using Modules.Attendence.Infrastructure.Presistance;
 using Modules.Attendence.Infrastructure.Quartz;
 using Modules.Attendence.Infrastructure.ZKTeco;
+using Modules.Attendence.Infrastructure.ZKTeco.Gateway;
 using Modules.Shared;
 using Modules.Shared.Infrastructure.Outbox;
 
@@ -38,23 +39,23 @@ public static class DependencyInjection
         services.AddScoped<IAttendanceDbContext>(sp =>
             sp.GetRequiredService<AttendanceDbContext>()
         );
+        var zktecoBaseUrl = Environment.GetEnvironmentVariable("ZKTECO_GATEWAY_BASE_URL")?.TrimEnd('/')
+                ?? throw new InvalidOperationException(
+                "ZKTECO_GATEWAY_BASE_URL environment variable is not set.");
 
         services.Configure<ZKTecoGatewayOptions>(options =>
         {
-            options.BaseUrl = Environment.GetEnvironmentVariable("ZKTecoGatewayBaseUrl")
-                ?? throw new InvalidOperationException(
-                    "ZKTecoGatewayBaseUrl environment variable is not set.");
+            options.BaseUrl = zktecoBaseUrl;
         });
+        Console.WriteLine($"ZKTeco Gateway BaseUrl: {zktecoBaseUrl}");
 
         services.AddHttpClient<ZKTecoGatwayMachineReader>((sp, client) =>
         {
-            var options = sp.GetRequiredService<IOptions<ZKTecoGatewayOptions>>().Value;
-            client.BaseAddress = new Uri(options.BaseUrl);
+            client.BaseAddress = new Uri($"{zktecoBaseUrl}/");
         });
 
         services.AddScoped<IZKemSessionFactory, ZkemSessionFactory>();
         services.AddScoped<ZKTecoAttendanceMachineReader>();
-        services.AddScoped<ZKTecoGatwayMachineReader>();
         services.AddScoped<IAttendanceMachineReaderFactory, AttendanceMachineReaderFactory>();
 
         // Punch polling scheduler (Quartz)
