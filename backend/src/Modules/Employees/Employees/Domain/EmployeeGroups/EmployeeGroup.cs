@@ -339,6 +339,8 @@ public sealed class EmployeeGroup : Entity
 
     public WorkScheduleResponse? GetGroupWorkScheduleInDateTime(DateOnly date)
     {
+        var defaultCheckInDateTime = date.ToDateTime(new TimeOnly(8, 0));
+        var defaultCheckOutDateTime = date.ToDateTime(new TimeOnly(16, 0));
         var rotation = GetRotation(date);
         if (rotation is null)
         {
@@ -357,16 +359,27 @@ public sealed class EmployeeGroup : Entity
                 var expectedCheckout = date
                     .ToDateTime(prevRotation.WorkSchedule.ShiftEndTime);
 
-                return new WorkScheduleResponse(expectedCheckin, expectedCheckout);
+                return new WorkScheduleResponse(
+                    expectedCheckin,
+                    expectedCheckout,
+                    prevRotation.WorkSchedule.WorkTime,
+                    rotation.Status);
             }
-            return null;
+            return new WorkScheduleResponse(
+                defaultCheckInDateTime,
+                defaultCheckOutDateTime,
+                TimeSpan.Zero,
+                rotation.Status);
 
         }
         var schedule = rotation.WorkSchedule;
         var expectedCheckIn = date.ToDateTime(schedule!.ShiftStartTime);
         var expectedCheckOut = date.AddDays(schedule.EndDayOffset).ToDateTime(schedule.ShiftEndTime);
-        return new WorkScheduleResponse(expectedCheckIn, expectedCheckOut);
+        return new WorkScheduleResponse(expectedCheckIn, expectedCheckOut, schedule.WorkTime, rotation.Status);
 
     }
 }
-public sealed record WorkScheduleResponse(DateTime ExpectedCheckInAt, DateTime ExpectedCheckoutAt);
+public sealed record WorkScheduleResponse(DateTime ExpectedCheckInAt,
+    DateTime ExpectedCheckoutAt,
+    TimeSpan WorkTime,
+   RotationStatus RotationStatus);
