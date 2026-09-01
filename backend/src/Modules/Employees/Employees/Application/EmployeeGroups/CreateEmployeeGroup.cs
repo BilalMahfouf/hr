@@ -17,7 +17,7 @@ public static class CreateEmployeeGroup
     {
         public Validator()
         {
-            RuleFor(x => x.EmployeeGroupNumber)
+            RuleFor(x => x.GroupNumber)
                 .NotEmpty()
                 .MaximumLength(100);
 
@@ -80,10 +80,10 @@ public static class CreateEmployeeGroup
             validator.ValidateAndThrow(command);
 
             var existing = await dbContext.EmployeeGroups
-                .AnyAsync(g => g.EmployeeGroupNumber == command.EmployeeGroupNumber, cancellationToken);
+                .AnyAsync(g => g.GroupNumber == command.GroupNumber, cancellationToken);
             if (existing)
             {
-                return Result<EmployeeGroupResponse>.Failure(EmployeeGroupErrors.EmployeeGroupNumberAlreadyExists);
+                return Result<EmployeeGroupResponse>.Failure(EmployeeGroupErrors.GroupNumberAlreadyExists);
             }
 
             var nameTaken = await dbContext.EmployeeGroups
@@ -94,7 +94,7 @@ public static class CreateEmployeeGroup
             }
 
             var group = EmployeeGroup.Create(
-                command.EmployeeGroupNumber,
+                command.GroupNumber,
                 command.Name,
                 command.IsSecurity,
                 command.RotationStartDate,
@@ -123,7 +123,7 @@ public static class CreateEmployeeGroup
                 CancellationToken ct) =>
             {
                 var command = new CreateEmployeeGroupCommand(
-                    request.EmployeeGroupNumber,
+                    request.GroupNumber,
                     request.Name,
                     request.IsSecurity,
                     request.Description,

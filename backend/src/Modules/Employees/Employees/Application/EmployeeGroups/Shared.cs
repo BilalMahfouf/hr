@@ -7,7 +7,7 @@ namespace Modules.Employees.Application.EmployeeGroups;
 
 public sealed record EmployeeGroupResponse(
     Guid Id,
-    string EmployeeGroupNumber,
+    string GroupNumber,
     string Name,
     bool IsSecurity,
     string? Description,
@@ -51,7 +51,7 @@ public sealed record CreateRotationEntryRequest(
     int? WorkScheduleIndex);
 
 public sealed record CreateEmployeeGroupRequest(
-    string EmployeeGroupNumber,
+    string GroupNumber,
     string Name,
     bool IsSecurity,
     string? Description,
@@ -89,7 +89,7 @@ public sealed record UpdateRotationRequest(
     Guid? WorkScheduleId);
 
 public sealed record CreateEmployeeGroupCommand(
-    string EmployeeGroupNumber,
+    string GroupNumber,
     string Name,
     bool IsSecurity,
     string? Description,
@@ -169,7 +169,7 @@ public static class EmployeeGroupMapper
     public static EmployeeGroupResponse ToResponse(EmployeeGroup group) =>
         new(
             group.Id.Value,
-            group.EmployeeGroupNumber,
+            group.GroupNumber,
             group.Name,
             group.IsSecurity,
             group.Description,

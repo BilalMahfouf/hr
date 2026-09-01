@@ -96,7 +96,7 @@ public sealed class EmployeeApi(
             .Include(g => g.WorkSchedules)
             .Include(g => g.RotationEntries)
                 .ThenInclude(re => re.WorkSchedule)
-            .FirstOrDefaultAsync(g => g.EmployeeGroupNumber == employee.EmployeeGroup, CancellationToken.None);
+            .FirstOrDefaultAsync(g => g.GroupNumber == employee.EmployeeGroup, CancellationToken.None);
         if (group is null)
         {
             return new EmployeeResponse(
@@ -203,7 +203,7 @@ public sealed class EmployeeApi(
                    .Include(g => g.WorkSchedules)
                    .Include(g => g.RotationEntries)
                        .ThenInclude(re => re.WorkSchedule)
-                   .FirstOrDefaultAsync(g => g.EmployeeGroupNumber == employee.EmployeeGroup, ct);
+                   .FirstOrDefaultAsync(g => g.GroupNumber == employee.EmployeeGroup, ct);
         if (group is null)
         {
             return Result<EmployeeReponseForAttendance>.Failure(EmployeeGroupErrors.NotFound);

@@ -10,7 +10,7 @@ namespace Modules.Employees.Domain.EmployeeGroups;
 public sealed class EmployeeGroup : Entity
 {
     public new EmployeeGroupId Id { get; private set; }
-    public string EmployeeGroupNumber { get; private set; }
+    public string GroupNumber { get; private set; }
 
     public string Name { get; private set; } = null!;
 
@@ -34,14 +34,14 @@ public sealed class EmployeeGroup : Entity
 
     private EmployeeGroup(
         EmployeeGroupId id,
-        string employeeGroupNumber,
+        string groupNumber,
         string name,
         bool isSecurity,
         string? description,
         DateOnly rotationStartDate)
     {
         Id = id;
-        EmployeeGroupNumber = employeeGroupNumber;
+        GroupNumber = groupNumber;
         Name = name;
         IsSecurity = isSecurity;
         Description = description;
@@ -49,14 +49,14 @@ public sealed class EmployeeGroup : Entity
     }
 
     public static EmployeeGroup Create(
-        string employeeGroupNumber,
+        string groupNumber,
         string name,
         bool isSecurity,
         DateOnly rotationStartDate,
         string? description = null)
     {
-        if (string.IsNullOrWhiteSpace(employeeGroupNumber))
-            throw new DomainException(EmployeeGroupErrors.InvalidEmployeeGroupNumber);
+        if (string.IsNullOrWhiteSpace(groupNumber))
+            throw new DomainException(EmployeeGroupErrors.InvalidGroupNumber);
 
         if (string.IsNullOrWhiteSpace(name))
             throw new DomainException(EmployeeGroupErrors.InvalidName);
@@ -66,7 +66,7 @@ public sealed class EmployeeGroup : Entity
 
         return new EmployeeGroup(
             EmployeeGroupId.New(),
-            employeeGroupNumber,
+            groupNumber,
             name,
             isSecurity,
             description,

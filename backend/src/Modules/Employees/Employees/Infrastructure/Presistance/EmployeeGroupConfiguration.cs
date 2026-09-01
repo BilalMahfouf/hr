@@ -27,8 +27,8 @@ public sealed class EmployeeGroupConfiguration
             .HasColumnName("name")
             .IsRequired();
 
-        builder.Property(x => x.EmployeeGroupNumber)
-            .HasColumnName("employee_group_number")
+        builder.Property(x => x.GroupNumber)
+            .HasColumnName("group_number")
             .IsRequired();
 
         builder.Ignore(x => x.NumberOfRotations);
@@ -52,9 +52,9 @@ public sealed class EmployeeGroupConfiguration
             .IsUnique()
             .HasDatabaseName("ix_employee_groups_name");
 
-        builder.HasIndex(x => x.EmployeeGroupNumber)
+        builder.HasIndex(x => x.GroupNumber)
             .IsUnique()
-            .HasDatabaseName("ix_employee_groups_employee_group_number");
+            .HasDatabaseName("ix_employee_groups_group_number");
 
         builder.Navigation(x => x.WorkSchedules)
             .UsePropertyAccessMode(PropertyAccessMode.Field);

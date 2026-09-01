@@ -61,7 +61,7 @@ public sealed class EmployeeGroupCommandHandlerTests
         Assert.True(result.IsSuccess);
         var group = await db.EmployeeGroups.Include(g => g.WorkSchedules).Include(g => g.RotationEntries).SingleAsync();
         Assert.Equal("Day Shift", group.Name);
-        Assert.Equal("GRP-001", group.EmployeeGroupNumber);
+        Assert.Equal("GRP-001", group.GroupNumber);
         Assert.Single(group.WorkSchedules);
         Assert.Equal(2, group.NumberOfRotations);
         Assert.Equal(RotationStatus.Work, group.RotationEntries.First(e => e.Position == 1).Status);
@@ -70,7 +70,7 @@ public sealed class EmployeeGroupCommandHandlerTests
     }
 
     [Fact]
-    public async Task Create_WhenGroupNumberAlreadyExists_ReturnsEmployeeGroupNumberAlreadyExists()
+    public async Task Create_WhenGroupNumberAlreadyExists_ReturnsGroupNumberAlreadyExists()
     {
         var (_, ctx) = CreateDb();
         var handler = CreateCreateHandler(ctx);
@@ -79,7 +79,7 @@ public sealed class EmployeeGroupCommandHandlerTests
         var result = await handler.Handle(ValidCommand(groupNumber: "GRP-001"), CancellationToken.None);
 
         Assert.False(result.IsSuccess);
-        Assert.Equal(EmployeeGroupErrors.EmployeeGroupNumberAlreadyExists.Code, result.Error.Code);
+        Assert.Equal(EmployeeGroupErrors.GroupNumberAlreadyExists.Code, result.Error.Code);
     }
 
     [Fact]
