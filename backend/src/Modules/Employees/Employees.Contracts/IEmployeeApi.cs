@@ -16,7 +16,14 @@ public interface IEmployeeApi
         CancellationToken ct = default);
 
     Task<Result<WorkScheduleReadDto>> GetEmployeeWorkSchedule(Guid employeeGroupId, CancellationToken ct = default);
+
+    Task<Result<EmployeeReponseForAttendance>> GetEmployeeForAttendance(int badge, DateOnly punchDate, CancellationToken ct = default);
 }
+public sealed record EmployeeReponseForAttendance(string EmployeeId,
+    EmployeeWorkStatus WorkStatus,
+    DateTime ShiftStartDateTime,
+    DateTime ShiftEndDateTime,
+    TimeSpan WorkTime);
 public sealed record EmployeeResponse(
     string EmployeeId,
     int Bgd,

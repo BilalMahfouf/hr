@@ -191,4 +191,42 @@ public sealed class EmployeeApi(
 
         return Result<WorkScheduleReadDto>.Success(scheduleDto);
     }
+
+    public async Task<Result<EmployeeReponseForAttendance>> GetEmployeeForAttendance(int badge, DateOnly punchDate, CancellationToken ct = default)
+    {
+        var employee = await employeeRepo.GetEmployeeByBgdeAsync(badge.ToString(), ct);
+        if (employee is null)
+        {
+            return Result<EmployeeReponseForAttendance>.Failure(EmployeeErrors.NotFound);
+        }
+        var group = await dbContext.EmployeeGroups
+                   .Include(g => g.WorkSchedules)
+                   .Include(g => g.RotationEntries)
+                       .ThenInclude(re => re.WorkSchedule)
+                   .FirstOrDefaultAsync(g => g.EmployeeGroupNumber == employee.EmployeeGroup, ct);
+        if (group is null)
+        {
+            return Result<EmployeeReponseForAttendance>.Failure(EmployeeGroupErrors.NotFound);
+        }
+        var groupWorkSchedule = group.GetGroupWorkScheduleInDateTime(punchDate);
+        if (groupWorkSchedule is null)
+        {
+
+            var r = new EmployeeReponseForAttendance(
+                employee.EmployeeId,
+                EmployeeWorkStatus.Rest,
+                DateTime.MinValue,
+                DateTime.MaxValue,
+                TimeSpan.Zero);
+            return Result<EmployeeReponseForAttendance>.Success(r);
+        }
+        var workStatus = groupWorkSchedule.RotationStatus == RotationStatus.Work ? EmployeeWorkStatus.Work : EmployeeWorkStatus.Rest;
+        var response = new EmployeeReponseForAttendance(
+            employee.EmployeeId,
+            workStatus,
+            groupWorkSchedule.ExpectedCheckInAt,
+            groupWorkSchedule.ExpectedCheckoutAt,
+            groupWorkSchedule.WorkTime);
+        return Result<EmployeeReponseForAttendance>.Success(response);
+    }
 }
