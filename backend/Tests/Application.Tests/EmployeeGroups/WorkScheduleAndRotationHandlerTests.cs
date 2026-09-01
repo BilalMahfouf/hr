@@ -45,6 +45,32 @@ public sealed class WorkScheduleAndRotationHandlerTests
             .SingleAsync(g => g.Id == new EmployeeGroupId(result.Value.Id)))!;
     }
 
+    private static async Task<EmployeeGroup> CreateSeededGroupWithoutRotationAsync(IEmployeeDbContext ctx)
+    {
+        var group = EmployeeGroup.Create(
+            "GRP-001",
+            "Day Shift",
+            false,
+            DateOnly.FromDateTime(DateTime.UtcNow),
+            "Test group");
+        group.AddWorkSchedule(new CreateWorkScheduleDto(
+            group.Id,
+            new TimeOnly(8, 0),
+            new TimeOnly(16, 0),
+            0,
+            new TimeOnly(12, 0),
+            new TimeOnly(13, 0),
+            5,
+            5));
+        ctx.EmployeeGroups.Add(group);
+        await ctx.SaveChangesAsync();
+
+        return (await ctx.EmployeeGroups
+            .Include(g => g.WorkSchedules)
+            .Include(g => g.RotationEntries)
+            .SingleAsync(g => g.Id == group.Id))!;
+    }
+
     #region CreateWorkSchedule
 
     [Fact]
@@ -104,7 +130,7 @@ public sealed class WorkScheduleAndRotationHandlerTests
     public async Task UpdateWorkSchedule_WhenValid_UpdatesSchedule()
     {
         var (db, ctx) = CreateDb();
-        var group = await CreateSeededGroupAsync(ctx);
+        var group = await CreateSeededGroupWithoutRotationAsync(ctx);
         var schedule = await db.WorkSchedules.SingleAsync(s => s.EmployeeGroupId == group.Id);
 
         var handler = new UpdateWorkSchedule.Handler(ctx, new UpdateWorkSchedule.Validator());
@@ -161,7 +187,7 @@ public sealed class WorkScheduleAndRotationHandlerTests
     public async Task DeleteWorkSchedule_WhenValid_RemovesSchedule()
     {
         var (db, ctx) = CreateDb();
-        var group = await CreateSeededGroupAsync(ctx);
+        var group = await CreateSeededGroupWithoutRotationAsync(ctx);
         var schedule = await db.WorkSchedules.SingleAsync(s => s.EmployeeGroupId == group.Id);
 
         var handler = new DeleteWorkSchedule.Handler(ctx);

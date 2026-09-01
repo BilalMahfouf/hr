@@ -173,8 +173,8 @@ public sealed class EmployeeGroupCrudTests : EmployeeGroupsTestBase
     {
         using var scope = CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<IEmployeeDbContext>();
-        var groupA = await SeedGroupAsync(db, "Group A");
-        var groupB = await SeedGroupAsync(db, "Group B");
+        var groupA = await SeedGroupAsync(db, "Group A", "GRP-001");
+        var groupB = await SeedGroupAsync(db, "Group B", "GRP-002");
 
         var handler = CreateUpdateHandler(scope.ServiceProvider);
         var command = new UpdateEmployeeGroupCommand(
@@ -308,9 +308,9 @@ public sealed class EmployeeGroupCrudTests : EmployeeGroupsTestBase
     {
         using var scope = CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<IEmployeeDbContext>();
-        await SeedGroupAsync(db, "Charlie");
-        await SeedGroupAsync(db, "Alpha");
-        await SeedGroupAsync(db, "Bravo");
+        await SeedGroupAsync(db, "Charlie", "GRP-003");
+        await SeedGroupAsync(db, "Alpha", "GRP-001");
+        await SeedGroupAsync(db, "Bravo", "GRP-002");
 
         var handler = CreateGetAllHandler(scope.ServiceProvider);
         var result = await handler.Handle(

@@ -180,8 +180,9 @@ public sealed class EmployeeGroupCommandHandlerTests
         Assert.True(result.IsSuccess);
         Assert.Equal(createResult.Value.Id, result.Value.Id);
         Assert.Single(result.Value.WorkSchedules);
-        Assert.Single(result.Value.RotationEntries);
-        Assert.Equal("Work", result.Value.RotationEntries.Single().Status);
+        Assert.Equal(2, result.Value.RotationEntries.Count);
+        Assert.Equal("Work", result.Value.RotationEntries.First(e => e.Position == 1).Status);
+        Assert.Equal("Rest", result.Value.RotationEntries.First(e => e.Position == 2).Status);
     }
 
     [Fact]
