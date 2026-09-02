@@ -159,6 +159,41 @@
             "allowedRange": "النطاق المسموح: 10-60 دقيقة",
             "pullNow": "سحب الآن",
             "genericError": "فشل في تحديث إعدادات جمع البصمات"
+        },
+        "import": {
+            "title": "استيراد الحضور",
+            "description": "استيراد سجلات الحضور من الأجهزة إلى النظام.",
+            "tabs": {
+                "allMachines": "جميع الأجهزة",
+                "byEmployee": "حسب الموظف",
+                "byMachine": "حسب الجهاز"
+            },
+            "dateRange": {
+                "from": "من",
+                "to": "إلى"
+            },
+            "maxOneWeek": "لا يمكن أن يتجاوز النطاق أسبوعاً واحداً.",
+            "importButton": "استيراد",
+            "importing": "جاري الاستيراد... قد يستغرق هذا عدة دقائق.",
+            "employeeSearch": {
+                "placeholder": "أدخل التأجير (الماتريكول) للموظف",
+                "search": "بحث",
+                "notFound": "الموظف غير موجود. يرجى التحقق من التأجير."
+            },
+            "employeeCard": {
+                "id": "التأجير",
+                "name": "الاسم الكامل",
+                "department": "القسم",
+                "group": "المجموعة"
+            },
+            "machineSelect": {
+                "placeholder": "اختر جهازاً"
+            },
+            "result": {
+                "success": "تم استيراد الحضور بنجاح",
+                "machinesCount": "تمت معالجة {{count}} جهاز(أجهزة)",
+                "punchesCount": "تم استيراد {{count}} بصمة(بصمات)"
+            }
         }
     },
     "table": {
@@ -519,7 +554,9 @@
             "fetchRecord": "فشل تحميل سجل الحضور",
             "fetchPollingSettings": "فشل تحميل إعدادات جمع البصمات",
             "updatePollingSettings": "فشل تحديث إعدادات جمع البصمات",
-            "runPollingNow": "فشل تشغيل جمع البصمات"
+            "runPollingNow": "فشل تشغيل جمع البصمات",
+            "importFailed": "فشل الاستيراد",
+            "importFailedDesc": "فشل استيراد سجلات الحضور. يرجى المحاولة مرة أخرى."
         },
         "employee": {
             "fetchEmployees": "فشل جلب الموظفين",

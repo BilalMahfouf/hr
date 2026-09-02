@@ -159,6 +159,41 @@
             "allowedRange": "Allowed range: 10-60 minutes",
             "pullNow": "Pull Now",
             "genericError": "Failed to update punch polling settings"
+        },
+        "import": {
+            "title": "Import Attendance",
+            "description": "Import attendance logs from machines into the system.",
+            "tabs": {
+                "allMachines": "All Machines",
+                "byEmployee": "By Employee",
+                "byMachine": "By Machine"
+            },
+            "dateRange": {
+                "from": "From",
+                "to": "To"
+            },
+            "maxOneWeek": "The date range cannot exceed 1 week.",
+            "importButton": "Import",
+            "importing": "Importing... This may take several minutes.",
+            "employeeSearch": {
+                "placeholder": "Enter employee matricule",
+                "search": "Search",
+                "notFound": "Employee not found. Please check the matricule."
+            },
+            "employeeCard": {
+                "id": "Matricule",
+                "name": "Full Name",
+                "department": "Department",
+                "group": "Group"
+            },
+            "machineSelect": {
+                "placeholder": "Select a machine"
+            },
+            "result": {
+                "success": "Attendance imported successfully",
+                "machinesCount": "{{count}} machine(s) processed",
+                "punchesCount": "{{count}} punch(es) imported"
+            }
         }
     },
     "table": {
@@ -519,7 +554,9 @@
             "fetchRecord": "Failed to fetch attendance record",
             "fetchPollingSettings": "Failed to fetch punch polling settings",
             "updatePollingSettings": "Failed to update punch polling settings",
-            "runPollingNow": "Failed to trigger punch polling"
+            "runPollingNow": "Failed to trigger punch polling",
+            "importFailed": "Import Failed",
+            "importFailedDesc": "Failed to import attendance logs. Please try again."
         },
         "employee": {
             "fetchEmployees": "Failed to fetch employees",

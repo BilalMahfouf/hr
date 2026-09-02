@@ -72,6 +72,12 @@ export const ErrorCodes = {
     MACHINE_NOT_FOUND: "AttendenceMachine.NotFound",
     MACHINE_ALREADY_EXISTS: "AttendenceMachine.AlreadyExists",
 
+    // Employee errors
+    EMPLOYEE_NOT_FOUND: "Employee.NotFound",
+
+    // Attendance import errors
+    ATTENDANCE_IMPORT_FAILED: "Attendance.ImportFailed",
+
     // Generic errors
     VALIDATION_ERROR: "Validation.Error",
     SERVER_ERROR: "Server.Error",
@@ -180,6 +186,12 @@ export function getErrorI18nKey(error: ParsedApiError): string {
         [ErrorCodes.MACHINE_NOT_FOUND]: "errors.machine.notFound",
         [ErrorCodes.MACHINE_ALREADY_EXISTS]: "errors.machine.alreadyExists",
 
+        // Employee errors
+        [ErrorCodes.EMPLOYEE_NOT_FOUND]: "errors.employee.notFound",
+
+        // Attendance import errors
+        [ErrorCodes.ATTENDANCE_IMPORT_FAILED]: "errors.attendance.importFailed",
+
         // Generic errors
         [ErrorCodes.VALIDATION_ERROR]: "errors.validation",
         [ErrorCodes.SERVER_ERROR]: "errors.server",
@@ -234,6 +246,12 @@ export function getErrorDescriptionKey(error: ParsedApiError): string {
         // Machine errors
         [ErrorCodes.MACHINE_NOT_FOUND]: "errors.machine.notFoundDesc",
         [ErrorCodes.MACHINE_ALREADY_EXISTS]: "errors.machine.alreadyExistsDesc",
+
+        // Employee errors
+        [ErrorCodes.EMPLOYEE_NOT_FOUND]: "errors.employee.notFoundDesc",
+
+        // Attendance import errors
+        [ErrorCodes.ATTENDANCE_IMPORT_FAILED]: "errors.attendance.importFailedDesc",
 
         // Generic errors
         [ErrorCodes.VALIDATION_ERROR]: "errors.validationDesc",

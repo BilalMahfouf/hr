@@ -192,6 +192,8 @@ const i18nKeyContainer = {
             fetchPollingSettings: 'errors.attendance.fetchPollingSettings',
             updatePollingSettings: 'errors.attendance.updatePollingSettings',
             runPollingNow: 'errors.attendance.runPollingNow',
+            importFailed: 'errors.attendance.importFailed',
+            importFailedDesc: 'errors.attendance.importFailedDesc',
         },
         employee: {
             fetchEmployees: 'errors.employee.fetchEmployees',
@@ -718,6 +720,41 @@ const i18nKeyContainer = {
             allowedRange: 'attendance.punchPolling.allowedRange',
             pullNow: 'attendance.punchPolling.pullNow',
             genericError: 'attendance.punchPolling.genericError',
+        },
+        import: {
+            title: 'attendance.import.title',
+            description: 'attendance.import.description',
+            tabs: {
+                allMachines: 'attendance.import.tabs.allMachines',
+                byEmployee: 'attendance.import.tabs.byEmployee',
+                byMachine: 'attendance.import.tabs.byMachine',
+            },
+            dateRange: {
+                from: 'attendance.import.dateRange.from',
+                to: 'attendance.import.dateRange.to',
+            },
+            maxOneWeek: 'attendance.import.maxOneWeek',
+            importButton: 'attendance.import.importButton',
+            importing: 'attendance.import.importing',
+            employeeSearch: {
+                placeholder: 'attendance.import.employeeSearch.placeholder',
+                search: 'attendance.import.employeeSearch.search',
+                notFound: 'attendance.import.employeeSearch.notFound',
+            },
+            employeeCard: {
+                id: 'attendance.import.employeeCard.id',
+                name: 'attendance.import.employeeCard.name',
+                department: 'attendance.import.employeeCard.department',
+                group: 'attendance.import.employeeCard.group',
+            },
+            machineSelect: {
+                placeholder: 'attendance.import.machineSelect.placeholder',
+            },
+            result: {
+                success: 'attendance.import.result.success',
+                machinesCount: 'attendance.import.result.machinesCount',
+                punchesCount: 'attendance.import.result.punchesCount',
+            },
         },
     },
     table: {

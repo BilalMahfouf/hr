@@ -159,6 +159,41 @@
             "allowedRange": "Plage autorisée : 10-60 minutes",
             "pullNow": "Récupérer maintenant",
             "genericError": "Échec de la mise à jour des paramètres de sondage des pointeuses"
+        },
+        "import": {
+            "title": "Importer les présences",
+            "description": "Importer les journaux de présence des machines dans le système.",
+            "tabs": {
+                "allMachines": "Toutes les machines",
+                "byEmployee": "Par employé",
+                "byMachine": "Par machine"
+            },
+            "dateRange": {
+                "from": "Du",
+                "to": "Au"
+            },
+            "maxOneWeek": "La période ne peut pas dépasser 1 semaine.",
+            "importButton": "Importer",
+            "importing": "Importation... Cela peut prendre plusieurs minutes.",
+            "employeeSearch": {
+                "placeholder": "Entrez le matricule de l'employé",
+                "search": "Rechercher",
+                "notFound": "Employé introuvable. Veuillez vérifier le matricule."
+            },
+            "employeeCard": {
+                "id": "Matricule",
+                "name": "Nom complet",
+                "department": "Département",
+                "group": "Groupe"
+            },
+            "machineSelect": {
+                "placeholder": "Sélectionner une machine"
+            },
+            "result": {
+                "success": "Présences importées avec succès",
+                "machinesCount": "{{count}} machine(s) traitée(s)",
+                "punchesCount": "{{count}} pointage(s) importé(s)"
+            }
         }
     },
     "table": {
@@ -519,7 +554,9 @@
             "fetchRecord": "Échec du chargement du relevé de présence",
             "fetchPollingSettings": "Échec du chargement des paramètres de sondage",
             "updatePollingSettings": "Échec de la mise à jour des paramètres de sondage",
-            "runPollingNow": "Échec du déclenchement du sondage"
+            "runPollingNow": "Échec du déclenchement du sondage",
+            "importFailed": "Échec de l'importation",
+            "importFailedDesc": "Échec de l'importation des journaux de présence. Veuillez réessayer."
         },
         "employee": {
             "fetchEmployees": "Échec de la récupération des employés",

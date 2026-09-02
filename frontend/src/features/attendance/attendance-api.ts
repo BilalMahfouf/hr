@@ -40,6 +40,16 @@ export type PullNowResponse = {
   punchCount: number;
 };
 
+export type ImportAttendanceRequest = {
+  from: string;
+  to: string;
+};
+
+export type ImportAttendanceResponse = {
+  machineCount: number;
+  punchCount: number;
+};
+
 const attendanceApi = {
   getAllPunches: async (request: TableRequest): Promise<PagedList<PunchRecord>> => {
     const params = getTableRequsestParams(request);
@@ -106,6 +116,42 @@ const attendanceApi = {
 
     if (result.status !== 200) {
       throw new Error(i18n.t(i18nKeyContainer.errors.attendance.runPollingNow));
+    }
+
+    return result.data;
+  },
+
+  importAllMachines: async (request: ImportAttendanceRequest): Promise<ImportAttendanceResponse> => {
+    const result = await api.post<ImportAttendanceResponse>("/attendance/import", request);
+
+    if (result.status !== 200) {
+      throw new Error(i18n.t(i18nKeyContainer.errors.attendance.importFailed));
+    }
+
+    return result.data;
+  },
+
+  importByEmployee: async (employeeId: string, request: ImportAttendanceRequest): Promise<ImportAttendanceResponse> => {
+    const result = await api.post<ImportAttendanceResponse>(
+      `/attendance/import/employee/${employeeId}`,
+      request,
+    );
+
+    if (result.status !== 200) {
+      throw new Error(i18n.t(i18nKeyContainer.errors.attendance.importFailed));
+    }
+
+    return result.data;
+  },
+
+  importByMachine: async (machineId: string, request: ImportAttendanceRequest): Promise<ImportAttendanceResponse> => {
+    const result = await api.post<ImportAttendanceResponse>(
+      `/attendance/import/machine/${machineId}`,
+      request,
+    );
+
+    if (result.status !== 200) {
+      throw new Error(i18n.t(i18nKeyContainer.errors.attendance.importFailed));
     }
 
     return result.data;
