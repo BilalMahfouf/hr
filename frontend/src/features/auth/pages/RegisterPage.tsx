@@ -34,14 +34,14 @@ export default function RegisterPage() {
   });
 
   const formSchema = z.object({
-    firstName: z.string().min(2, { message: t(i18nKeyContainer.register.firstName) + " is too short" }), // Ideally use separate error keys
-    lastName: z.string().min(2, { message: t(i18nKeyContainer.register.lastName) + " is too short" }),
-    userName: z.string().min(3, { message: t(i18nKeyContainer.register.userName) + " is too short" }),
+    firstName: z.string().min(2, { message: t(i18nKeyContainer.auth.fieldTooShort, { field: t(i18nKeyContainer.register.firstName) }) }),
+    lastName: z.string().min(2, { message: t(i18nKeyContainer.auth.fieldTooShort, { field: t(i18nKeyContainer.register.lastName) }) }),
+    userName: z.string().min(3, { message: t(i18nKeyContainer.auth.fieldTooShort, { field: t(i18nKeyContainer.register.userName) }) }),
     email: z.string().email(),
-    password: z.string().min(6, { message: t(i18nKeyContainer.register.password) + " is too short" }),
+    password: z.string().min(6, { message: t(i18nKeyContainer.auth.fieldTooShort, { field: t(i18nKeyContainer.register.password) }) }),
     confirmPassword: z.string(),
   }).refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords don't match",
+    message: t(i18nKeyContainer.auth.passwordsDoNotMatch),
     path: ["confirmPassword"],
   });
 
@@ -76,11 +76,11 @@ export default function RegisterPage() {
 
       if (loginSuccess) {
           toast.success(t(i18nKeyContainer.register.successMessage));
-          navigate("/onboarding/subscribe");
+          navigate("/dashboard");
       } else {
         // Fallback if login fails (e.g., verify email required)
         navigate("/login");
-        toast.info("Registration successful. Please login.");
+        toast.info(t(i18nKeyContainer.register.successMessage));
       }
 
     } catch (error: unknown) {
@@ -90,7 +90,7 @@ export default function RegisterPage() {
         if (Array.isArray(errors)) {
              toast.error(errors.map((e) => typeof e === 'string' ? e : e.description).join(", "));
         } else {
-            toast.error("An unexpected error occurred.");
+            toast.error(t(i18nKeyContainer.toast.genericErrorDesc));
         }
     }
   }

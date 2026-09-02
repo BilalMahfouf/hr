@@ -11,7 +11,9 @@
     "signUp": "S'inscrire",
     "app": {
         "name": "HREnap",
-        "logoAlt": "Logo HREnap"
+        "logoAlt": "Logo HREnap",
+        "subtitle": "La gestion des ressources humaines, redéfinie.",
+        "footer": "© 2026 HREnap. Conçu pour les professionnels."
     },
     "dashboard": "Tableau de bord",
     "subscriptionPlansNav": "Plans d'abonnement",
@@ -88,9 +90,34 @@
         "deleting": "Suppression...",
         "close": "Fermer",
         "save": "Enregistrer",
-        "saving": "Enregistrement..."
+        "saving": "Enregistrement...",
+        "back": "Retour",
+        "create": "Créer",
+        "update": "Mettre à jour",
+        "delete": "Supprimer",
+        "edit": "Modifier",
+        "view": "Voir",
+        "submit": "Soumettre",
+        "reset": "Réinitialiser",
+        "loading": "Chargement...",
+        "dismiss": "Ignorer",
+        "yes": "Oui",
+        "no": "Non",
+        "ok": "OK",
+        "error": "Erreur",
+        "success": "Succès",
+        "warning": "Avertissement",
+        "info": "Info",
+        "noResults": "Aucun résultat trouvé.",
+        "active": "Actif",
+        "inactive": "Inactif",
+        "somethingWentWrong": "Une erreur s'est produite."
     },
-    "deleteDialog": {},
+    "logout": "Déconnexion",
+    "deleteDialog": {
+        "title": "Supprimer l'élément",
+        "description": "Êtes-vous sûr de vouloir supprimer cet élément ?"
+    },
     "attendance": {
         "title": "Présences",
         "status": {
@@ -210,6 +237,11 @@
         "title": "Plans d'abonnement",
         "description": "Gérez tous les plans d'abonnement disponibles pour les comptes de votre organisation.",
         "addPlan": "Ajouter un plan",
+        "editPlan": "Modifier le plan",
+        "deletePlan": "Supprimer le plan",
+        "noPlan": "Aucun plan sélectionné",
+        "currency": "Devise",
+        "billingCycle": "Cycle de facturation",
         "viewTitle": "Détails du plan d'abonnement",
         "viewDescription": "Afficher les informations complètes du plan d'abonnement.",
         "loadError": "Échec du chargement des plans d'abonnement.",
@@ -588,6 +620,12 @@
         },
         "validation": "Erreur de validation",
         "validationDesc": "Veuillez vérifier vos informations et réessayer.",
+        "unauthorized": "Non autorisé",
+        "unauthorizedDesc": "Vous n'êtes pas autorisé à effectuer cette action.",
+        "notFound": "Introuvable",
+        "notFoundDesc": "La ressource demandée est introuvable.",
+        "conflict": "Conflit",
+        "conflictDesc": "Un conflit est survenu avec l'état actuel de la ressource.",
         "network": "Erreur de connexion",
         "networkDesc": "Impossible de se connecter au serveur. Veuillez vérifier votre connexion internet.",
         "server": "Erreur serveur",
@@ -616,7 +654,8 @@
     },
     "dashboardPage": {
         "title": "Tableau de bord",
-        "subtitle": "Bienvenue dans votre espace de travail"
+        "subtitle": "Bienvenue dans votre espace de travail",
+        "welcome": "Bienvenue dans votre tableau de bord"
     },
     "notification": {
         "title": "Notifications",
@@ -656,6 +695,19 @@
         "profile": {
             "header": "Informations personnelles",
             "description": "Gérez vos informations personnelles et préférences",
+            "avatar": {
+                "title": "Photo de profil",
+                "description": "Cela sera affiché sur votre profil",
+                "upload": "Télécharger une photo",
+                "remove": "Supprimer",
+                "change": "Changer"
+            },
+            "fullName": "Nom complet",
+            "fullNamePlaceholder": "Entrez votre nom complet",
+            "emailReadOnly": "Contactez le support pour modifier votre e-mail",
+            "phone": "Numéro de téléphone",
+            "phonePlaceholder": "Entrez votre numéro de téléphone",
+            "phoneOptional": "Optionnel",
             "personalInfo": {
                 "title": "Informations personnelles",
                 "description": "Les détails de base de votre compte"
@@ -674,6 +726,9 @@
                 "description": "Langue et paramètres régionaux"
             },
             "language": "Langue",
+            "languagePlaceholder": "Sélectionner la langue",
+            "timezone": "Fuseau horaire",
+            "timezonePlaceholder": "Sélectionner le fuseau horaire",
             "saveChanges": "Enregistrer les modifications",
             "saved": "Enregistré",
             "saving": "Enregistrement...",
@@ -749,6 +804,8 @@
         }
     },
     "auth": {
+        "passwordsDoNotMatch": "Les mots de passe ne correspondent pas",
+        "fieldTooShort": "{{field}} est trop court",
         "forgotPassword": {
             "title": "Mot de passe oublié ?",
             "description": "Entrez votre email pour réinitialiser votre mot de passe",

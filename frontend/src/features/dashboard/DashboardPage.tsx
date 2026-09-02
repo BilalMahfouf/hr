@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next";
 import { LayoutDashboard } from "lucide-react";
 
 import { Card } from "@/components/ui/card";
+import i18nKeyContainer from "@/lib/i18n/keyContainer";
 
 export default function DashboardPage() {
     const { t, i18n } = useTranslation();
@@ -18,10 +19,10 @@ export default function DashboardPage() {
                     </div>
                     <div>
                         <h1 className="text-2xl font-bold text-slate-900">
-                            {t("dashboardPage.title")}
+                            {t(i18nKeyContainer.dashboardPage.title)}
                         </h1>
                         <p className="text-slate-500 text-sm">
-                            {t("dashboardPage.subtitle")}
+                            {t(i18nKeyContainer.dashboardPage.subtitle)}
                         </p>
                     </div>
                 </div>
@@ -30,7 +31,7 @@ export default function DashboardPage() {
             {/* Welcome Message */}
             <Card className="p-8 rounded-2xl bg-white border-0 shadow-sm">
                 <p className="text-slate-600">
-                    {t("dashboardPage.welcome") || "Welcome to your dashboard"}
+                    {t(i18nKeyContainer.dashboardPage.welcome)}
                 </p>
             </Card>
         </div>

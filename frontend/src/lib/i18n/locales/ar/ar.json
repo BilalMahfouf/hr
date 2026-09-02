@@ -1,5 +1,5 @@
 {
-    "welcomMessage": "مرحبا بك في تطبيق إدارة الموارد البشرية",
+    "welcomeMessage": "مرحبا بك في تطبيق إدارة الموارد البشرية",
     "signIn": "تسجيل الدخول",
     "signInDescription": "سجل دخولك لإدارة شركتك وفريقك.",
     "login": "دخول",
@@ -11,7 +11,9 @@
     "signUp": "إنشاء حساب",
     "app": {
         "name": "HREnap",
-        "logoAlt": "شعار HREnap"
+        "logoAlt": "شعار HREnap",
+        "subtitle": "إدارة الموارد البشرية، بشكل جديد.",
+        "footer": "© 2026 HREnap. صُنع للمحترفين."
     },
     "dashboard": "لوحة التحكم",
     "subscriptionPlansNav": "خطط الاشتراك",
@@ -88,9 +90,34 @@
         "deleting": "جاري الحذف...",
         "close": "إغلاق",
         "save": "حفظ",
-        "saving": "جاري الحفظ..."
+        "saving": "جاري الحفظ...",
+        "back": "رجوع",
+        "create": "إنشاء",
+        "update": "تحديث",
+        "delete": "حذف",
+        "edit": "تعديل",
+        "view": "عرض",
+        "submit": "إرسال",
+        "reset": "إعادة تعيين",
+        "loading": "جاري التحميل...",
+        "dismiss": "تجاهل",
+        "yes": "نعم",
+        "no": "لا",
+        "ok": "موافق",
+        "error": "خطأ",
+        "success": "نجاح",
+        "warning": "تحذير",
+        "info": "معلومات",
+        "noResults": "لا توجد نتائج.",
+        "active": "نشط",
+        "inactive": "غير نشط",
+        "somethingWentWrong": "حدث خطأ ما."
     },
-    "deleteDialog": {},
+    "logout": "تسجيل الخروج",
+    "deleteDialog": {
+        "title": "حذف العنصر",
+        "description": "هل أنت متأكد من حذف هذا العنصر؟"
+    },
     "attendance": {
         "title": "الحضور والانصراف",
         "status": {
@@ -210,6 +237,11 @@
         "title": "خطط الاشتراك",
         "description": "إدارة جميع خطط الاشتراك المتاحة لحسابات مؤسستك.",
         "addPlan": "إضافة خطة",
+        "editPlan": "تعديل الخطة",
+        "deletePlan": "حذف الخطة",
+        "noPlan": "لم يتم تحديد خطة",
+        "currency": "العملة",
+        "billingCycle": "دورة الفوترة",
         "viewTitle": "تفاصيل خطة الاشتراك",
         "viewDescription": "عرض المعلومات الكاملة لخطة الاشتراك.",
         "loadError": "فشل تحميل خطط الاشتراك.",
@@ -588,6 +620,12 @@
         },
         "validation": "خطأ في التحقق",
         "validationDesc": "يرجى التحقق من المدخلات والمحاولة مرة أخرى.",
+        "unauthorized": "غير مصرح",
+        "unauthorizedDesc": "لست مصرحاً لك بتنفيذ هذا الإجراء.",
+        "notFound": "غير موجود",
+        "notFoundDesc": "تعذر العثور على المورد المطلوب.",
+        "conflict": "تعارض",
+        "conflictDesc": "حدث تارض مع الحالة الحالية للمورد.",
         "network": "خطأ في الاتصال",
         "networkDesc": "تعذر الاتصال بالخادم. يرجى التحقق من اتصالك بالإنترنت.",
         "server": "خطأ في الخادم",
@@ -616,7 +654,8 @@
     },
     "dashboardPage": {
         "title": "لوحة التحكم",
-        "subtitle": "أهلاً وسهلاً في مساحة العمل الخاصة بك"
+        "subtitle": "أهلاً وسهلاً في مساحة العمل الخاصة بك",
+        "welcome": "مرحباً بك في لوحة التحكم"
     },
     "notification": {
         "title": "الإشعارات",
@@ -656,6 +695,19 @@
         "profile": {
             "header": "المعلومات الشخصية",
             "description": "إدارة معلوماتك الشخصية وتفضيلاتك",
+            "avatar": {
+                "title": "الصورة الشخصية",
+                "description": "ستظهر هذه الصورة في ملفك الشخصي",
+                "upload": "تحميل صورة",
+                "remove": "إزالة",
+                "change": "تغيير"
+            },
+            "fullName": "الاسم الكامل",
+            "fullNamePlaceholder": "أدخل اسمك الكامل",
+            "emailReadOnly": "اتصل بالدعم لتغيير بريدك الإلكتروني",
+            "phone": "رقم الهاتف",
+            "phonePlaceholder": "أدخل رقم هاتفك",
+            "phoneOptional": "اختياري",
             "personalInfo": {
                 "title": "المعلومات الشخصية",
                 "description": "تفاصيل حسابك الأساسية"
@@ -674,6 +726,9 @@
                 "description": "اللغة والإعدادات الإقليمية"
             },
             "language": "اللغة",
+            "languagePlaceholder": "اختر اللغة",
+            "timezone": "المنطقة الزمنية",
+            "timezonePlaceholder": "اختر المنطقة الزمنية",
             "saveChanges": "حفظ التغييرات",
             "saved": "تم الحفظ",
             "saving": "جاري الحفظ...",
@@ -749,6 +804,8 @@
         }
     },
     "auth": {
+        "passwordsDoNotMatch": "كلمات المرور غير متطابقة",
+        "fieldTooShort": "{{field}} قصير جداً",
         "forgotPassword": {
             "title": "نسيت كلمة المرور؟",
             "description": "أدخل بريدك الإلكتروني لإعادة تعيين كلمة المرور",

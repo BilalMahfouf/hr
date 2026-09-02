@@ -9,11 +9,6 @@ import ResetPasswordPage from './features/auth/pages/ResetPasswordPage';
 import AuthGuard from './features/auth/AuthGuard';
 import RoleGuard from './features/auth/RoleGuard';
 import UserPage from './features/users/UserPage';
-import SubscribePage from './features/subscriptions/pages/SubscribePage';
-import RenewPage from './features/subscriptions/pages/RenewPage';
-import PaymentSuccessPage from './features/subscriptions/pages/PaymentSuccessPage';
-import PaymentFailedPage from './features/subscriptions/pages/PaymentFailedPage';
-import SubscriptionPlansPage from './features/subscriptions/pages/SubscriptionPlansPage';
 import MachinesPage from './features/machines/MachinesPage';
 import CreateMachinePage from './features/machines/CreateMachinePage';
 import EditMachinePage from './features/machines/EditMachinePage';
@@ -54,25 +49,6 @@ export const router = createBrowserRouter([
     {
         element: <AuthGuard />,
         children: [
-            // Onboarding routes (authenticated but no subscription check)
-            {
-                path: '/onboarding/subscribe',
-                element: <SubscribePage />,
-            },
-            {
-                path: '/onboarding/renew',
-                element: <RenewPage />,
-            },
-            // Payment callback routes
-            {
-                path: '/payment/success',
-                element: <PaymentSuccessPage />,
-            },
-            {
-                path: '/payment/failed',
-                element: <PaymentFailedPage />,
-            },
-            // Protected app routes (authenticated + subscription check)
             {
                element: <MainLayout />,
     children: [
@@ -85,14 +61,6 @@ export const router = createBrowserRouter([
             element: (
                 <RoleGuard requiredRole="admin">
                     <UserPage />
-                </RoleGuard>
-            ),
-        },
-        {
-            path: '/subscription-plans',
-            element: (
-                <RoleGuard requiredRole="admin">
-                    <SubscriptionPlansPage />
                 </RoleGuard>
             ),
         },

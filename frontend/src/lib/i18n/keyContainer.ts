@@ -12,6 +12,8 @@ const i18nKeyContainer = {
     app: {
         name: 'app.name',
         logoAlt: 'app.logoAlt',
+        subtitle: 'app.subtitle',
+        footer: 'app.footer',
     },
     dashboard: 'dashboard',
     subscriptionPlansNav: 'subscriptionPlansNav',
@@ -245,6 +247,7 @@ const i18nKeyContainer = {
     dashboardPage: {
         title: 'dashboardPage.title',
         subtitle: 'dashboardPage.subtitle',
+        welcome: 'dashboardPage.welcome',
     },
     settingsPage: {
         title: 'settingsPage.title',
@@ -651,7 +654,10 @@ const i18nKeyContainer = {
         empty: 'employeeGroups.empty',
         scheduleInUse: 'employeeGroups.scheduleInUse',
     },
-    deleteDialog: {},
+    deleteDialog: {
+        title: 'deleteDialog.title',
+        description: 'deleteDialog.description',
+    },
     attendance: {
         title: 'attendance.title',
         status: {
@@ -816,6 +822,8 @@ const i18nKeyContainer = {
         info: 'toast.info',
     },
     auth: {
+        passwordsDoNotMatch: 'auth.passwordsDoNotMatch',
+        fieldTooShort: 'auth.fieldTooShort',
         forgotPassword: {
             title: 'auth.forgotPassword.title',
             description: 'auth.forgotPassword.description',

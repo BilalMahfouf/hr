@@ -13,6 +13,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { tokenManager } from "../api/tokenManager";
 import { SignalRContext } from "./SignalRContext";
+import i18n from "@/lib/i18n";
 
 // ==================== Helper ====================
 
@@ -56,11 +57,11 @@ export const SignalRProvider = ({ children }: PropsWithChildren) => {
 
       // Show toast notification
       if (data?.notification) {
-        toast(data.notification.title || "New Notification", {
+        toast(data.notification.title || i18n.t('notification.title'), {
           description: data.notification.body,
         });
       } else {
-        toast("New notification received");
+        toast(i18n.t('notification.description'));
       }
     });
 

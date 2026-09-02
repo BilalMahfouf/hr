@@ -4,7 +4,6 @@ import {
   LogOut,
   Languages,
   Shield,
-  CreditCard,
   ScanLine,
   CalendarClock,
   Users,
@@ -36,7 +35,6 @@ type CollapsibleItem = {
 const navigationItems: (NavLinkItem | CollapsibleItem)[] = [
   { pathname: "/dashboard", key: i18nKeyContainer.dashboard, icon: LayoutDashboard },
   { pathname: "/users", key: i18nKeyContainer.staff.title, icon: Shield, requiresAdmin: true },
-  { pathname: "/subscription-plans", key: i18nKeyContainer.subscriptionPlansNav, icon: CreditCard, requiresAdmin: true },
   { pathname: "/machines", key: i18nKeyContainer.machines.title, icon: ScanLine, requiresAdmin: true },
   {
     labelKey: i18nKeyContainer.attendance.title,

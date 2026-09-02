@@ -191,7 +191,7 @@ export function DataTable<TData>({
             <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/70 rounded-lg">
               <div className="flex items-center gap-2 rounded-lg bg-white px-4 py-2 shadow-md">
                 <Loader2 className="h-5 w-5 animate-spin text-primary" />
-                <span className="text-sm font-medium text-slate-600">Loading...</span>
+                <span className="text-sm font-medium text-slate-600">{t(i18nKeyContainer.common.loading)}</span>
               </div>
             </div>
           )}

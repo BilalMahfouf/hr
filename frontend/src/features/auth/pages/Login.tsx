@@ -9,15 +9,9 @@ import { Lock, Mail, Loader2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import i18nKeyContainer from "@/lib/i18n/keyContainer";
 import { authApi } from '@/lib/api/auth';
-import api from '@/lib/api/api';
 import { useMutation } from '@tanstack/react-query';
 import { useToast } from "@/hooks/use-toast";
 import LanguageSwitcher from "@/components/ui/language-switcher";
-import type { CurrentUser } from '@/features/auth/types';
-import {
-  isExpiredStatus,
-  isPastDueStatus,
-} from '@/features/subscriptions/subscription-status';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -31,18 +25,6 @@ export default function Login() {
   const mutation = useMutation({
     mutationFn: authApi.login,
     onSuccess: async () => {
-      try {
-        const response = await api.get<CurrentUser>('/auth/me');
-        const subscriptionStatus = response.data?.subscriptionStatus;
-
-        if (isPastDueStatus(subscriptionStatus) || isExpiredStatus(subscriptionStatus)) {
-          navigate('/onboarding/renew');
-          return;
-        }
-      } catch {
-        // If status fetch fails, fallback to default app entry.
-      }
-
         navigate('/dashboard');
     },
     onError: (error) => {
