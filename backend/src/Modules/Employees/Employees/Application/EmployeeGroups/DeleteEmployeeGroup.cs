@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.EntityFrameworkCore;
 using Modules.Employees.Application.Abstractions;
 using Modules.Employees.Domain.EmployeeGroups;
 using Modules.Shared.CQRS;
@@ -11,22 +12,21 @@ namespace Modules.Employees.Application.EmployeeGroups;
 
 public static class DeleteEmployeeGroup
 {
-    public sealed class Handler(
-        IEmployeeGroupRepository repository,
-        IEmployeeDbContext dbContext)
+    public sealed class Handler(IEmployeeDbContext dbContext)
         : ICommandHandler<DeleteEmployeeGroupCommand>
     {
         public async Task<Result> Handle(
             DeleteEmployeeGroupCommand command,
             CancellationToken cancellationToken = default)
         {
-            var group = await repository.GetByIdWithDetailsAsync(new EmployeeGroupId(command.Id), cancellationToken);
+            var group = await dbContext.EmployeeGroups
+                .FirstOrDefaultAsync(g => g.Id == new EmployeeGroupId(command.Id), cancellationToken);
             if (group is null)
             {
                 return Result.Failure(EmployeeGroupErrors.NotFound);
             }
 
-            repository.Remove(group);
+            dbContext.EmployeeGroups.Remove(group);
             await dbContext.SaveChangesAsync(cancellationToken);
 
             return Result.Success;

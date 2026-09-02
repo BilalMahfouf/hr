@@ -32,6 +32,7 @@ public sealed class EmployeeGroupCrudTests : EmployeeGroupsTestBase
         var result = await handler.Handle(command, CancellationToken.None);
 
         Assert.True(result.IsSuccess);
+        Assert.Equal("01", result.Value.GroupNumber);
         Assert.Equal("Security Alpha", result.Value.Name);
         Assert.True(result.Value.IsSecurity);
         Assert.Equal("Main security group", result.Value.Description);
@@ -50,9 +51,8 @@ public sealed class EmployeeGroupCrudTests : EmployeeGroupsTestBase
     public async Task Create_DuplicateName_ReturnsFailure()
     {
         using var scope = CreateScope();
-        var repo = scope.ServiceProvider.GetRequiredService<IEmployeeGroupRepository>();
         var db = scope.ServiceProvider.GetRequiredService<IEmployeeDbContext>();
-        await SeedGroupAsync(repo, db, "Existing Group");
+        await SeedGroupAsync(db, "Existing Group", "01");
 
         var handler = CreateCreateHandler(scope.ServiceProvider);
         var command = new CreateEmployeeGroupCommand(
@@ -141,9 +141,8 @@ public sealed class EmployeeGroupCrudTests : EmployeeGroupsTestBase
     public async Task Update_ValidCommand_UpdatesFieldsAndPersists()
     {
         using var scope = CreateScope();
-        var repo = scope.ServiceProvider.GetRequiredService<IEmployeeGroupRepository>();
         var db = scope.ServiceProvider.GetRequiredService<IEmployeeDbContext>();
-        var group = await SeedGroupAsync(repo, db);
+        var group = await SeedGroupAsync(db);
 
         var handler = CreateUpdateHandler(scope.ServiceProvider);
         var command = new UpdateEmployeeGroupCommand(
@@ -168,10 +167,9 @@ public sealed class EmployeeGroupCrudTests : EmployeeGroupsTestBase
     public async Task Update_DuplicateName_ReturnsFailure()
     {
         using var scope = CreateScope();
-        var repo = scope.ServiceProvider.GetRequiredService<IEmployeeGroupRepository>();
         var db = scope.ServiceProvider.GetRequiredService<IEmployeeDbContext>();
-        var groupA = await SeedGroupAsync(repo, db, "Group A");
-        var groupB = await SeedGroupAsync(repo, db, "Group B");
+        var groupA = await SeedGroupAsync(db, "Group A", "01");
+        var groupB = await SeedGroupAsync(db, "Group B", "02");
 
         var handler = CreateUpdateHandler(scope.ServiceProvider);
         var command = new UpdateEmployeeGroupCommand(
@@ -190,9 +188,8 @@ public sealed class EmployeeGroupCrudTests : EmployeeGroupsTestBase
     public async Task Update_SameName_NoConflict()
     {
         using var scope = CreateScope();
-        var repo = scope.ServiceProvider.GetRequiredService<IEmployeeGroupRepository>();
         var db = scope.ServiceProvider.GetRequiredService<IEmployeeDbContext>();
-        var group = await SeedGroupAsync(repo, db, "Group A");
+        var group = await SeedGroupAsync(db, "Group A");
 
         var handler = CreateUpdateHandler(scope.ServiceProvider);
         var command = new UpdateEmployeeGroupCommand(
@@ -229,9 +226,8 @@ public sealed class EmployeeGroupCrudTests : EmployeeGroupsTestBase
     public async Task Delete_ExistingGroup_RemovesGroupAndChildren()
     {
         using var scope = CreateScope();
-        var repo = scope.ServiceProvider.GetRequiredService<IEmployeeGroupRepository>();
         var db = scope.ServiceProvider.GetRequiredService<IEmployeeDbContext>();
-        var group = await SeedGroupWithScheduleAndRotationAsync(repo, db);
+        var group = await SeedGroupWithScheduleAndRotationAsync(db);
 
         var handler = CreateDeleteHandler(scope.ServiceProvider);
         var result = await handler.Handle(
@@ -273,9 +269,8 @@ public sealed class EmployeeGroupCrudTests : EmployeeGroupsTestBase
     public async Task GetById_ExistingGroup_ReturnsGroupWithChildren()
     {
         using var scope = CreateScope();
-        var repo = scope.ServiceProvider.GetRequiredService<IEmployeeGroupRepository>();
         var db = scope.ServiceProvider.GetRequiredService<IEmployeeDbContext>();
-        var group = await SeedGroupWithScheduleAndRotationAsync(repo, db);
+        var group = await SeedGroupWithScheduleAndRotationAsync(db);
 
         var handler = CreateGetByIdHandler(scope.ServiceProvider);
         var result = await handler.Handle(
@@ -307,11 +302,10 @@ public sealed class EmployeeGroupCrudTests : EmployeeGroupsTestBase
     public async Task GetAll_MultipleGroups_ReturnsOrderedByName()
     {
         using var scope = CreateScope();
-        var repo = scope.ServiceProvider.GetRequiredService<IEmployeeGroupRepository>();
         var db = scope.ServiceProvider.GetRequiredService<IEmployeeDbContext>();
-        await SeedGroupAsync(repo, db, "Charlie");
-        await SeedGroupAsync(repo, db, "Alpha");
-        await SeedGroupAsync(repo, db, "Bravo");
+        await SeedGroupAsync(db, "Charlie", "03");
+        await SeedGroupAsync(db, "Alpha", "01");
+        await SeedGroupAsync(db, "Bravo", "02");
 
         var handler = CreateGetAllHandler(scope.ServiceProvider);
         var result = await handler.Handle(

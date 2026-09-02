@@ -189,6 +189,11 @@ const i18nKeyContainer = {
             fetchPunch: 'errors.attendance.fetchPunch',
             fetchRecords: 'errors.attendance.fetchRecords',
             fetchRecord: 'errors.attendance.fetchRecord',
+            fetchPollingSettings: 'errors.attendance.fetchPollingSettings',
+            updatePollingSettings: 'errors.attendance.updatePollingSettings',
+            runPollingNow: 'errors.attendance.runPollingNow',
+            importFailed: 'errors.attendance.importFailed',
+            importFailedDesc: 'errors.attendance.importFailedDesc',
         },
         employee: {
             fetchEmployees: 'errors.employee.fetchEmployees',
@@ -574,6 +579,7 @@ const i18nKeyContainer = {
             schedule: {
                 shiftStartTime: 'employeeGroups.form.schedule.shiftStartTime',
                 shiftEndTime: 'employeeGroups.form.schedule.shiftEndTime',
+                hasBreak: 'employeeGroups.form.schedule.hasBreak',
                 breakStartTime: 'employeeGroups.form.schedule.breakStartTime',
                 breakEndTime: 'employeeGroups.form.schedule.breakEndTime',
                 endDayOffset: 'employeeGroups.form.schedule.endDayOffset',
@@ -701,6 +707,55 @@ const i18nKeyContainer = {
                 status: 'attendance.records.view.status',
             },
         },
+        punchPolling: {
+            title: 'attendance.punchPolling.title',
+            description: 'attendance.punchPolling.description',
+            cardTitle: 'attendance.punchPolling.cardTitle',
+            cardDescription: 'attendance.punchPolling.cardDescription',
+            enabled: 'attendance.punchPolling.enabled',
+            enabledDescription: 'attendance.punchPolling.enabledDescription',
+            interval: 'attendance.punchPolling.interval',
+            intervalDescription: 'attendance.punchPolling.intervalDescription',
+            minutes: 'attendance.punchPolling.minutes',
+            allowedRange: 'attendance.punchPolling.allowedRange',
+            pullNow: 'attendance.punchPolling.pullNow',
+            genericError: 'attendance.punchPolling.genericError',
+        },
+        import: {
+            title: 'attendance.import.title',
+            description: 'attendance.import.description',
+            tabs: {
+                allMachines: 'attendance.import.tabs.allMachines',
+                byEmployee: 'attendance.import.tabs.byEmployee',
+                byMachine: 'attendance.import.tabs.byMachine',
+            },
+            dateRange: {
+                from: 'attendance.import.dateRange.from',
+                to: 'attendance.import.dateRange.to',
+            },
+            maxOneWeek: 'attendance.import.maxOneWeek',
+            importButton: 'attendance.import.importButton',
+            importing: 'attendance.import.importing',
+            employeeSearch: {
+                placeholder: 'attendance.import.employeeSearch.placeholder',
+                search: 'attendance.import.employeeSearch.search',
+                notFound: 'attendance.import.employeeSearch.notFound',
+            },
+            employeeCard: {
+                id: 'attendance.import.employeeCard.id',
+                name: 'attendance.import.employeeCard.name',
+                department: 'attendance.import.employeeCard.department',
+                group: 'attendance.import.employeeCard.group',
+            },
+            machineSelect: {
+                placeholder: 'attendance.import.machineSelect.placeholder',
+            },
+            result: {
+                success: 'attendance.import.result.success',
+                machinesCount: 'attendance.import.result.machinesCount',
+                punchesCount: 'attendance.import.result.punchesCount',
+            },
+        },
     },
     table: {
         search: 'table.search',
@@ -740,6 +795,11 @@ const i18nKeyContainer = {
             markedAllAsReadDesc: 'toast.notification.markedAllAsReadDesc',
             pushEnabled: 'toast.notification.pushEnabled',
             pushDisabled: 'toast.notification.pushDisabled',
+        },
+        punchPolling: {
+            updated: 'toast.punchPolling.updated',
+            updatedDesc: 'toast.punchPolling.updatedDesc',
+            pullCompleted: 'toast.punchPolling.pullCompleted',
         },
         auth: {
             resetLinkSent: 'toast.auth.resetLinkSent',

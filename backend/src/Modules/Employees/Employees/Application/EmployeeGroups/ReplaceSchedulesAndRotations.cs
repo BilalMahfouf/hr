@@ -2,6 +2,7 @@ using FluentValidation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.EntityFrameworkCore;
 using Modules.Employees.Application.Abstractions;
 using Modules.Employees.Domain.EmployeeGroups;
 using Modules.Shared.CQRS;
@@ -52,7 +53,6 @@ public static class ReplaceSchedulesAndRotations
     }
 
     public sealed class Handler(
-        IEmployeeGroupRepository repository,
         IEmployeeDbContext dbContext,
         IValidator<ReplaceSchedulesAndRotationsCommand> validator)
         : ICommandHandler<ReplaceSchedulesAndRotationsCommand, EmployeeGroupResponse>
@@ -63,7 +63,11 @@ public static class ReplaceSchedulesAndRotations
         {
             validator.ValidateAndThrow(command);
 
-            var group = await repository.GetByIdWithDetailsAsync(new EmployeeGroupId(command.GroupId), cancellationToken);
+            var group = await dbContext.EmployeeGroups
+                .Include(g => g.WorkSchedules)
+                .Include(g => g.RotationEntries)
+                    .ThenInclude(re => re.WorkSchedule)
+                .FirstOrDefaultAsync(g => g.Id == new EmployeeGroupId(command.GroupId), cancellationToken);
             if (group is null)
             {
                 return Result<EmployeeGroupResponse>.Failure(EmployeeGroupErrors.NotFound);

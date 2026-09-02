@@ -8,11 +8,12 @@ namespace Domain.Tests.Employees;
 public sealed class EmployeeGroupTests
 {
     private static EmployeeGroup CreateGroup(
+        string employeeGroupNumber = "GRP-001",
         string name = "Day Shift",
         bool isSecurity = false,
         string? description = null,
         DateOnly? rotationStartDate = null) =>
-        EmployeeGroup.Create(name, isSecurity, rotationStartDate ?? DateOnly.FromDateTime(DateTime.UtcNow), description);
+        EmployeeGroup.Create(employeeGroupNumber, name, isSecurity, rotationStartDate ?? DateOnly.FromDateTime(DateTime.UtcNow), description);
 
     private static CreateWorkScheduleDto CreateScheduleDto(EmployeeGroupId groupId) =>
         new(
@@ -82,7 +83,7 @@ public sealed class EmployeeGroupTests
     public void Create_WhenNameNullOrWhitespace_ThrowsDomainException(string name)
     {
         var exception = Assert.Throws<DomainException>(() =>
-            EmployeeGroup.Create(name, isSecurity: false, rotationStartDate: DateOnly.FromDateTime(DateTime.UtcNow)));
+            EmployeeGroup.Create("GRP-001", name, isSecurity: false, rotationStartDate: DateOnly.FromDateTime(DateTime.UtcNow)));
 
         Assert.Equal(EmployeeGroupErrors.InvalidName.Code, exception.Error.Code);
     }
@@ -91,7 +92,7 @@ public sealed class EmployeeGroupTests
     public void Create_WhenNameNull_ThrowsDomainException()
     {
         var exception = Assert.Throws<DomainException>(() =>
-            EmployeeGroup.Create(null!, isSecurity: false, rotationStartDate: DateOnly.FromDateTime(DateTime.UtcNow)));
+            EmployeeGroup.Create("GRP-001", null!, isSecurity: false, rotationStartDate: DateOnly.FromDateTime(DateTime.UtcNow)));
 
         Assert.Equal(EmployeeGroupErrors.InvalidName.Code, exception.Error.Code);
     }
@@ -100,7 +101,7 @@ public sealed class EmployeeGroupTests
     public void Create_WhenRotationStartDateDefault_ThrowsDomainException()
     {
         var exception = Assert.Throws<DomainException>(() =>
-            EmployeeGroup.Create("Test", isSecurity: false, rotationStartDate: default));
+            EmployeeGroup.Create("GRP-001", "Test", isSecurity: false, rotationStartDate: default));
 
         Assert.Equal(EmployeeGroupErrors.RotationStartDateRequired.Code, exception.Error.Code);
     }

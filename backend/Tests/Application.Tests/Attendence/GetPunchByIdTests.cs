@@ -1,126 +1,133 @@
-//using Microsoft.EntityFrameworkCore;
-//using Moq;
-//using Modules.Attendence.Application.Punches;
-//using Modules.Attendence.Domain.Machines;
-//using Modules.Attendence.Domain.Punches;
-//using Modules.Attendence.Infrastructure.Presistance;
-//using Modules.Employees.Contracts;
-//using Modules.Shared.Results;
-//using ContractSchedule = Modules.Employees.Contracts.WorkSchedule;
+using Microsoft.EntityFrameworkCore;
+using Moq;
+using Modules.Attendence.Application.Punches;
+using Modules.Attendence.Domain.Machines;
+using Modules.Attendence.Domain.Punches;
+using Modules.Attendence.Infrastructure.Presistance;
+using Modules.Employees.Contracts;
+using Modules.Shared.Results;
 
-//namespace Application.Tests.Attendence;
+namespace Application.Tests.Attendence;
 
-//public sealed class GetPunchByIdTests
-//{
-//    private static readonly MachineId MachineId = MachineId.New();
+public sealed class GetPunchByIdTests
+{
+    private static readonly MachineId MachineId = MachineId.New();
 
-//    private static EmployeeResponse Employee(int badge, string employeeId, string fullName) =>
-//        new(
-//            employeeId,
-//            badge,
-//            fullName,
-//            new ContractSchedule(
-//                StandardWorkTime: TimeSpan.FromHours(8),
-//                ExpectedCheckOutTime: DateTime.UtcNow.Date.AddHours(17),
-//                ExpectedCheckInTime: DateTime.UtcNow.Date.AddHours(9)));
+    private static WorkScheduleReadDto DummySchedule() => new(
+        Guid.NewGuid(), Guid.NewGuid(),
+        new TimeOnly(9, 0), new TimeOnly(17, 0),
+        TimeSpan.FromHours(8), 0,
+        new TimeOnly(12, 0), new TimeOnly(13, 0),
+        5, 5, true,
+        DateTime.UtcNow.Date.AddHours(9), DateTime.UtcNow.Date.AddHours(17),
+        DateTime.UtcNow.Date.AddHours(12), DateTime.UtcNow.Date.AddHours(13),
+        EmployeeWorkStatus.Work);
 
-//    private static (GetPunchById.QueryHandler handler, Mock<IEmployeeApi> employeeApi) Arrange(
-//        Punch? punch = null,
-//        AttendenceMachine? machine = null,
-//        Result<EmployeeResponse>? employeeResult = null)
-//    {
-//        var options = new DbContextOptionsBuilder<AttendanceDbContext>()
-//            .UseInMemoryDatabase(Guid.NewGuid().ToString())
-//            .Options;
-//        var db = new AttendanceDbContext(options);
+    private static EmployeeResponse Employee(int badge, string employeeId, string fullName) =>
+        new(
+            employeeId,
+            badge,
+            fullName,
+            DummySchedule());
 
-//        if (punch is not null)
-//        {
-//            db.Punches.Add(punch);
-//        }
-//        if (machine is not null)
-//        {
-//            db.Machines.Add(machine);
-//        }
-//        db.SaveChanges();
+    private static (GetPunchById.QueryHandler handler, Mock<IEmployeeApi> employeeApi) Arrange(
+        Punch? punch = null,
+        AttendenceMachine? machine = null,
+        Result<EmployeeResponse>? employeeResult = null)
+    {
+        var options = new DbContextOptionsBuilder<AttendanceDbContext>()
+            .UseInMemoryDatabase(Guid.NewGuid().ToString())
+            .Options;
+        var db = new AttendanceDbContext(options);
 
-//        var employeeApi = new Mock<IEmployeeApi>();
-//        employeeApi
-//            .Setup(x => x.GetEmployeeByBadgeAsync(
-//                It.IsAny<int>(),
-//                It.IsAny<CancellationToken>()))
-//            .ReturnsAsync(employeeResult ??
-//                Result<EmployeeResponse>.Success(Employee(punch?.EmployeeBadge ?? 0, "E100", "John Doe")));
+        if (punch is not null)
+        {
+            db.Punches.Add(punch);
+        }
+        if (machine is not null)
+        {
+            db.Machines.Add(machine);
+        }
+        db.SaveChanges();
 
-//        return (new GetPunchById.QueryHandler(db, employeeApi.Object), employeeApi);
-//    }
+        var employeeApi = new Mock<IEmployeeApi>();
+        employeeApi
+            .Setup(x => x.GetEmployeeByBadgeAsync(
+                It.IsAny<int>(),
+                It.IsAny<DateOnly>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(employeeResult ??
+                Result<EmployeeResponse>.Success(Employee(punch?.EmployeeBadge ?? 0, "E100", "John Doe")));
 
-//    [Fact]
-//    public async Task Handle_WhenPunchExists_ReturnsMappedResponse()
-//    {
-//        var occurredAt = new DateTime(2026, 8, 20, 8, 0, 0, DateTimeKind.Utc);
-//        var punch = Punch.Create(MachineId, 100, occurredAt, occurredAt.AddMinutes(1));
-//        var machine = AttendenceMachine.Create(MachineId, "192.168.3.205", 1, 8080);
-//        var (handler, _) = Arrange(punch, machine);
+        return (new GetPunchById.QueryHandler(db, employeeApi.Object), employeeApi);
+    }
 
-//        var result = await handler.Handle(
-//            new GetPunchById.Query(punch.Id),
-//            CancellationToken.None);
+    [Fact]
+    public async Task Handle_WhenPunchExists_ReturnsMappedResponse()
+    {
+        var occurredAt = new DateTime(2026, 8, 20, 8, 0, 0, DateTimeKind.Utc);
+        var punch = Punch.Create(MachineId, 100, occurredAt, occurredAt.AddMinutes(1));
+        var machine = AttendenceMachine.Create(MachineId, "192.168.3.205", 1, MachineType.ZKTecoSdk, 8080);
+        var (handler, _) = Arrange(punch, machine);
 
-//        Assert.True(result.IsSuccess);
-//        Assert.Equal(punch.Id, result.Value.PunchId);
-//        Assert.Equal(MachineId, result.Value.MachineId);
-//        Assert.Equal("192.168.3.205", result.Value.MachineIp);
-//        Assert.Equal("E100", result.Value.EmployeeId);
-//        Assert.Equal("John Doe", result.Value.EmployeeFullName);
-//        Assert.Equal(occurredAt, result.Value.PunchOccurredOnUtc);
-//        Assert.Equal(punch.CreatedOnUtc, result.Value.CreatedOnUtc);
-//    }
+        var result = await handler.Handle(
+            new GetPunchById.Query(punch.Id),
+            CancellationToken.None);
 
-//    [Fact]
-//    public async Task Handle_WhenPunchDoesNotExist_ReturnsNotFound()
-//    {
-//        var (handler, _) = Arrange();
+        Assert.True(result.IsSuccess);
+        Assert.Equal(punch.Id, result.Value.PunchId);
+        Assert.Equal(MachineId, result.Value.MachineId);
+        Assert.Equal("192.168.3.205", result.Value.MachineIp);
+        Assert.Equal("E100", result.Value.EmployeeId);
+        Assert.Equal("John Doe", result.Value.EmployeeFullName);
+        Assert.Equal(occurredAt, result.Value.PunchOccurredOnUtc);
+        Assert.Equal(punch.CreatedOnUtc, result.Value.CreatedOnUtc);
+    }
 
-//        var result = await handler.Handle(
-//            new GetPunchById.Query(Guid.NewGuid()),
-//            CancellationToken.None);
+    [Fact]
+    public async Task Handle_WhenPunchDoesNotExist_ReturnsNotFound()
+    {
+        var (handler, _) = Arrange();
 
-//        Assert.False(result.IsSuccess);
-//        Assert.Equal("Punch.NotFound", result.Error.Code);
-//    }
+        var result = await handler.Handle(
+            new GetPunchById.Query(Guid.NewGuid()),
+            CancellationToken.None);
 
-//    [Fact]
-//    public async Task Handle_WhenIdIsEmpty_ReturnsNotFound()
-//    {
-//        var (handler, _) = Arrange();
+        Assert.False(result.IsSuccess);
+        Assert.Equal("Punch.NotFound", result.Error.Code);
+    }
 
-//        var result = await handler.Handle(
-//            new GetPunchById.Query(Guid.Empty),
-//            CancellationToken.None);
+    [Fact]
+    public async Task Handle_WhenIdIsEmpty_ReturnsNotFound()
+    {
+        var (handler, _) = Arrange();
 
-//        Assert.False(result.IsSuccess);
-//        Assert.Equal("Punch.NotFound", result.Error.Code);
-//    }
+        var result = await handler.Handle(
+            new GetPunchById.Query(Guid.Empty),
+            CancellationToken.None);
 
-//    [Fact]
-//    public async Task Handle_WhenEmployeeNotFound_ReturnsResponseWithNullEmployee()
-//    {
-//        var occurredAt = new DateTime(2026, 8, 20, 8, 0, 0, DateTimeKind.Utc);
-//        var punch = Punch.Create(MachineId, 100, occurredAt, occurredAt.AddMinutes(1));
-//        var machine = AttendenceMachine.Create(MachineId, "192.168.3.205", 1, 8080);
-//        var (handler, _) = Arrange(
-//            punch,
-//            machine,
-//            Result<EmployeeResponse>.Failure(EmployeeErrors.NotFound));
+        Assert.False(result.IsSuccess);
+        Assert.Equal("Punch.NotFound", result.Error.Code);
+    }
 
-//        var result = await handler.Handle(
-//            new GetPunchById.Query(punch.Id),
-//            CancellationToken.None);
+    [Fact]
+    public async Task Handle_WhenEmployeeNotFound_ReturnsResponseWithNullEmployee()
+    {
+        var occurredAt = new DateTime(2026, 8, 20, 8, 0, 0, DateTimeKind.Utc);
+        var punch = Punch.Create(MachineId, 100, occurredAt, occurredAt.AddMinutes(1));
+        var machine = AttendenceMachine.Create(MachineId, "192.168.3.205", 1, MachineType.ZKTecoSdk, 8080);
+        var (handler, _) = Arrange(
+            punch,
+            machine,
+            Result<EmployeeResponse>.Failure(EmployeeErrors.NotFound));
 
-//        Assert.True(result.IsSuccess);
-//        Assert.Equal("192.168.3.205", result.Value.MachineIp);
-//        Assert.Null(result.Value.EmployeeId);
-//        Assert.Null(result.Value.EmployeeFullName);
-//    }
-//}
+        var result = await handler.Handle(
+            new GetPunchById.Query(punch.Id),
+            CancellationToken.None);
+
+        Assert.True(result.IsSuccess);
+        Assert.Equal("192.168.3.205", result.Value.MachineIp);
+        Assert.Null(result.Value.EmployeeId);
+        Assert.Null(result.Value.EmployeeFullName);
+    }
+}

@@ -20,6 +20,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import i18nKeyContainer from "@/lib/i18n/keyContainer";
 import attendanceApi from "./attendance-api";
 
@@ -74,12 +75,19 @@ export default function ViewPunchPage() {
     return (
       <div dir={isRtl ? "rtl" : "ltr"}>
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-slate-900">
-            {t(i18nKeyContainer.attendance.punches.view.title)}
-          </h1>
-          <p className="text-slate-500">
-            {t(i18nKeyContainer.attendance.punches.view.description)}
-          </p>
+          <div className="flex items-center gap-3">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+              <Skeleton className="h-6 w-6" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-slate-900">
+                {t(i18nKeyContainer.attendance.punches.view.title)}
+              </h1>
+              <p className="text-slate-500">
+                {t(i18nKeyContainer.attendance.punches.view.description)}
+              </p>
+            </div>
+          </div>
         </div>
         <Card className="mx-auto max-w-2xl border-slate-200 bg-white shadow-sm">
           <CardContent className="space-y-3 p-6">
@@ -109,18 +117,23 @@ export default function ViewPunchPage() {
   return (
     <div dir={isRtl ? "rtl" : "ltr"}>
       <div className="mb-6 flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900">
-            {t(i18nKeyContainer.attendance.punches.view.title)}
-          </h1>
-          <p className="text-slate-500">
-            {t(i18nKeyContainer.attendance.punches.view.description)}
-          </p>
+        <div className="flex items-center gap-3">
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+            <Fingerprint className="h-6 w-6 text-primary" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-slate-900">
+              {t(i18nKeyContainer.attendance.punches.view.title)}
+            </h1>
+            <p className="text-slate-500">
+              {t(i18nKeyContainer.attendance.punches.view.description)}
+            </p>
+          </div>
         </div>
 
         <Button
-          variant="outline"
-          className="h-10 cursor-pointer border-slate-200 bg-white hover:bg-slate-50"
+          variant="white"
+          className="h-10"
           onClick={() => navigate("/attendance/punches")}
         >
           <ArrowLeft className="h-4 w-4 rtl:rotate-180" />

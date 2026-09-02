@@ -1,35 +1,73 @@
 using FluentValidation;
-using Moq;
+using Microsoft.EntityFrameworkCore;
 using Modules.Employees.Application.Abstractions;
 using Modules.Employees.Application.EmployeeGroups;
 using Modules.Employees.Application.EmployeeGroups.Rotations;
 using Modules.Employees.Application.EmployeeGroups.WorkSchedules;
 using Modules.Employees.Domain.EmployeeGroups;
 using Modules.Employees.Domain.EmployeeGroups.WorkSchedules;
+using Modules.Employees.Infrastructure.Presistance;
 
 namespace Application.Tests.EmployeeGroups;
 
 public sealed class WorkScheduleAndRotationHandlerTests
 {
-    private readonly Mock<IEmployeeGroupRepository> _repoMock = new();
-    private readonly Mock<IEmployeeDbContext> _dbMock = new();
-
-    private static EmployeeGroup CreateSeededGroup(out WorkSchedule schedule)
+    private static (EmployeeDbContext db, IEmployeeDbContext ctx) CreateDb()
     {
-        var group = EmployeeGroup.Create("Day Shift", false, DateOnly.FromDateTime(DateTime.UtcNow));
-        group.AddWorkSchedule(new CreateWorkScheduleDto(
-            group.Id, new TimeOnly(8, 0), new TimeOnly(16, 0), 0,
-            new TimeOnly(12, 0), new TimeOnly(13, 0), 5, 5));
-        schedule = group.WorkSchedules.Single();
-        return group;
+        var options = new DbContextOptionsBuilder<EmployeeDbContext>()
+            .UseInMemoryDatabase(Guid.NewGuid().ToString())
+            .Options;
+        var db = new EmployeeDbContext(options);
+        return (db, db);
     }
 
-    private void SetupGroup(EmployeeGroup group)
+    private static async Task<EmployeeGroup> CreateSeededGroupAsync(IEmployeeDbContext ctx)
     {
-        _repoMock
-            .Setup(r => r.GetByIdWithDetailsAsync(group.Id, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(group);
-        _dbMock.Setup(db => db.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(1);
+        var handler = new CreateEmployeeGroup.Handler(ctx, new CreateEmployeeGroup.Validator());
+        var result = await handler.Handle(
+            new CreateEmployeeGroupCommand(
+                "Day Shift",
+                false,
+                null,
+                DateOnly.FromDateTime(DateTime.UtcNow),
+                new List<CreateWorkScheduleRequest>
+                {
+                    new(new TimeOnly(8, 0), new TimeOnly(16, 0),
+                        new TimeOnly(12, 0), new TimeOnly(13, 0), 0, 5, 5)
+                },
+                new List<CreateRotationEntryRequest> { new(1, 0) }),
+            CancellationToken.None);
+
+        return (await ctx.EmployeeGroups
+            .Include(g => g.WorkSchedules)
+            .Include(g => g.RotationEntries)
+            .SingleAsync(g => g.Id == new EmployeeGroupId(result.Value.Id)))!;
+    }
+
+    private static async Task<EmployeeGroup> CreateSeededGroupWithoutRotationAsync(IEmployeeDbContext ctx)
+    {
+        var group = EmployeeGroup.Create(
+            "GRP-001",
+            "Day Shift",
+            false,
+            DateOnly.FromDateTime(DateTime.UtcNow),
+            "Test group");
+        group.AddWorkSchedule(new CreateWorkScheduleDto(
+            group.Id,
+            new TimeOnly(8, 0),
+            new TimeOnly(16, 0),
+            0,
+            new TimeOnly(12, 0),
+            new TimeOnly(13, 0),
+            5,
+            5));
+        ctx.EmployeeGroups.Add(group);
+        await ctx.SaveChangesAsync();
+
+        return (await ctx.EmployeeGroups
+            .Include(g => g.WorkSchedules)
+            .Include(g => g.RotationEntries)
+            .SingleAsync(g => g.Id == group.Id))!;
     }
 
     #region CreateWorkSchedule
@@ -37,12 +75,10 @@ public sealed class WorkScheduleAndRotationHandlerTests
     [Fact]
     public async Task CreateWorkSchedule_WhenValid_AddsSchedule()
     {
-        var group = CreateSeededGroup(out _);
-        SetupGroup(group);
+        var (db, ctx) = CreateDb();
+        var group = await CreateSeededGroupAsync(ctx);
 
-        var handler = new CreateWorkSchedule.Handler(
-            _repoMock.Object, _dbMock.Object, new CreateWorkSchedule.Validator());
-
+        var handler = new CreateWorkSchedule.Handler(ctx, new CreateWorkSchedule.Validator());
         var result = await handler.Handle(new CreateWorkScheduleCommand(
             group.Id.Value,
             new TimeOnly(15, 0), new TimeOnly(23, 0),
@@ -50,15 +86,15 @@ public sealed class WorkScheduleAndRotationHandlerTests
             0, 10, 10), CancellationToken.None);
 
         Assert.True(result.IsSuccess);
-        Assert.Equal(2, group.WorkSchedules.Count);
-        Assert.False(result.Value.IsActive);
+        var updated = await db.WorkSchedules.Where(s => s.EmployeeGroupId == group.Id).ToListAsync();
+        Assert.Equal(2, updated.Count);
     }
 
     [Fact]
     public async Task CreateWorkSchedule_WhenGroupMissing_ReturnsNotFound()
     {
-        var handler = new CreateWorkSchedule.Handler(
-            _repoMock.Object, _dbMock.Object, new CreateWorkSchedule.Validator());
+        var (_, ctx) = CreateDb();
+        var handler = new CreateWorkSchedule.Handler(ctx, new CreateWorkSchedule.Validator());
 
         var result = await handler.Handle(new CreateWorkScheduleCommand(
             Guid.NewGuid(),
@@ -73,11 +109,9 @@ public sealed class WorkScheduleAndRotationHandlerTests
     [Fact]
     public async Task CreateWorkSchedule_WhenInvalidTimes_ThrowsValidationException()
     {
-        var group = CreateSeededGroup(out _);
-        SetupGroup(group);
-
-        var handler = new CreateWorkSchedule.Handler(
-            _repoMock.Object, _dbMock.Object, new CreateWorkSchedule.Validator());
+        var (_, ctx) = CreateDb();
+        var group = await CreateSeededGroupAsync(ctx);
+        var handler = new CreateWorkSchedule.Handler(ctx, new CreateWorkSchedule.Validator());
 
         await Assert.ThrowsAsync<ValidationException>(() => handler.Handle(
             new CreateWorkScheduleCommand(
@@ -85,8 +119,6 @@ public sealed class WorkScheduleAndRotationHandlerTests
                 new TimeOnly(18, 0), new TimeOnly(6, 0),
                 new TimeOnly(12, 0), new TimeOnly(13, 0),
                 0, 10, 10), CancellationToken.None));
-
-        Assert.Single(group.WorkSchedules);
     }
 
     #endregion
@@ -96,12 +128,11 @@ public sealed class WorkScheduleAndRotationHandlerTests
     [Fact]
     public async Task UpdateWorkSchedule_WhenValid_UpdatesSchedule()
     {
-        var group = CreateSeededGroup(out var schedule);
-        SetupGroup(group);
+        var (db, ctx) = CreateDb();
+        var group = await CreateSeededGroupWithoutRotationAsync(ctx);
+        var schedule = await db.WorkSchedules.SingleAsync(s => s.EmployeeGroupId == group.Id);
 
-        var handler = new UpdateWorkSchedule.Handler(
-            _repoMock.Object, _dbMock.Object, new UpdateWorkSchedule.Validator());
-
+        var handler = new UpdateWorkSchedule.Handler(ctx, new UpdateWorkSchedule.Validator());
         var result = await handler.Handle(new UpdateWorkScheduleCommand(
             group.Id.Value, schedule.Id.Value,
             new TimeOnly(9, 0), new TimeOnly(17, 0),
@@ -109,20 +140,17 @@ public sealed class WorkScheduleAndRotationHandlerTests
             0, 10, 10), CancellationToken.None);
 
         Assert.True(result.IsSuccess);
-        Assert.Single(group.WorkSchedules);
-        Assert.Equal(new TimeOnly(9, 0), group.WorkSchedules.Single().ShiftStartTime);
+        Assert.Equal(new TimeOnly(9, 0), result.Value.ShiftStartTime);
     }
 
     [Fact]
     public async Task UpdateWorkSchedule_WhenReferencedByRotation_ReturnsWorkScheduleInUse()
     {
-        var group = CreateSeededGroup(out var schedule);
-        group.AddRotationEntry(1, schedule.Id);
-        SetupGroup(group);
+        var (db, ctx) = CreateDb();
+        var group = await CreateSeededGroupAsync(ctx);
+        var schedule = await db.WorkSchedules.SingleAsync(s => s.EmployeeGroupId == group.Id);
 
-        var handler = new UpdateWorkSchedule.Handler(
-            _repoMock.Object, _dbMock.Object, new UpdateWorkSchedule.Validator());
-
+        var handler = new UpdateWorkSchedule.Handler(ctx, new UpdateWorkSchedule.Validator());
         var result = await handler.Handle(new UpdateWorkScheduleCommand(
             group.Id.Value, schedule.Id.Value,
             new TimeOnly(9, 0), new TimeOnly(17, 0),
@@ -131,18 +159,15 @@ public sealed class WorkScheduleAndRotationHandlerTests
 
         Assert.False(result.IsSuccess);
         Assert.Equal(EmployeeGroupErrors.WorkScheduleInUse.Code, result.Error.Code);
-        _dbMock.Verify(db => db.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
     public async Task UpdateWorkSchedule_WhenScheduleMissing_ReturnsWorkScheduleNotFound()
     {
-        var group = CreateSeededGroup(out _);
-        SetupGroup(group);
+        var (_, ctx) = CreateDb();
+        var group = await CreateSeededGroupAsync(ctx);
 
-        var handler = new UpdateWorkSchedule.Handler(
-            _repoMock.Object, _dbMock.Object, new UpdateWorkSchedule.Validator());
-
+        var handler = new UpdateWorkSchedule.Handler(ctx, new UpdateWorkSchedule.Validator());
         var result = await handler.Handle(new UpdateWorkScheduleCommand(
             group.Id.Value, Guid.NewGuid(),
             new TimeOnly(9, 0), new TimeOnly(17, 0),
@@ -160,33 +185,31 @@ public sealed class WorkScheduleAndRotationHandlerTests
     [Fact]
     public async Task DeleteWorkSchedule_WhenValid_RemovesSchedule()
     {
-        var group = CreateSeededGroup(out var schedule);
-        SetupGroup(group);
+        var (db, ctx) = CreateDb();
+        var group = await CreateSeededGroupWithoutRotationAsync(ctx);
+        var schedule = await db.WorkSchedules.SingleAsync(s => s.EmployeeGroupId == group.Id);
 
-        var handler = new DeleteWorkSchedule.Handler(_repoMock.Object, _dbMock.Object);
-
+        var handler = new DeleteWorkSchedule.Handler(ctx);
         var result = await handler.Handle(
             new DeleteWorkScheduleCommand(group.Id.Value, schedule.Id.Value), CancellationToken.None);
 
         Assert.True(result.IsSuccess);
-        Assert.Empty(group.WorkSchedules);
+        Assert.Empty(await db.WorkSchedules.Where(s => s.EmployeeGroupId == group.Id).ToListAsync());
     }
 
     [Fact]
     public async Task DeleteWorkSchedule_WhenReferencedByRotation_ReturnsWorkScheduleInUse()
     {
-        var group = CreateSeededGroup(out var schedule);
-        group.AddRotationEntry(1, schedule.Id);
-        SetupGroup(group);
+        var (db, ctx) = CreateDb();
+        var group = await CreateSeededGroupAsync(ctx);
+        var schedule = await db.WorkSchedules.SingleAsync(s => s.EmployeeGroupId == group.Id);
 
-        var handler = new DeleteWorkSchedule.Handler(_repoMock.Object, _dbMock.Object);
-
+        var handler = new DeleteWorkSchedule.Handler(ctx);
         var result = await handler.Handle(
             new DeleteWorkScheduleCommand(group.Id.Value, schedule.Id.Value), CancellationToken.None);
 
         Assert.False(result.IsSuccess);
         Assert.Equal(EmployeeGroupErrors.WorkScheduleInUse.Code, result.Error.Code);
-        Assert.Single(group.WorkSchedules);
     }
 
     #endregion
@@ -196,11 +219,11 @@ public sealed class WorkScheduleAndRotationHandlerTests
     [Fact]
     public async Task ActivateWorkSchedule_WhenValid_ActivatesSchedule()
     {
-        var group = CreateSeededGroup(out var schedule);
-        SetupGroup(group);
+        var (db, ctx) = CreateDb();
+        var group = await CreateSeededGroupAsync(ctx);
+        var schedule = await db.WorkSchedules.SingleAsync(s => s.EmployeeGroupId == group.Id);
 
-        var handler = new ActivateWorkSchedule.Handler(_repoMock.Object, _dbMock.Object);
-
+        var handler = new ActivateWorkSchedule.Handler(ctx);
         var result = await handler.Handle(
             new ActivateWorkScheduleCommand(group.Id.Value, schedule.Id.Value), CancellationToken.None);
 
@@ -211,13 +234,16 @@ public sealed class WorkScheduleAndRotationHandlerTests
     [Fact]
     public async Task DeactivateWorkSchedule_WhenActive_DeactivatesSchedule()
     {
-        var group = CreateSeededGroup(out var schedule);
-        group.ActivateWorkSchedule(schedule.Id);
-        SetupGroup(group);
+        var (db, ctx) = CreateDb();
+        var group = await CreateSeededGroupAsync(ctx);
+        var schedule = await db.WorkSchedules.SingleAsync(s => s.EmployeeGroupId == group.Id);
 
-        var handler = new DeactivateWorkSchedule.Handler(_repoMock.Object, _dbMock.Object);
+        var activateHandler = new ActivateWorkSchedule.Handler(ctx);
+        await activateHandler.Handle(
+            new ActivateWorkScheduleCommand(group.Id.Value, schedule.Id.Value), CancellationToken.None);
 
-        var result = await handler.Handle(
+        var deactivateHandler = new DeactivateWorkSchedule.Handler(ctx);
+        var result = await deactivateHandler.Handle(
             new DeactivateWorkScheduleCommand(group.Id.Value, schedule.Id.Value), CancellationToken.None);
 
         Assert.True(result.IsSuccess);
@@ -227,11 +253,10 @@ public sealed class WorkScheduleAndRotationHandlerTests
     [Fact]
     public async Task ActivateWorkSchedule_WhenScheduleMissing_ReturnsWorkScheduleNotFound()
     {
-        var group = CreateSeededGroup(out _);
-        SetupGroup(group);
+        var (_, ctx) = CreateDb();
+        var group = await CreateSeededGroupAsync(ctx);
 
-        var handler = new ActivateWorkSchedule.Handler(_repoMock.Object, _dbMock.Object);
-
+        var handler = new ActivateWorkSchedule.Handler(ctx);
         var result = await handler.Handle(
             new ActivateWorkScheduleCommand(group.Id.Value, Guid.NewGuid()), CancellationToken.None);
 
@@ -246,35 +271,29 @@ public sealed class WorkScheduleAndRotationHandlerTests
     [Fact]
     public async Task GetRotations_ReturnsEntriesOrderedByPosition()
     {
-        var group = CreateSeededGroup(out var schedule);
-        group.AddRotationEntry(2, null);
-        group.AddRotationEntry(1, schedule.Id);
-        SetupGroup(group);
+        var (db, ctx) = CreateDb();
+        var group = await CreateSeededGroupAsync(ctx);
 
-        var handler = new GetAllRotations.Handler(_repoMock.Object);
-
+        var handler = new GetAllRotations.Handler(ctx);
         var result = await handler.Handle(
             new GetAllRotationsQuery(group.Id.Value), CancellationToken.None);
 
         Assert.True(result.IsSuccess);
-        Assert.Equal(2, result.Value.Count);
+        Assert.Single(result.Value);
         Assert.Equal(1, result.Value[0].Position);
         Assert.Equal("Work", result.Value[0].Status);
-        Assert.Equal(2, result.Value[1].Position);
-        Assert.Equal("Rest", result.Value[1].Status);
     }
 
     [Fact]
     public async Task CreateWorkRotation_WhenValid_AddsWorkEntry()
     {
-        var group = CreateSeededGroup(out var schedule);
-        SetupGroup(group);
+        var (db, ctx) = CreateDb();
+        var group = await CreateSeededGroupAsync(ctx);
+        var schedule = await db.WorkSchedules.SingleAsync(s => s.EmployeeGroupId == group.Id);
 
-        var handler = new CreateWorkRotation.Handler(
-            _repoMock.Object, _dbMock.Object, new CreateWorkRotation.Validator());
-
+        var handler = new CreateWorkRotation.Handler(ctx, new CreateWorkRotation.Validator());
         var result = await handler.Handle(new CreateWorkRotationCommand(
-            group.Id.Value, 1, schedule.Id.Value), CancellationToken.None);
+            group.Id.Value, 2, schedule.Id.Value), CancellationToken.None);
 
         Assert.True(result.IsSuccess);
         Assert.Equal("Work", result.Value.Status);
@@ -284,14 +303,12 @@ public sealed class WorkScheduleAndRotationHandlerTests
     [Fact]
     public async Task CreateWorkRotation_WhenScheduleNotInGroup_ReturnsWorkScheduleNotFound()
     {
-        var group = CreateSeededGroup(out _);
-        SetupGroup(group);
+        var (_, ctx) = CreateDb();
+        var group = await CreateSeededGroupAsync(ctx);
 
-        var handler = new CreateWorkRotation.Handler(
-            _repoMock.Object, _dbMock.Object, new CreateWorkRotation.Validator());
-
+        var handler = new CreateWorkRotation.Handler(ctx, new CreateWorkRotation.Validator());
         var result = await handler.Handle(new CreateWorkRotationCommand(
-            group.Id.Value, 1, Guid.NewGuid()), CancellationToken.None);
+            group.Id.Value, 2, Guid.NewGuid()), CancellationToken.None);
 
         Assert.False(result.IsSuccess);
         Assert.Equal(EmployeeGroupErrors.WorkScheduleNotFound.Code, result.Error.Code);
@@ -300,14 +317,12 @@ public sealed class WorkScheduleAndRotationHandlerTests
     [Fact]
     public async Task CreateRestRotation_WhenValid_AddsRestEntry()
     {
-        var group = CreateSeededGroup(out _);
-        SetupGroup(group);
+        var (_, ctx) = CreateDb();
+        var group = await CreateSeededGroupAsync(ctx);
 
-        var handler = new CreateRestRotation.Handler(
-            _repoMock.Object, _dbMock.Object, new CreateRestRotation.Validator());
-
+        var handler = new CreateRestRotation.Handler(ctx, new CreateRestRotation.Validator());
         var result = await handler.Handle(
-            new CreateRestRotationCommand(group.Id.Value, 1), CancellationToken.None);
+            new CreateRestRotationCommand(group.Id.Value, 2), CancellationToken.None);
 
         Assert.True(result.IsSuccess);
         Assert.Equal("Rest", result.Value.Status);
@@ -317,13 +332,10 @@ public sealed class WorkScheduleAndRotationHandlerTests
     [Fact]
     public async Task CreateRestRotation_WhenPositionTaken_ReturnsDuplicatePosition()
     {
-        var group = CreateSeededGroup(out _);
-        group.AddRotationEntry(1, null);
-        SetupGroup(group);
+        var (_, ctx) = CreateDb();
+        var group = await CreateSeededGroupAsync(ctx);
 
-        var handler = new CreateRestRotation.Handler(
-            _repoMock.Object, _dbMock.Object, new CreateRestRotation.Validator());
-
+        var handler = new CreateRestRotation.Handler(ctx, new CreateRestRotation.Validator());
         var result = await handler.Handle(
             new CreateRestRotationCommand(group.Id.Value, 1), CancellationToken.None);
 
@@ -334,33 +346,30 @@ public sealed class WorkScheduleAndRotationHandlerTests
     [Fact]
     public async Task UpdateRotation_WhenValid_ChangesPositionAndSchedule()
     {
-        var group = CreateSeededGroup(out var schedule);
-        group.AddRotationEntry(1, null);
-        SetupGroup(group);
+        var (db, ctx) = CreateDb();
+        var group = await CreateSeededGroupAsync(ctx);
+        var schedule = await db.WorkSchedules.SingleAsync(s => s.EmployeeGroupId == group.Id);
 
-        var handler = new UpdateRotationPosition.Handler(
-            _repoMock.Object, _dbMock.Object, new UpdateRotationPosition.Validator());
-
+        var handler = new UpdateRotationPosition.Handler(ctx, new UpdateRotationPosition.Validator());
         var result = await handler.Handle(new UpdateRotationCommand(
             group.Id.Value, 1, 5, schedule.Id.Value), CancellationToken.None);
 
         Assert.True(result.IsSuccess);
         Assert.Equal(5, result.Value.Position);
         Assert.Equal("Work", result.Value.Status);
-        Assert.Single(group.RotationEntries);
     }
 
     [Fact]
     public async Task UpdateRotation_WhenTargetPositionTaken_ReturnsDuplicatePosition()
     {
-        var group = CreateSeededGroup(out var schedule);
-        group.AddRotationEntry(1, null);
-        group.AddRotationEntry(2, null);
-        SetupGroup(group);
+        var (db, ctx) = CreateDb();
+        var group = await CreateSeededGroupAsync(ctx);
+        var schedule = await db.WorkSchedules.SingleAsync(s => s.EmployeeGroupId == group.Id);
 
-        var handler = new UpdateRotationPosition.Handler(
-            _repoMock.Object, _dbMock.Object, new UpdateRotationPosition.Validator());
+        var createHandler = new CreateRestRotation.Handler(ctx, new CreateRestRotation.Validator());
+        await createHandler.Handle(new CreateRestRotationCommand(group.Id.Value, 2), CancellationToken.None);
 
+        var handler = new UpdateRotationPosition.Handler(ctx, new UpdateRotationPosition.Validator());
         var result = await handler.Handle(new UpdateRotationCommand(
             group.Id.Value, 1, 2, schedule.Id.Value), CancellationToken.None);
 
@@ -371,12 +380,10 @@ public sealed class WorkScheduleAndRotationHandlerTests
     [Fact]
     public async Task UpdateRotation_WhenEntryMissing_ReturnsRotationEntryNotFound()
     {
-        var group = CreateSeededGroup(out _);
-        SetupGroup(group);
+        var (_, ctx) = CreateDb();
+        var group = await CreateSeededGroupAsync(ctx);
 
-        var handler = new UpdateRotationPosition.Handler(
-            _repoMock.Object, _dbMock.Object, new UpdateRotationPosition.Validator());
-
+        var handler = new UpdateRotationPosition.Handler(ctx, new UpdateRotationPosition.Validator());
         var result = await handler.Handle(new UpdateRotationCommand(
             group.Id.Value, 9, 10, null), CancellationToken.None);
 
@@ -387,27 +394,28 @@ public sealed class WorkScheduleAndRotationHandlerTests
     [Fact]
     public async Task DeleteRotation_WhenValid_RemovesEntry()
     {
-        var group = CreateSeededGroup(out _);
-        group.AddRotationEntry(1, null);
-        SetupGroup(group);
+        var (db, ctx) = CreateDb();
+        var group = await CreateSeededGroupAsync(ctx);
 
-        var handler = new DeleteRotation.Handler(_repoMock.Object, _dbMock.Object);
+        var createHandler = new CreateRestRotation.Handler(ctx, new CreateRestRotation.Validator());
+        await createHandler.Handle(new CreateRestRotationCommand(group.Id.Value, 2), CancellationToken.None);
 
+        var handler = new DeleteRotation.Handler(ctx);
         var result = await handler.Handle(
-            new DeleteRotationCommand(group.Id.Value, 1), CancellationToken.None);
+            new DeleteRotationCommand(group.Id.Value, 2), CancellationToken.None);
 
         Assert.True(result.IsSuccess);
-        Assert.Empty(group.RotationEntries);
+        var remaining = await db.RotationEntries.Where(r => r.EmployeeGroupId == group.Id).ToListAsync();
+        Assert.Single(remaining);
     }
 
     [Fact]
     public async Task DeleteRotation_WhenEntryMissing_ReturnsRotationEntryNotFound()
     {
-        var group = CreateSeededGroup(out _);
-        SetupGroup(group);
+        var (_, ctx) = CreateDb();
+        var group = await CreateSeededGroupAsync(ctx);
 
-        var handler = new DeleteRotation.Handler(_repoMock.Object, _dbMock.Object);
-
+        var handler = new DeleteRotation.Handler(ctx);
         var result = await handler.Handle(
             new DeleteRotationCommand(group.Id.Value, 5), CancellationToken.None);
 

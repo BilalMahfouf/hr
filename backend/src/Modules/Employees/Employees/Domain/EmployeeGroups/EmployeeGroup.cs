@@ -10,6 +10,7 @@ namespace Modules.Employees.Domain.EmployeeGroups;
 public sealed class EmployeeGroup : Entity
 {
     public new EmployeeGroupId Id { get; private set; }
+    public string GroupNumber { get; private set; }
 
     public string Name { get; private set; } = null!;
 
@@ -33,12 +34,14 @@ public sealed class EmployeeGroup : Entity
 
     private EmployeeGroup(
         EmployeeGroupId id,
+        string groupNumber,
         string name,
         bool isSecurity,
         string? description,
         DateOnly rotationStartDate)
     {
         Id = id;
+        GroupNumber = groupNumber;
         Name = name;
         IsSecurity = isSecurity;
         Description = description;
@@ -46,11 +49,15 @@ public sealed class EmployeeGroup : Entity
     }
 
     public static EmployeeGroup Create(
+        string groupNumber,
         string name,
         bool isSecurity,
         DateOnly rotationStartDate,
         string? description = null)
     {
+        if (string.IsNullOrWhiteSpace(groupNumber))
+            throw new DomainException(EmployeeGroupErrors.InvalidGroupNumber);
+
         if (string.IsNullOrWhiteSpace(name))
             throw new DomainException(EmployeeGroupErrors.InvalidName);
 
@@ -59,6 +66,7 @@ public sealed class EmployeeGroup : Entity
 
         return new EmployeeGroup(
             EmployeeGroupId.New(),
+            groupNumber,
             name,
             isSecurity,
             description,
@@ -319,6 +327,10 @@ public sealed class EmployeeGroup : Entity
 
     public RotationEntry? GetRotation(DateOnly date)
     {
+        if (NumberOfRotations <= 0)
+        {
+            return null;
+        }
         if (date < RotationStartDate)
         {
             return null;
@@ -331,6 +343,8 @@ public sealed class EmployeeGroup : Entity
 
     public WorkScheduleResponse? GetGroupWorkScheduleInDateTime(DateOnly date)
     {
+        var defaultCheckInDateTime = date.ToDateTime(new TimeOnly(8, 0));
+        var defaultCheckOutDateTime = date.ToDateTime(new TimeOnly(16, 0));
         var rotation = GetRotation(date);
         if (rotation is null)
         {
@@ -349,16 +363,27 @@ public sealed class EmployeeGroup : Entity
                 var expectedCheckout = date
                     .ToDateTime(prevRotation.WorkSchedule.ShiftEndTime);
 
-                return new WorkScheduleResponse(expectedCheckin, expectedCheckout);
+                return new WorkScheduleResponse(
+                    expectedCheckin,
+                    expectedCheckout,
+                    prevRotation.WorkSchedule.WorkTime,
+                    rotation.Status);
             }
-            return null;
+            return new WorkScheduleResponse(
+                defaultCheckInDateTime,
+                defaultCheckOutDateTime,
+                TimeSpan.Zero,
+                rotation.Status);
 
         }
         var schedule = rotation.WorkSchedule;
         var expectedCheckIn = date.ToDateTime(schedule!.ShiftStartTime);
         var expectedCheckOut = date.AddDays(schedule.EndDayOffset).ToDateTime(schedule.ShiftEndTime);
-        return new WorkScheduleResponse(expectedCheckIn, expectedCheckOut);
+        return new WorkScheduleResponse(expectedCheckIn, expectedCheckOut, schedule.WorkTime, rotation.Status);
 
     }
 }
-public sealed record WorkScheduleResponse(DateTime ExpectedCheckInAt, DateTime ExpectedCheckoutAt);
+public sealed record WorkScheduleResponse(DateTime ExpectedCheckInAt,
+    DateTime ExpectedCheckoutAt,
+    TimeSpan WorkTime,
+   RotationStatus RotationStatus);

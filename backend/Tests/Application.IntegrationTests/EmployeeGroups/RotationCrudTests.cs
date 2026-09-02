@@ -21,9 +21,8 @@ public sealed class RotationCrudTests : EmployeeGroupsTestBase
     public async Task CreateWorkRotation_ValidCommand_PersistsAndReturnsEntry()
     {
         using var scope = CreateScope();
-        var repo = scope.ServiceProvider.GetRequiredService<IEmployeeGroupRepository>();
         var db = scope.ServiceProvider.GetRequiredService<IEmployeeDbContext>();
-        var group = await SeedGroupWithScheduleAsync(repo, db);
+        var group = await SeedGroupWithScheduleAsync(db);
         var schedule = group.WorkSchedules.First();
 
         var handler = CreateWorkRotationHandler(scope.ServiceProvider);
@@ -59,9 +58,8 @@ public sealed class RotationCrudTests : EmployeeGroupsTestBase
     public async Task CreateWorkRotation_DuplicatePosition_ReturnsDuplicateRotationPosition()
     {
         using var scope = CreateScope();
-        var repo = scope.ServiceProvider.GetRequiredService<IEmployeeGroupRepository>();
         var db = scope.ServiceProvider.GetRequiredService<IEmployeeDbContext>();
-        var group = await SeedGroupWithScheduleAsync(repo, db);
+        var group = await SeedGroupWithScheduleAsync(db);
         var schedule = group.WorkSchedules.First();
 
         var handler = CreateWorkRotationHandler(scope.ServiceProvider);
@@ -81,9 +79,8 @@ public sealed class RotationCrudTests : EmployeeGroupsTestBase
     public async Task CreateWorkRotation_NonExistentSchedule_ReturnsWorkScheduleNotFound()
     {
         using var scope = CreateScope();
-        var repo = scope.ServiceProvider.GetRequiredService<IEmployeeGroupRepository>();
         var db = scope.ServiceProvider.GetRequiredService<IEmployeeDbContext>();
-        var group = await SeedGroupAsync(repo, db);
+        var group = await SeedGroupAsync(db);
 
         var handler = CreateWorkRotationHandler(scope.ServiceProvider);
         var result = await handler.Handle(
@@ -98,9 +95,8 @@ public sealed class RotationCrudTests : EmployeeGroupsTestBase
     public async Task CreateWorkRotation_PositionZero_ThrowsValidationException()
     {
         using var scope = CreateScope();
-        var repo = scope.ServiceProvider.GetRequiredService<IEmployeeGroupRepository>();
         var db = scope.ServiceProvider.GetRequiredService<IEmployeeDbContext>();
-        var group = await SeedGroupWithScheduleAsync(repo, db);
+        var group = await SeedGroupWithScheduleAsync(db);
         var schedule = group.WorkSchedules.First();
 
         var handler = CreateWorkRotationHandler(scope.ServiceProvider);
@@ -114,9 +110,8 @@ public sealed class RotationCrudTests : EmployeeGroupsTestBase
     public async Task CreateRestRotation_ValidCommand_PersistsAndReturnsEntry()
     {
         using var scope = CreateScope();
-        var repo = scope.ServiceProvider.GetRequiredService<IEmployeeGroupRepository>();
         var db = scope.ServiceProvider.GetRequiredService<IEmployeeDbContext>();
-        var group = await SeedGroupAsync(repo, db);
+        var group = await SeedGroupAsync(db);
 
         var handler = CreateRestRotationHandler(scope.ServiceProvider);
         var command = new CreateRestRotationCommand(group.Id.Value, 1);
@@ -151,9 +146,8 @@ public sealed class RotationCrudTests : EmployeeGroupsTestBase
     public async Task CreateRestRotation_DuplicatePosition_ReturnsDuplicateRotationPosition()
     {
         using var scope = CreateScope();
-        var repo = scope.ServiceProvider.GetRequiredService<IEmployeeGroupRepository>();
         var db = scope.ServiceProvider.GetRequiredService<IEmployeeDbContext>();
-        var group = await SeedGroupAsync(repo, db);
+        var group = await SeedGroupAsync(db);
 
         var handler = CreateRestRotationHandler(scope.ServiceProvider);
         await handler.Handle(
@@ -172,9 +166,8 @@ public sealed class RotationCrudTests : EmployeeGroupsTestBase
     public async Task UpdateRotationPosition_ChangePositionAndType_PersistsAndReturnsEntry()
     {
         using var scope = CreateScope();
-        var repo = scope.ServiceProvider.GetRequiredService<IEmployeeGroupRepository>();
         var db = scope.ServiceProvider.GetRequiredService<IEmployeeDbContext>();
-        var group = await SeedGroupWithScheduleAndRotationAsync(repo, db);
+        var group = await SeedGroupWithScheduleAndRotationAsync(db);
         var existingEntry = group.RotationEntries.First();
         var schedule = group.WorkSchedules.First();
 
@@ -204,9 +197,8 @@ public sealed class RotationCrudTests : EmployeeGroupsTestBase
     public async Task UpdateRotationPosition_NonExistentEntry_ReturnsRotationEntryNotFound()
     {
         using var scope = CreateScope();
-        var repo = scope.ServiceProvider.GetRequiredService<IEmployeeGroupRepository>();
         var db = scope.ServiceProvider.GetRequiredService<IEmployeeDbContext>();
-        var group = await SeedGroupAsync(repo, db);
+        var group = await SeedGroupAsync(db);
 
         var handler = CreateUpdateRotationHandler(scope.ServiceProvider);
         var command = new UpdateRotationCommand(group.Id.Value, 1, null, null);
@@ -221,9 +213,8 @@ public sealed class RotationCrudTests : EmployeeGroupsTestBase
     public async Task UpdateRotationPosition_DuplicateTargetPosition_ReturnsDuplicateRotationPosition()
     {
         using var scope = CreateScope();
-        var repo = scope.ServiceProvider.GetRequiredService<IEmployeeGroupRepository>();
         var db = scope.ServiceProvider.GetRequiredService<IEmployeeDbContext>();
-        var group = await SeedGroupWithScheduleAsync(repo, db);
+        var group = await SeedGroupWithScheduleAsync(db);
         var schedule = group.WorkSchedules.First();
 
         group.AddRotationEntry(1, schedule.Id);
@@ -257,9 +248,8 @@ public sealed class RotationCrudTests : EmployeeGroupsTestBase
     public async Task UpdateRotationPosition_NewPositionBelowOne_ThrowsValidationException()
     {
         using var scope = CreateScope();
-        var repo = scope.ServiceProvider.GetRequiredService<IEmployeeGroupRepository>();
         var db = scope.ServiceProvider.GetRequiredService<IEmployeeDbContext>();
-        var group = await SeedGroupWithScheduleAndRotationAsync(repo, db);
+        var group = await SeedGroupWithScheduleAndRotationAsync(db);
 
         var handler = CreateUpdateRotationHandler(scope.ServiceProvider);
         var command = new UpdateRotationCommand(group.Id.Value, 1, 0, null);
@@ -272,9 +262,8 @@ public sealed class RotationCrudTests : EmployeeGroupsTestBase
     public async Task DeleteRotation_ExistingEntry_RemovesAndPersists()
     {
         using var scope = CreateScope();
-        var repo = scope.ServiceProvider.GetRequiredService<IEmployeeGroupRepository>();
         var db = scope.ServiceProvider.GetRequiredService<IEmployeeDbContext>();
-        var group = await SeedGroupWithScheduleAndRotationAsync(repo, db);
+        var group = await SeedGroupWithScheduleAndRotationAsync(db);
 
         var handler = CreateDeleteRotationHandler(scope.ServiceProvider);
         var result = await handler.Handle(
@@ -292,9 +281,8 @@ public sealed class RotationCrudTests : EmployeeGroupsTestBase
     public async Task DeleteRotation_NonExistentEntry_ReturnsRotationEntryNotFound()
     {
         using var scope = CreateScope();
-        var repo = scope.ServiceProvider.GetRequiredService<IEmployeeGroupRepository>();
         var db = scope.ServiceProvider.GetRequiredService<IEmployeeDbContext>();
-        var group = await SeedGroupAsync(repo, db);
+        var group = await SeedGroupAsync(db);
 
         var handler = CreateDeleteRotationHandler(scope.ServiceProvider);
         var result = await handler.Handle(
@@ -323,9 +311,8 @@ public sealed class RotationCrudTests : EmployeeGroupsTestBase
     public async Task GetAllRotations_ExistingGroup_ReturnsOrderedByPosition()
     {
         using var scope = CreateScope();
-        var repo = scope.ServiceProvider.GetRequiredService<IEmployeeGroupRepository>();
         var db = scope.ServiceProvider.GetRequiredService<IEmployeeDbContext>();
-        var group = await SeedGroupWithScheduleAsync(repo, db);
+        var group = await SeedGroupWithScheduleAsync(db);
         var schedule = group.WorkSchedules.First();
 
         group.AddRotationEntry(3, null);
@@ -363,9 +350,8 @@ public sealed class RotationCrudTests : EmployeeGroupsTestBase
     public async Task GetAllRotations_EmptyGroup_ReturnsEmptyList()
     {
         using var scope = CreateScope();
-        var repo = scope.ServiceProvider.GetRequiredService<IEmployeeGroupRepository>();
         var db = scope.ServiceProvider.GetRequiredService<IEmployeeDbContext>();
-        var group = await SeedGroupAsync(repo, db);
+        var group = await SeedGroupAsync(db);
 
         var handler = CreateGetAllRotationsHandler(scope.ServiceProvider);
         var result = await handler.Handle(

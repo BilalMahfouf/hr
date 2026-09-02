@@ -1,185 +1,192 @@
-//using Microsoft.EntityFrameworkCore;
-//using Moq;
-//using Modules.Attendence.Application.AttendenceRerords;
-//using Modules.Attendence.Domain.AttendenceRecords;
-//using Modules.Attendence.Domain.Machines;
-//using Modules.Attendence.Infrastructure.Presistance;
-//using Modules.Employees.Contracts;
-//using Modules.Shared.Paginations.OffSet;
-//using Modules.Shared.Results;
-//using ContractSchedule = Modules.Employees.Contracts.WorkSchedule;
-//using DomainWorkSchedule = Modules.Attendence.Domain.AttendenceRecords.WorkSchedule;
+using Microsoft.EntityFrameworkCore;
+using Moq;
+using Modules.Attendence.Application.AttendenceRerords;
+using Modules.Attendence.Domain.AttendenceRecords;
+using Modules.Attendence.Domain.Machines;
+using Modules.Attendence.Infrastructure.Presistance;
+using Modules.Employees.Contracts;
+using Modules.Shared.Paginations.OffSet;
+using Modules.Shared.Results;
+using DomainWorkSchedule = Modules.Attendence.Domain.AttendenceRecords.WorkSchedule;
 
-//namespace Application.Tests.Attendence;
+namespace Application.Tests.Attendence;
 
-//public sealed class GetAllAttendanceRecordsTests
-//{
-//    private static readonly MachineId MachineId = MachineId.New();
+public sealed class GetAllAttendanceRecordsTests
+{
+    private static readonly MachineId MachineId = MachineId.New();
 
-//    private static EmployeeResponse Employee(string employeeId, string fullName) =>
-//        new(
-//            employeeId,
-//            100,
-//            fullName,
-//            nggew ContractSchedule(
-//                StandardWorkTime: TimeSpan.FromHours(8),
-//                ExpectedCheckOutTime: DateTime.UtcNow.Date.AddHours(17),
-//                ExpectedCheckInTime: DateTime.UtcNow.Date.AddHours(9)));
+    private static WorkScheduleReadDto DummySchedule() => new(
+        Guid.NewGuid(), Guid.NewGuid(),
+        new TimeOnly(9, 0), new TimeOnly(17, 0),
+        TimeSpan.FromHours(8), 0,
+        new TimeOnly(12, 0), new TimeOnly(13, 0),
+        5, 5, true,
+        DateTime.UtcNow.Date.AddHours(9), DateTime.UtcNow.Date.AddHours(17),
+        DateTime.UtcNow.Date.AddHours(12), DateTime.UtcNow.Date.AddHours(13),
+        EmployeeWorkStatus.Work);
 
-//    private static AttendanceRecord CreateRecord(
-//        string employeeId,
-//        DateTime checkIn,
-//        DateTime? checkOut = null)
-//    {
-//        var record = AttendanceRecord.Create(MachineId, employeeId);
-//        record.RegisterCheckIn(checkIn, checkIn.AddHours(-1), null);
-//        if (checkOut is not null)
-//        {
-//            record.RegisterCheckOut(
-//                checkOut.Value,
-//                new DomainWorkSchedule(TimeSpan.FromHours(8), checkOut.Value));
-//        }
-//        return record;
-//    }
+    private static EmployeeResponse Employee(string employeeId, string fullName) =>
+        new(
+            employeeId,
+            100,
+            fullName,
+            DummySchedule());
 
-//    private static (GetAllAttendanceRecords.QueryHandler handler, Mock<IEmployeeApi> employeeApi) Arrange(
-//        IReadOnlyList<AttendanceRecord>? records = null,
-//        IReadOnlyList<EmployeeResponse>? employees = null)
-//    {
-//        var options = new DbContextOptionsBuilder<AttendanceDbContext>()
-//            .UseInMemoryDatabase(Guid.NewGuid().ToString())
-//            .Options;
-//        var db = new AttendanceDbContext(options);
+    private static AttendanceRecord CreateRecord(
+        string employeeId,
+        DateTime checkIn,
+        DateTime? checkOut = null)
+    {
+        var record = AttendanceRecord.Create(MachineId, employeeId);
+        record.RegisterCheckIn(checkIn, checkIn.AddHours(-1), null);
+        if (checkOut is not null)
+        {
+            record.RegisterCheckOut(
+                checkOut.Value,
+                new DomainWorkSchedule(TimeSpan.FromHours(8), checkOut.Value));
+        }
+        return record;
+    }
 
-//        db.AttendanceRecords.AddRange(records ?? []);
-//        db.SaveChanges();
+    private static (GetAllAttendanceRecords.QueryHandler handler, Mock<IEmployeeApi> employeeApi) Arrange(
+        IReadOnlyList<AttendanceRecord>? records = null,
+        IReadOnlyList<EmployeeResponse>? employees = null)
+    {
+        var options = new DbContextOptionsBuilder<AttendanceDbContext>()
+            .UseInMemoryDatabase(Guid.NewGuid().ToString())
+            .Options;
+        var db = new AttendanceDbContext(options);
 
-//        var employeeApi = new Mock<IEmployeeApi>();
-//        employeeApi
-//            .Setup(x => x.GetEmployeesByIdsAsync(
-//                It.IsAny<IReadOnlyCollection<string>>(),
-//                It.IsAny<CancellationToken>()))
-//            .ReturnsAsync(Result<IReadOnlyList<EmployeeResponse>>.Success(
-//                employees ?? new List<EmployeeResponse>()));
+        db.AttendanceRecords.AddRange(records ?? []);
+        db.SaveChanges();
 
-//        return (new GetAllAttendanceRecords.QueryHandler(db, employeeApi.Object), employeeApi);
-//    }
+        var employeeApi = new Mock<IEmployeeApi>();
+        employeeApi
+            .Setup(x => x.GetEmployeesByIdsAsync(
+                It.IsAny<IReadOnlyCollection<string>>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Result<IReadOnlyList<EmployeeResponse>>.Success(
+                employees ?? new List<EmployeeResponse>()));
 
-//    [Fact]
-//    public async Task Handle_WhenNoRecords_ReturnsRecordsNotFound()
-//    {
-//        var (handler, _) = Arrange();
-//        var query = TableRequest<GetAllAttendanceRecords.Response>.Create(10, 1);
+        return (new GetAllAttendanceRecords.QueryHandler(db, employeeApi.Object), employeeApi);
+    }
 
-//        var result = await handler.Handle(query, CancellationToken.None);
+    [Fact]
+    public async Task Handle_WhenNoRecords_ReturnsEmptyPagedList()
+    {
+        var (handler, _) = Arrange();
+        var query = TableRequest<GetAllAttendanceRecords.Response>.Create(10, 1);
 
-//        Assert.False(result.IsSuccess);
-//        Assert.Equal("AttendanceRecord.RecordsNotFound", result.Error.Code);
-//    }
+        var result = await handler.Handle(query, CancellationToken.None);
 
-//    [Fact]
-//    public async Task Handle_WhenRecordsExist_ReturnsMappedResponses()
-//    {
-//        var checkIn = new DateTime(2026, 8, 20, 8, 0, 0, DateTimeKind.Utc);
-//        var checkOut = new DateTime(2026, 8, 20, 16, 0, 0, DateTimeKind.Utc);
-//        var record = CreateRecord("E100", checkIn, checkOut);
-//        var (handler, _) = Arrange(records: [record], employees: [Employee("E100", "John Doe")]);
+        Assert.True(result.IsSuccess);
+        Assert.Equal(0, result.Value.TotalCount);
+        Assert.Empty(result.Value.Item);
+    }
 
-//        var result = await handler.Handle(
-//            TableRequest<GetAllAttendanceRecords.Response>.Create(10, 1),
-//            CancellationToken.None);
+    [Fact]
+    public async Task Handle_WhenRecordsExist_ReturnsMappedResponses()
+    {
+        var checkIn = new DateTime(2026, 8, 20, 8, 0, 0, DateTimeKind.Utc);
+        var checkOut = new DateTime(2026, 8, 20, 16, 0, 0, DateTimeKind.Utc);
+        var record = CreateRecord("E100", checkIn, checkOut);
+        var (handler, _) = Arrange(records: [record], employees: [Employee("E100", "John Doe")]);
 
-//        Assert.True(result.IsSuccess);
-//        var item = result.Value.Item.Single();
-//        Assert.Equal(record.Id, item.AttendanceRecordId);
-//        Assert.Equal("E100", item.EmployeeId);
-//        Assert.Equal("John Doe", item.EmployeeFullName);
-//        Assert.Equal(checkIn, item.CheckInAt);
-//        Assert.Equal(checkOut, item.CheckOutAt);
-//        Assert.Equal(TimeSpan.FromHours(8), item.WorkedTime);
-//        Assert.False(item.IsAbsent);
-//    }
+        var result = await handler.Handle(
+            TableRequest<GetAllAttendanceRecords.Response>.Create(10, 1),
+            CancellationToken.None);
 
-//    [Fact]
-//    public async Task Handle_WhenEmployeeLookupFails_StillReturnsRecordsWithNullEmployee()
-//    {
-//        var checkIn = new DateTime(2026, 8, 20, 8, 0, 0, DateTimeKind.Utc);
-//        var record = CreateRecord("E100", checkIn);
-//        var (handler, employeeApi) = Arrange(records: [record]);
-//        employeeApi
-//            .Setup(x => x.GetEmployeesByIdsAsync(
-//                It.IsAny<IReadOnlyCollection<string>>(),
-//                It.IsAny<CancellationToken>()))
-//            .ReturnsAsync(Result<IReadOnlyList<EmployeeResponse>>.Failure(EmployeeErrors.NotFound));
+        Assert.True(result.IsSuccess);
+        var item = result.Value.Item.Single();
+        Assert.Equal(record.Id, item.AttendanceRecordId);
+        Assert.Equal("E100", item.EmployeeId);
+        Assert.Equal("John Doe", item.EmployeeFullName);
+        Assert.Equal(checkIn, item.CheckInAt);
+        Assert.Equal(checkOut, item.CheckOutAt);
+        Assert.Equal(TimeSpan.FromHours(8), item.WorkedTime);
+        Assert.False(item.IsAbsent);
+    }
 
-//        var result = await handler.Handle(
-//            TableRequest<GetAllAttendanceRecords.Response>.Create(10, 1),
-//            CancellationToken.None);
+    [Fact]
+    public async Task Handle_WhenEmployeeLookupFails_StillReturnsRecordsWithNullEmployee()
+    {
+        var checkIn = new DateTime(2026, 8, 20, 8, 0, 0, DateTimeKind.Utc);
+        var record = CreateRecord("E100", checkIn);
+        var (handler, employeeApi) = Arrange(records: [record]);
+        employeeApi
+            .Setup(x => x.GetEmployeesByIdsAsync(
+                It.IsAny<IReadOnlyCollection<string>>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Result<IReadOnlyList<EmployeeResponse>>.Failure(EmployeeErrors.NotFound));
 
-//        Assert.True(result.IsSuccess);
-//        var item = result.Value.Item.Single();
-//        Assert.Equal("E100", item.EmployeeId);
-//        Assert.Null(item.EmployeeFullName);
-//    }
+        var result = await handler.Handle(
+            TableRequest<GetAllAttendanceRecords.Response>.Create(10, 1),
+            CancellationToken.None);
 
-//    [Fact]
-//    public async Task Handle_WhenSearchMatchesEmployeeFullName_FiltersResults()
-//    {
-//        var recordA = CreateRecord("E100", new DateTime(2026, 8, 20, 8, 0, 0, DateTimeKind.Utc));
-//        var recordB = CreateRecord("E200", new DateTime(2026, 8, 20, 8, 5, 0, DateTimeKind.Utc));
-//        var (handler, _) = Arrange(
-//            records: [recordA, recordB],
-//            employees:
-//            [
-//                Employee("E100", "Alice Smith"),
-//                Employee("E200", "Bob Jones")
-//            ]);
+        Assert.True(result.IsSuccess);
+        var item = result.Value.Item.Single();
+        Assert.Equal("E100", item.EmployeeId);
+        Assert.Null(item.EmployeeFullName);
+    }
 
-//        var result = await handler.Handle(
-//            TableRequest<GetAllAttendanceRecords.Response>.Create(10, 1, "bob"),
-//            CancellationToken.None);
+    [Fact]
+    public async Task Handle_WhenSearchMatchesEmployeeFullName_FiltersResults()
+    {
+        var recordA = CreateRecord("E100", new DateTime(2026, 8, 20, 8, 0, 0, DateTimeKind.Utc));
+        var recordB = CreateRecord("E200", new DateTime(2026, 8, 20, 8, 5, 0, DateTimeKind.Utc));
+        var (handler, _) = Arrange(
+            records: [recordA, recordB],
+            employees:
+            [
+                Employee("E100", "Alice Smith"),
+                Employee("E200", "Bob Jones")
+            ]);
 
-//        Assert.True(result.IsSuccess);
-//        var item = result.Value.Item.Single();
-//        Assert.Equal("Bob Jones", item.EmployeeFullName);
-//    }
+        var result = await handler.Handle(
+            TableRequest<GetAllAttendanceRecords.Response>.Create(10, 1, "bob"),
+            CancellationToken.None);
 
-//    [Fact]
-//    public async Task Handle_SortByCheckInAtDesc_OrdersResults()
-//    {
-//        var recordA = CreateRecord("E100", new DateTime(2026, 8, 20, 8, 0, 0, DateTimeKind.Utc));
-//        var recordB = CreateRecord("E200", new DateTime(2026, 8, 20, 9, 0, 0, DateTimeKind.Utc));
-//        var (handler, _) = Arrange(records: [recordA, recordB]);
+        Assert.True(result.IsSuccess);
+        var item = result.Value.Item.Single();
+        Assert.Equal("Bob Jones", item.EmployeeFullName);
+    }
 
-//        var result = await handler.Handle(
-//            TableRequest<GetAllAttendanceRecords.Response>.Create(10, 1, null, "checkinat", "desc"),
-//            CancellationToken.None);
+    [Fact]
+    public async Task Handle_SortByCheckInAtDesc_OrdersResults()
+    {
+        var recordA = CreateRecord("E100", new DateTime(2026, 8, 20, 8, 0, 0, DateTimeKind.Utc));
+        var recordB = CreateRecord("E200", new DateTime(2026, 8, 20, 9, 0, 0, DateTimeKind.Utc));
+        var (handler, _) = Arrange(records: [recordA, recordB]);
 
-//        Assert.True(result.IsSuccess);
-//        var items = result.Value.Item.ToList();
-//        Assert.Equal(recordB.Id, items[0].AttendanceRecordId);
-//        Assert.Equal(recordA.Id, items[1].AttendanceRecordId);
-//    }
+        var result = await handler.Handle(
+            TableRequest<GetAllAttendanceRecords.Response>.Create(10, 1, null, "checkinat", "desc"),
+            CancellationToken.None);
 
-//    [Fact]
-//    public async Task Handle_Pagination_ReturnsOnlyPageItems()
-//    {
-//        var records = Enumerable.Range(1, 3)
-//            .Select(i => CreateRecord(
-//                $"E{i}",
-//                new DateTime(2026, 8, 20, 8, i, 0, DateTimeKind.Utc)))
-//            .ToList();
-//        var (handler, _) = Arrange(records: records);
+        Assert.True(result.IsSuccess);
+        var items = result.Value.Item.ToList();
+        Assert.Equal(recordB.Id, items[0].AttendanceRecordId);
+        Assert.Equal(recordA.Id, items[1].AttendanceRecordId);
+    }
 
-//        var result = await handler.Handle(
-//            TableRequest<GetAllAttendanceRecords.Response>.Create(2, 2),
-//            CancellationToken.None);
+    [Fact]
+    public async Task Handle_Pagination_ReturnsOnlyPageItems()
+    {
+        var records = Enumerable.Range(1, 3)
+            .Select(i => CreateRecord(
+                $"E{i}",
+                new DateTime(2026, 8, 20, 8, i, 0, DateTimeKind.Utc)))
+            .ToList();
+        var (handler, _) = Arrange(records: records);
 
-//        Assert.True(result.IsSuccess);
-//        Assert.Equal(3, result.Value.TotalCount);
-//        Assert.Equal(2, result.Value.Page);
-//        Assert.Single(result.Value.Item);
-//        Assert.True(result.Value.HasPreviousPage);
-//        Assert.False(result.Value.HasNextPage);
-//    }
-//}
+        var result = await handler.Handle(
+            TableRequest<GetAllAttendanceRecords.Response>.Create(2, 2),
+            CancellationToken.None);
+
+        Assert.True(result.IsSuccess);
+        Assert.Equal(3, result.Value.TotalCount);
+        Assert.Equal(2, result.Value.Page);
+        Assert.Single(result.Value.Item);
+        Assert.True(result.Value.HasPreviousPage);
+        Assert.False(result.Value.HasNextPage);
+    }
+}

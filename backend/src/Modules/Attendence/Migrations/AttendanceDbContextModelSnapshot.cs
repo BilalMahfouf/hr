@@ -96,6 +96,28 @@ namespace Modules.Attendence.Migrations
                     b.ToTable("machines", "attendance");
                 });
 
+            modelBuilder.Entity("Modules.Attendence.Domain.PunchPolling.PunchPollingSettings", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedOnUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("IntervalMinutes")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsEnabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("punch_polling_settings", "attendance");
+                });
+
             modelBuilder.Entity("Modules.Attendence.Domain.Punches.Punch", b =>
                 {
                     b.Property<Guid>("Id")

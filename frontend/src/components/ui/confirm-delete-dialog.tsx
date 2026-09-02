@@ -85,7 +85,7 @@ export default function ConfirmDeleteDialog({
             <Button
               type="button"
               variant="ghost"
-              className="flex-1 h-11 cursor-pointer hover:bg-slate-100 transition-colors"
+              className="flex-1 h-11 hover:bg-slate-100 transition-colors"
               onClick={onClose}
               disabled={isLoading}
             >
@@ -94,7 +94,7 @@ export default function ConfirmDeleteDialog({
             <Button
               type="button"
               variant="default"
-              className="flex-1 h-11 font-bold shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
+              className="flex-1 h-11 font-bold shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
               onClick={handleConfirm}
               disabled={isLoading}
             >

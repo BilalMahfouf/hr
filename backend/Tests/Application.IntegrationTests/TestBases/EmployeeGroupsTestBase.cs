@@ -36,7 +36,6 @@ public abstract class EmployeeGroupsTestBase : IntegrationTestBase
                 .AddInterceptors(sp.GetRequiredService<InsertOutboxMessagesInterceptors>());
         });
         services.AddScoped<IEmployeeDbContext>(sp => sp.GetRequiredService<EmployeeDbContext>());
-        services.AddScoped<IEmployeeGroupRepository, EmployeeGroupRepository>();
 
         services.AddSingleton<IValidator<CreateEmployeeGroupCommand>>(new CreateEmployeeGroup.Validator());
         services.AddSingleton<IValidator<UpdateEmployeeGroupCommand>>(new UpdateEmployeeGroup.Validator());
@@ -51,7 +50,6 @@ public abstract class EmployeeGroupsTestBase : IntegrationTestBase
     protected static CreateEmployeeGroup.Handler CreateCreateHandler(IServiceProvider services)
     {
         return new CreateEmployeeGroup.Handler(
-            services.GetRequiredService<IEmployeeGroupRepository>(),
             services.GetRequiredService<IEmployeeDbContext>(),
             services.GetRequiredService<IValidator<CreateEmployeeGroupCommand>>());
     }
@@ -59,7 +57,6 @@ public abstract class EmployeeGroupsTestBase : IntegrationTestBase
     protected static UpdateEmployeeGroup.Handler CreateUpdateHandler(IServiceProvider services)
     {
         return new UpdateEmployeeGroup.Handler(
-            services.GetRequiredService<IEmployeeGroupRepository>(),
             services.GetRequiredService<IEmployeeDbContext>(),
             services.GetRequiredService<IValidator<UpdateEmployeeGroupCommand>>());
     }
@@ -67,26 +64,24 @@ public abstract class EmployeeGroupsTestBase : IntegrationTestBase
     protected static DeleteEmployeeGroup.Handler CreateDeleteHandler(IServiceProvider services)
     {
         return new DeleteEmployeeGroup.Handler(
-            services.GetRequiredService<IEmployeeGroupRepository>(),
             services.GetRequiredService<IEmployeeDbContext>());
     }
 
     protected static GetEmployeeGroupById.Handler CreateGetByIdHandler(IServiceProvider services)
     {
         return new GetEmployeeGroupById.Handler(
-            services.GetRequiredService<IEmployeeGroupRepository>());
+            services.GetRequiredService<IEmployeeDbContext>());
     }
 
     protected static GetAllEmployeeGroups.Handler CreateGetAllHandler(IServiceProvider services)
     {
         return new GetAllEmployeeGroups.Handler(
-            services.GetRequiredService<IEmployeeGroupRepository>());
+            services.GetRequiredService<IEmployeeDbContext>());
     }
 
     protected static ReplaceSchedulesAndRotations.Handler CreateReplaceHandler(IServiceProvider services)
     {
         return new ReplaceSchedulesAndRotations.Handler(
-            services.GetRequiredService<IEmployeeGroupRepository>(),
             services.GetRequiredService<IEmployeeDbContext>(),
             services.GetRequiredService<IValidator<ReplaceSchedulesAndRotationsCommand>>());
     }
@@ -94,7 +89,6 @@ public abstract class EmployeeGroupsTestBase : IntegrationTestBase
     protected static CreateWorkSchedule.Handler CreateWorkScheduleHandler(IServiceProvider services)
     {
         return new CreateWorkSchedule.Handler(
-            services.GetRequiredService<IEmployeeGroupRepository>(),
             services.GetRequiredService<IEmployeeDbContext>(),
             services.GetRequiredService<IValidator<CreateWorkScheduleCommand>>());
     }
@@ -102,13 +96,12 @@ public abstract class EmployeeGroupsTestBase : IntegrationTestBase
     protected static GetWorkScheduleById.Handler CreateGetWorkScheduleByIdHandler(IServiceProvider services)
     {
         return new GetWorkScheduleById.Handler(
-            services.GetRequiredService<IEmployeeGroupRepository>());
+            services.GetRequiredService<IEmployeeDbContext>());
     }
 
     protected static UpdateWorkSchedule.Handler CreateUpdateWorkScheduleHandler(IServiceProvider services)
     {
         return new UpdateWorkSchedule.Handler(
-            services.GetRequiredService<IEmployeeGroupRepository>(),
             services.GetRequiredService<IEmployeeDbContext>(),
             services.GetRequiredService<IValidator<UpdateWorkScheduleCommand>>());
     }
@@ -116,28 +109,24 @@ public abstract class EmployeeGroupsTestBase : IntegrationTestBase
     protected static DeleteWorkSchedule.Handler CreateDeleteWorkScheduleHandler(IServiceProvider services)
     {
         return new DeleteWorkSchedule.Handler(
-            services.GetRequiredService<IEmployeeGroupRepository>(),
             services.GetRequiredService<IEmployeeDbContext>());
     }
 
     protected static ActivateWorkSchedule.Handler CreateActivateWorkScheduleHandler(IServiceProvider services)
     {
         return new ActivateWorkSchedule.Handler(
-            services.GetRequiredService<IEmployeeGroupRepository>(),
             services.GetRequiredService<IEmployeeDbContext>());
     }
 
     protected static DeactivateWorkSchedule.Handler CreateDeactivateWorkScheduleHandler(IServiceProvider services)
     {
         return new DeactivateWorkSchedule.Handler(
-            services.GetRequiredService<IEmployeeGroupRepository>(),
             services.GetRequiredService<IEmployeeDbContext>());
     }
 
     protected static CreateWorkRotation.Handler CreateWorkRotationHandler(IServiceProvider services)
     {
         return new CreateWorkRotation.Handler(
-            services.GetRequiredService<IEmployeeGroupRepository>(),
             services.GetRequiredService<IEmployeeDbContext>(),
             services.GetRequiredService<IValidator<CreateWorkRotationCommand>>());
     }
@@ -145,7 +134,6 @@ public abstract class EmployeeGroupsTestBase : IntegrationTestBase
     protected static CreateRestRotation.Handler CreateRestRotationHandler(IServiceProvider services)
     {
         return new CreateRestRotation.Handler(
-            services.GetRequiredService<IEmployeeGroupRepository>(),
             services.GetRequiredService<IEmployeeDbContext>(),
             services.GetRequiredService<IValidator<CreateRestRotationCommand>>());
     }
@@ -153,13 +141,12 @@ public abstract class EmployeeGroupsTestBase : IntegrationTestBase
     protected static GetAllRotations.Handler CreateGetAllRotationsHandler(IServiceProvider services)
     {
         return new GetAllRotations.Handler(
-            services.GetRequiredService<IEmployeeGroupRepository>());
+            services.GetRequiredService<IEmployeeDbContext>());
     }
 
     protected static UpdateRotationPosition.Handler CreateUpdateRotationHandler(IServiceProvider services)
     {
         return new UpdateRotationPosition.Handler(
-            services.GetRequiredService<IEmployeeGroupRepository>(),
             services.GetRequiredService<IEmployeeDbContext>(),
             services.GetRequiredService<IValidator<UpdateRotationCommand>>());
     }
@@ -167,27 +154,26 @@ public abstract class EmployeeGroupsTestBase : IntegrationTestBase
     protected static DeleteRotation.Handler CreateDeleteRotationHandler(IServiceProvider services)
     {
         return new DeleteRotation.Handler(
-            services.GetRequiredService<IEmployeeGroupRepository>(),
             services.GetRequiredService<IEmployeeDbContext>());
     }
 
     protected static async Task<EmployeeGroup> SeedGroupAsync(
-        IEmployeeGroupRepository repo,
         IEmployeeDbContext db,
-        string name = "Group A")
+        string name = "Group A",
+        string groupNumber = "01")
     {
-        var group = EmployeeGroup.Create(name, false, new DateOnly(2026, 1, 1), "Test group");
-        repo.Add(group);
+        var group = EmployeeGroup.Create(groupNumber, name, false, new DateOnly(2026, 1, 1), "Test group");
+        db.EmployeeGroups.Add(group);
         await db.SaveChangesAsync();
         return group;
     }
 
     protected static async Task<EmployeeGroup> SeedGroupWithScheduleAsync(
-        IEmployeeGroupRepository repo,
         IEmployeeDbContext db,
-        string name = "Group A")
+        string name = "Group A",
+        string groupNumber = "01")
     {
-        var group = EmployeeGroup.Create(name, false, new DateOnly(2026, 1, 1), "Test group");
+        var group = EmployeeGroup.Create(groupNumber, name, false, new DateOnly(2026, 1, 1), "Test group");
         group.AddWorkSchedule(new CreateWorkScheduleDto(
             group.Id,
             TimeOnly.FromTimeSpan(TimeSpan.FromHours(8)),
@@ -197,17 +183,17 @@ public abstract class EmployeeGroupsTestBase : IntegrationTestBase
             TimeOnly.FromTimeSpan(TimeSpan.FromHours(13)),
             15,
             15));
-        repo.Add(group);
+        db.EmployeeGroups.Add(group);
         await db.SaveChangesAsync();
         return group;
     }
 
     protected static async Task<(EmployeeGroup Group, WorkSchedule Schedule)> SeedGroupWithScheduleReturnScheduleAsync(
-        IEmployeeGroupRepository repo,
         IEmployeeDbContext db,
-        string name = "Group A")
+        string name = "Group A",
+        string groupNumber = "01")
     {
-        var group = EmployeeGroup.Create(name, false, new DateOnly(2026, 1, 1), "Test group");
+        var group = EmployeeGroup.Create(groupNumber, name, false, new DateOnly(2026, 1, 1), "Test group");
         group.AddWorkSchedule(new CreateWorkScheduleDto(
             group.Id,
             TimeOnly.FromTimeSpan(TimeSpan.FromHours(8)),
@@ -217,7 +203,7 @@ public abstract class EmployeeGroupsTestBase : IntegrationTestBase
             TimeOnly.FromTimeSpan(TimeSpan.FromHours(13)),
             15,
             15));
-        repo.Add(group);
+        db.EmployeeGroups.Add(group);
         await db.SaveChangesAsync();
 
         var schedule = group.WorkSchedules.First();
@@ -225,11 +211,11 @@ public abstract class EmployeeGroupsTestBase : IntegrationTestBase
     }
 
     protected static async Task<EmployeeGroup> SeedGroupWithScheduleAndRotationAsync(
-        IEmployeeGroupRepository repo,
         IEmployeeDbContext db,
-        string name = "Group A")
+        string name = "Group A",
+        string groupNumber = "01")
     {
-        var group = EmployeeGroup.Create(name, false, new DateOnly(2026, 1, 1), "Test group");
+        var group = EmployeeGroup.Create(groupNumber, name, false, new DateOnly(2026, 1, 1), "Test group");
         group.ReplaceSchedulesAndRotations(
             [
                 new CreateWorkScheduleDto(
@@ -243,7 +229,7 @@ public abstract class EmployeeGroupsTestBase : IntegrationTestBase
                     15)
             ],
             [(1, 0)]);
-        repo.Add(group);
+        db.EmployeeGroups.Add(group);
         await db.SaveChangesAsync();
         return group;
     }

@@ -2,6 +2,7 @@ using FluentValidation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.EntityFrameworkCore;
 using Modules.Employees.Application.Abstractions;
 using Modules.Employees.Domain.EmployeeGroups;
 using Modules.Shared.CQRS;
@@ -64,7 +65,6 @@ public static class CreateEmployeeGroup
     }
 
     public sealed class Handler(
-        IEmployeeGroupRepository repository,
         IEmployeeDbContext dbContext,
         IValidator<CreateEmployeeGroupCommand> validator)
         : ICommandHandler<CreateEmployeeGroupCommand, EmployeeGroupResponse>
@@ -75,13 +75,17 @@ public static class CreateEmployeeGroup
         {
             validator.ValidateAndThrow(command);
 
-            var existing = await repository.GetByNameAsync(command.Name, cancellationToken);
-            if (existing is not null)
+            var nameTaken = await dbContext.EmployeeGroups
+                .AnyAsync(g => g.Name == command.Name, cancellationToken);
+            if (nameTaken)
             {
                 return Result<EmployeeGroupResponse>.Failure(EmployeeGroupErrors.NameAlreadyExists);
             }
 
+            var groupNumber = await GenerateNextGroupNumberAsync(cancellationToken);
+
             var group = EmployeeGroup.Create(
+                groupNumber,
                 command.Name,
                 command.IsSecurity,
                 command.RotationStartDate,
@@ -93,10 +97,25 @@ public static class CreateEmployeeGroup
                     .Select(r => (r.Position, r.WorkScheduleIndex))
                     .ToList());
 
-            repository.Add(group);
+            dbContext.EmployeeGroups.Add(group);
             await dbContext.SaveChangesAsync(cancellationToken);
 
             return Result<EmployeeGroupResponse>.Success(EmployeeGroupMapper.ToResponse(group));
+        }
+
+        private async Task<string> GenerateNextGroupNumberAsync(CancellationToken cancellationToken)
+        {
+            var maxGroupNumber = await dbContext.EmployeeGroups
+                .Select(g => g.GroupNumber)
+                .OrderByDescending(g => g)
+                .FirstOrDefaultAsync(cancellationToken);
+
+            if (string.IsNullOrEmpty(maxGroupNumber) || !int.TryParse(maxGroupNumber, out var lastNumber))
+            {
+                lastNumber = 0;
+            }
+
+            return (lastNumber + 1).ToString("D2");
         }
     }
 

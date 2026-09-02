@@ -19,9 +19,8 @@ public sealed class ReplaceSchedulesAndRotationsTests : EmployeeGroupsTestBase
     public async Task ReplaceSchedulesAndRotations_ValidCommand_ReplacesAllAndPersists()
     {
         using var scope = CreateScope();
-        var repo = scope.ServiceProvider.GetRequiredService<IEmployeeGroupRepository>();
         var db = scope.ServiceProvider.GetRequiredService<IEmployeeDbContext>();
-        var group = await SeedGroupWithScheduleAndRotationAsync(repo, db);
+        var group = await SeedGroupWithScheduleAndRotationAsync(db);
 
         var handler = CreateReplaceHandler(scope.ServiceProvider);
         var command = new ReplaceSchedulesAndRotationsCommand(
@@ -80,9 +79,8 @@ public sealed class ReplaceSchedulesAndRotationsTests : EmployeeGroupsTestBase
     public async Task ReplaceSchedulesAndRotations_InvalidScheduleReference_ThrowsValidationException()
     {
         using var scope = CreateScope();
-        var repo = scope.ServiceProvider.GetRequiredService<IEmployeeGroupRepository>();
         var db = scope.ServiceProvider.GetRequiredService<IEmployeeDbContext>();
-        var group = await SeedGroupAsync(repo, db);
+        var group = await SeedGroupAsync(db);
 
         var handler = CreateReplaceHandler(scope.ServiceProvider);
         var command = new ReplaceSchedulesAndRotationsCommand(

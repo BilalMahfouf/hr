@@ -293,7 +293,7 @@ export default function NotificationDropdown() {
                 <Button
                     variant="ghost"
                     size="icon"
-                    className="relative hover:bg-slate-100 cursor-pointer"
+                    className="relative hover:bg-slate-100"
                 >
                     <Bell className="h-5 w-5 text-slate-600" />
                     {/* Notification badge */}
@@ -321,7 +321,7 @@ export default function NotificationDropdown() {
                             size="sm"
                             onClick={() => markAllAsRead()}
                             disabled={isMarkingAll}
-                            className="h-7 px-2 text-xs text-primary hover:text-primary cursor-pointer hover:bg-blue-100/50"
+                            className="h-7 px-2 text-xs text-primary hover:text-primary hover:bg-blue-100/50"
                         >
                             {isMarkingAll ? (
                                 <Loader2 className="h-3 w-3 me-1 animate-spin" />
@@ -446,7 +446,7 @@ export default function NotificationDropdown() {
                                 size="sm"
                                 disabled={isPushLoading || pushStatus === "denied"}
                                 onClick={handlePushToggle}
-                                className="h-7 px-3 text-xs shrink-0 cursor-pointer"
+                                className="h-7 px-3 text-xs shrink-0"
                             >
                                 {isPushLoading ? (
                                     <Loader2 className="h-3.5 w-3.5 animate-spin" />

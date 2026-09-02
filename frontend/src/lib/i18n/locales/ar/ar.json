@@ -145,6 +145,55 @@
                 "workedTime": "مدة العمل",
                 "status": "الحالة"
             }
+        },
+        "punchPolling": {
+            "title": "جمع البصمات التلقائي",
+            "description": "تكوين الجمع التلقائي للبصمات من أجهزة الحضور والانصراف.",
+            "cardTitle": "الجمع التلقائي للبصمات",
+            "cardDescription": "تكوين النظام لسحب البصمات تلقائيًا من أجهزة الحضور والانصراف بفواصل منتظمة.",
+            "enabled": "مفعل",
+            "enabledDescription": "تفعيل الجمع التلقائي للبصمات من جميع الأجهزة النشطة.",
+            "interval": "فترة الجمع",
+            "intervalDescription": "كم مرة يجب على النظام سحب البصمات من الأجهزة.",
+            "minutes": "دقيقة",
+            "allowedRange": "النطاق المسموح: 10-60 دقيقة",
+            "pullNow": "سحب الآن",
+            "genericError": "فشل في تحديث إعدادات جمع البصمات"
+        },
+        "import": {
+            "title": "استيراد الحضور",
+            "description": "استيراد سجلات الحضور من الأجهزة إلى النظام.",
+            "tabs": {
+                "allMachines": "جميع الأجهزة",
+                "byEmployee": "حسب الموظف",
+                "byMachine": "حسب الجهاز"
+            },
+            "dateRange": {
+                "from": "من",
+                "to": "إلى"
+            },
+            "maxOneWeek": "لا يمكن أن يتجاوز النطاق أسبوعاً واحداً.",
+            "importButton": "استيراد",
+            "importing": "جاري الاستيراد... قد يستغرق هذا عدة دقائق.",
+            "employeeSearch": {
+                "placeholder": "أدخل التأجير (الماتريكول) للموظف",
+                "search": "بحث",
+                "notFound": "الموظف غير موجود. يرجى التحقق من التأجير."
+            },
+            "employeeCard": {
+                "id": "التأجير",
+                "name": "الاسم الكامل",
+                "department": "القسم",
+                "group": "المجموعة"
+            },
+            "machineSelect": {
+                "placeholder": "اختر جهازاً"
+            },
+            "result": {
+                "success": "تم استيراد الحضور بنجاح",
+                "machinesCount": "تمت معالجة {{count}} جهاز(أجهزة)",
+                "punchesCount": "تم استيراد {{count}} بصمة(بصمات)"
+            }
         }
     },
     "table": {
@@ -350,6 +399,7 @@
             "schedule": {
                 "shiftStartTime": "بداية الوردية",
                 "shiftEndTime": "نهاية الوردية",
+                "hasBreak": "فترة راحة",
                 "breakStartTime": "بداية الراحة",
                 "breakEndTime": "نهاية الراحة",
                 "endDayOffset": "امتداد لليوم التالي",
@@ -450,6 +500,11 @@
             "pushEnabled": "تم تفعيل إشعارات سطح المكتب.",
             "pushDisabled": "تم تعطيل إشعارات سطح المكتب."
         },
+        "punchPolling": {
+            "updated": "تم تحديث الإعدادات",
+            "updatedDesc": "تم تحديث إعدادات جمع البصمات بنجاح.",
+            "pullCompleted": "اكتمل السحب"
+        },
         "auth": {
             "resetLinkSent": "تم جدولة إرسال البريد",
             "resetLinkSentDesc": "إذا كان هناك حساب بهذا البريد، سيتم إرسال رابط إعادة التعيين خلال 1-2 دقيقة.",
@@ -496,7 +551,12 @@
             "fetchPunches": "فشل تحميل البصمات",
             "fetchPunch": "فشل تحميل البصمة",
             "fetchRecords": "فشل تحميل سجلات الحضور",
-            "fetchRecord": "فشل تحميل سجل الحضور"
+            "fetchRecord": "فشل تحميل سجل الحضور",
+            "fetchPollingSettings": "فشل تحميل إعدادات جمع البصمات",
+            "updatePollingSettings": "فشل تحديث إعدادات جمع البصمات",
+            "runPollingNow": "فشل تشغيل جمع البصمات",
+            "importFailed": "فشل الاستيراد",
+            "importFailedDesc": "فشل استيراد سجلات الحضور. يرجى المحاولة مرة أخرى."
         },
         "employee": {
             "fetchEmployees": "فشل جلب الموظفين",

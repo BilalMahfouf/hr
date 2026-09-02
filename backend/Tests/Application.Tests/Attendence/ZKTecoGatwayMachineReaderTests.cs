@@ -2,11 +2,13 @@ using System.Net;
 using System.Net.Http.Json;
 using System.Net.Http;
 using System.Threading;
+using Microsoft.Extensions.Options;
 using Modules.Attendence.Application.Abstractions;
 using Modules.Attendence.Domain.Machines;
-using Modules.Attendence.Infrastructure.ZKTeco;
 using Moq;
 using Moq.Protected;
+using Modules.Attendence.Infrastructure.ZKTeco;
+using Modules.Attendence.Infrastructure.ZKTeco.Gateway;
 
 namespace Application.Tests.Attendence;
 
@@ -14,6 +16,13 @@ public sealed class ZKTecoGatwayMachineReaderTests
 {
     private static AttendenceMachine Machine()
         => AttendenceMachine.Create(MachineId.New(), "192.168.3.205", 1, MachineType.ZKTecoGateway);
+
+    private static Mock<IOptions<ZKTecoGatewayOptions>> FakeOptions(string baseUrl = "http://localhost:5000")
+    {
+        var mock = new Mock<IOptions<ZKTecoGatewayOptions>>();
+        mock.Setup(o => o.Value).Returns(new ZKTecoGatewayOptions { BaseUrl = baseUrl });
+        return mock;
+    }
 
     private static (ZKTecoGatwayMachineReader reader, Mock<HttpMessageHandler> handler) Arrange(
         HttpStatusCode statusCode = HttpStatusCode.OK,
@@ -39,7 +48,7 @@ public sealed class ZKTecoGatwayMachineReaderTests
             BaseAddress = new Uri("http://localhost:5000")
         };
 
-        return (new ZKTecoGatwayMachineReader(httpClient), handler);
+        return (new ZKTecoGatwayMachineReader(httpClient, FakeOptions().Object), handler);
     }
 
     [Fact]
@@ -59,7 +68,7 @@ public sealed class ZKTecoGatwayMachineReaderTests
             Times.Once(),
             ItExpr.Is<HttpRequestMessage>(req =>
                 req.Method == HttpMethod.Post &&
-                req.RequestUri!.ToString().Contains("api/zkteco/")),
+                req.RequestUri!.ToString().Contains("/zkteco/")),
             ItExpr.IsAny<CancellationToken>());
     }
 
@@ -187,7 +196,7 @@ public sealed class ZKTecoGatwayMachineReaderTests
             BaseAddress = new Uri("http://localhost:5000")
         };
 
-        var reader = new ZKTecoGatwayMachineReader(httpClient);
+        var reader = new ZKTecoGatwayMachineReader(httpClient, FakeOptions().Object);
         var machine = Machine();
 
         using var cts = new CancellationTokenSource();

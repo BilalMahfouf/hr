@@ -94,7 +94,7 @@ export default function MachinesPage() {
           <p className="text-slate-500">{t(i18nKeyContainer.machines.description)}</p>
         </div>
 
-        <Button onClick={() => navigate("/machines/create")} className="cursor-pointer">
+        <Button onClick={() => navigate("/machines/create")}>
           {t(i18nKeyContainer.machines.addMachine)}
         </Button>
       </div>

@@ -2,6 +2,7 @@ using FluentValidation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.EntityFrameworkCore;
 using Modules.Employees.Application.Abstractions;
 using Modules.Employees.Domain.EmployeeGroups;
 using Modules.Shared.CQRS;
@@ -24,7 +25,6 @@ public static class UpdateEmployeeGroup
     }
 
     public sealed class Handler(
-        IEmployeeGroupRepository repository,
         IEmployeeDbContext dbContext,
         IValidator<UpdateEmployeeGroupCommand> validator)
         : ICommandHandler<UpdateEmployeeGroupCommand, EmployeeGroupResponse>
@@ -35,7 +35,11 @@ public static class UpdateEmployeeGroup
         {
             validator.ValidateAndThrow(command);
 
-            var group = await repository.GetByIdWithDetailsAsync(new EmployeeGroupId(command.Id), cancellationToken);
+            var group = await dbContext.EmployeeGroups
+                .Include(g => g.WorkSchedules)
+                .Include(g => g.RotationEntries)
+                    .ThenInclude(re => re.WorkSchedule)
+                .FirstOrDefaultAsync(g => g.Id == new EmployeeGroupId(command.Id), cancellationToken);
             if (group is null)
             {
                 return Result<EmployeeGroupResponse>.Failure(EmployeeGroupErrors.NotFound);
@@ -43,8 +47,9 @@ public static class UpdateEmployeeGroup
 
             if (command.Name is not null && !command.Name.Equals(group.Name, StringComparison.OrdinalIgnoreCase))
             {
-                var existing = await repository.GetByNameAsync(command.Name, cancellationToken);
-                if (existing is not null)
+                var nameTaken = await dbContext.EmployeeGroups
+                    .AnyAsync(g => g.Name == command.Name, cancellationToken);
+                if (nameTaken)
                 {
                     return Result<EmployeeGroupResponse>.Failure(EmployeeGroupErrors.NameAlreadyExists);
                 }

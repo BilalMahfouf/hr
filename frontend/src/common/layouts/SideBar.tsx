@@ -44,6 +44,8 @@ const navigationItems: (NavLinkItem | CollapsibleItem)[] = [
     children: [
       { pathname: "/attendance/punches", key: i18nKeyContainer.attendance.punches.title },
       { pathname: "/attendance/records", key: i18nKeyContainer.attendance.records.title },
+      { pathname: "/attendance/import", key: i18nKeyContainer.attendance.import.title },
+      { pathname: "/attendance/punch-polling", key: i18nKeyContainer.attendance.punchPolling.title },
     ],
   },
   {

@@ -1,14 +1,21 @@
 ﻿using System.Net.Http.Json;
+using System.Text.Json;
+using Microsoft.Extensions.Options;
 using Modules.Attendence.Application.Abstractions;
 using Modules.Attendence.Domain.Machines;
 using Modules.Attendence.Infrastructure.ZKTeco.Gateway.Requests;
 using Modules.Attendence.Infrastructure.ZKTeco.Gateway.Responses;
 
-namespace Modules.Attendence.Infrastructure.ZKTeco;
+namespace Modules.Attendence.Infrastructure.ZKTeco.Gateway;
 
 public sealed class ZKTecoGatwayMachineReader(
-    HttpClient httpClient) : IAttendanceMachineReader
+    HttpClient httpClient, IOptions<ZKTecoGatewayOptions> options) : IAttendanceMachineReader
 {
+    private static readonly JsonSerializerOptions JsonOptions = new()
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+    };
+
     public async Task<IReadOnlyList<RawAttendanceLog>> GetLogsAsync(
         AttendenceMachine machine,
         DateOnly from,
@@ -23,8 +30,9 @@ public sealed class ZKTecoGatwayMachineReader(
             machine.MachineNumber);
 
         var response = await httpClient.PostAsJsonAsync(
-            "api/zkteco/",
+            "/api/zkteco/",
             request,
+            JsonOptions,
             cancellationToken);
 
         response.EnsureSuccessStatusCode();
@@ -35,7 +43,7 @@ public sealed class ZKTecoGatwayMachineReader(
         }
 
         var logs = await response.Content.ReadFromJsonAsync<
-            List<ZKTecoGatewayLogResponse>>(cancellationToken);
+            List<ZKTecoGatewayLogResponse>>(JsonOptions, cancellationToken);
 
         if (logs is null)
         {
@@ -54,4 +62,31 @@ public sealed class ZKTecoGatwayMachineReader(
                 MachineNumber: r.MachineNumber))
             .ToList();
     }
+
+
+    public async Task ConnectAsync(string ip, int port, CancellationToken ct)
+    {
+        var request = new
+        {
+            IpAddress = ip,
+            Port = port,
+            MachineNumber = 6
+        };
+
+        try
+        {
+            var response = await httpClient.PostAsJsonAsync(
+                "/api/zkteco/connect",
+                request,
+                JsonOptions,
+                ct);
+
+            response.EnsureSuccessStatusCode();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"ZKTeco connect error: {e.Message}");
+        }
+    }
+
 }

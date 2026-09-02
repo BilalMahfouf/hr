@@ -36,7 +36,7 @@ public class GetAllUsersTests
     }
 
     [Fact]
-    public async Task Handle_WhenNoUsers_ShouldReturnUsersNotFoundError()
+    public async Task Handle_WhenNoUsers_ShouldReturnEmptyPagedList()
     {
         // Arrange
         SetupUsersDbSet([]);
@@ -47,8 +47,9 @@ public class GetAllUsersTests
         var result = await handler.Handle(query, CancellationToken.None);
 
         // Assert
-        Assert.False(result.IsSuccess);
-        Assert.Equal("User.UsersNotFound", result.Error.Code);
+        Assert.True(result.IsSuccess);
+        Assert.Equal(0, result.Value.TotalCount);
+        Assert.Empty(result.Value.Item);
     }
 
     [Fact]

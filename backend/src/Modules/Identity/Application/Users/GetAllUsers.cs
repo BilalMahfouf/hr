@@ -21,13 +21,6 @@ public static class GetAllUsers
             TableRequest<Response> query,
             CancellationToken cancellationToken = default)
         {
-            var count = await db.Users.CountAsync(cancellationToken);
-            if (count <= 0)
-            {
-                return Result<OffSetPagedList<Response>>
-                    .Failure(UserErrors.UsersNotFound);
-            }
-
             var usersQuery = db.Users
                 .AsQueryable();
             if (!string.IsNullOrWhiteSpace(query.search))
@@ -59,11 +52,6 @@ public static class GetAllUsers
                 _ => r => r.CreatedOnUtc,
             };
             var temp = await responseQuery.ToListAsync(cancellationToken);
-            if (temp is null)
-            {
-                return Result<OffSetPagedList<Response>>
-                    .Failure(UserErrors.UsersNotFound);
-            }
             var tempQuery = temp.AsQueryable();
             if (query.SortOrder?.ToLower() == "desc")
             {
@@ -77,14 +65,9 @@ public static class GetAllUsers
                 .Skip((query.Page - 1) * query.PageSize)
                 .Take(query.PageSize)
                 .ToList();
-            if (items is null)
-            {
-                return Result<OffSetPagedList<Response>>
-                    .Failure(UserErrors.UsersNotFound);
-            }
             var result = OffSetPagedList<Response>.Create(
                 items,
-                count,
+                temp.Count,
                 query.Page,
                 query.PageSize);
             return Result<OffSetPagedList<Response>>.Success(result);

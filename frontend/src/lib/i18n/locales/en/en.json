@@ -145,6 +145,55 @@
                 "workedTime": "Worked Time",
                 "status": "Status"
             }
+        },
+        "punchPolling": {
+            "title": "Punch Polling",
+            "description": "Configure automatic punch collection from attendance machines.",
+            "cardTitle": "Automatic Punch Collection",
+            "cardDescription": "Configure the system to automatically pull punches from attendance machines at regular intervals.",
+            "enabled": "Enabled",
+            "enabledDescription": "Turn on automatic punch collection from all active machines.",
+            "interval": "Polling Interval",
+            "intervalDescription": "How often the system should pull punches from machines.",
+            "minutes": "minutes",
+            "allowedRange": "Allowed range: 10-60 minutes",
+            "pullNow": "Pull Now",
+            "genericError": "Failed to update punch polling settings"
+        },
+        "import": {
+            "title": "Import Attendance",
+            "description": "Import attendance logs from machines into the system.",
+            "tabs": {
+                "allMachines": "All Machines",
+                "byEmployee": "By Employee",
+                "byMachine": "By Machine"
+            },
+            "dateRange": {
+                "from": "From",
+                "to": "To"
+            },
+            "maxOneWeek": "The date range cannot exceed 1 week.",
+            "importButton": "Import",
+            "importing": "Importing... This may take several minutes.",
+            "employeeSearch": {
+                "placeholder": "Enter employee matricule",
+                "search": "Search",
+                "notFound": "Employee not found. Please check the matricule."
+            },
+            "employeeCard": {
+                "id": "Matricule",
+                "name": "Full Name",
+                "department": "Department",
+                "group": "Group"
+            },
+            "machineSelect": {
+                "placeholder": "Select a machine"
+            },
+            "result": {
+                "success": "Attendance imported successfully",
+                "machinesCount": "{{count}} machine(s) processed",
+                "punchesCount": "{{count}} punch(es) imported"
+            }
         }
     },
     "table": {
@@ -350,6 +399,7 @@
             "schedule": {
                 "shiftStartTime": "Shift Start",
                 "shiftEndTime": "Shift End",
+                "hasBreak": "Has Break",
                 "breakStartTime": "Break Start",
                 "breakEndTime": "Break End",
                 "endDayOffset": "End Day Offset",
@@ -450,6 +500,11 @@
             "pushEnabled": "Desktop notifications enabled.",
             "pushDisabled": "Desktop notifications disabled."
         },
+        "punchPolling": {
+            "updated": "Settings Updated",
+            "updatedDesc": "Punch polling settings have been updated successfully.",
+            "pullCompleted": "Pull Completed"
+        },
         "auth": {
             "resetLinkSent": "Reset Email Queued",
             "resetLinkSentDesc": "If an account exists with this email, the reset link will be sent within the next 1–2 minutes.",
@@ -496,7 +551,12 @@
             "fetchPunches": "Failed to fetch punches",
             "fetchPunch": "Failed to fetch punch",
             "fetchRecords": "Failed to fetch attendance records",
-            "fetchRecord": "Failed to fetch attendance record"
+            "fetchRecord": "Failed to fetch attendance record",
+            "fetchPollingSettings": "Failed to fetch punch polling settings",
+            "updatePollingSettings": "Failed to update punch polling settings",
+            "runPollingNow": "Failed to trigger punch polling",
+            "importFailed": "Import Failed",
+            "importFailedDesc": "Failed to import attendance logs. Please try again."
         },
         "employee": {
             "fetchEmployees": "Failed to fetch employees",

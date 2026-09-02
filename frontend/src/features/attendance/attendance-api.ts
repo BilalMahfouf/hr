@@ -24,6 +24,32 @@ export type AttendanceRecord = {
   isAbsent: boolean;
 };
 
+export type PunchPollingSettings = {
+  isEnabled: boolean;
+  intervalMinutes: number;
+  updatedAt: string;
+};
+
+export type UpdatePunchPollingSettingsRequest = {
+  isEnabled: boolean;
+  intervalMinutes: number;
+};
+
+export type PullNowResponse = {
+  machineCount: number;
+  punchCount: number;
+};
+
+export type ImportAttendanceRequest = {
+  from: string;
+  to: string;
+};
+
+export type ImportAttendanceResponse = {
+  machineCount: number;
+  punchCount: number;
+};
+
 const attendanceApi = {
   getAllPunches: async (request: TableRequest): Promise<PagedList<PunchRecord>> => {
     const params = getTableRequsestParams(request);
@@ -62,6 +88,76 @@ const attendanceApi = {
 
     if (result.status !== 200) {
       throw new Error(i18n.t(i18nKeyContainer.errors.attendance.fetchRecord));
+    }
+
+    return result.data;
+  },
+
+  getPunchPollingSettings: async (): Promise<PunchPollingSettings> => {
+    const result = await api.get<PunchPollingSettings>("/attendance/punch-polling");
+
+    if (result.status !== 200) {
+      throw new Error(i18n.t(i18nKeyContainer.errors.attendance.fetchPollingSettings));
+    }
+
+    return result.data;
+  },
+
+  updatePunchPollingSettings: async (data: UpdatePunchPollingSettingsRequest): Promise<void> => {
+    const result = await api.put("/attendance/punch-polling", data);
+
+    if (result.status !== 204) {
+      throw new Error(i18n.t(i18nKeyContainer.errors.attendance.updatePollingSettings));
+    }
+  },
+
+  runPunchPollingNow: async (): Promise<PullNowResponse> => {
+    const result = await api.post<PullNowResponse>("/attendance/punch-polling/run", undefined, {
+      timeout: 600_000,
+    });
+
+    if (result.status !== 200) {
+      throw new Error(i18n.t(i18nKeyContainer.errors.attendance.runPollingNow));
+    }
+
+    return result.data;
+  },
+
+  importAllMachines: async (request: ImportAttendanceRequest): Promise<ImportAttendanceResponse> => {
+    const result = await api.post<ImportAttendanceResponse>("/attendance/import", request, {
+      timeout: 600_000, // 10 minutes — machines are polled sequentially and can take a long time
+    });
+
+    if (result.status !== 200) {
+      throw new Error(i18n.t(i18nKeyContainer.errors.attendance.importFailed));
+    }
+
+    return result.data;
+  },
+
+  importByEmployee: async (employeeId: string, request: ImportAttendanceRequest): Promise<ImportAttendanceResponse> => {
+    const result = await api.post<ImportAttendanceResponse>(
+      `/attendance/import/employee/${employeeId}`,
+      request,
+      { timeout: 600_000 },
+    );
+
+    if (result.status !== 200) {
+      throw new Error(i18n.t(i18nKeyContainer.errors.attendance.importFailed));
+    }
+
+    return result.data;
+  },
+
+  importByMachine: async (machineId: string, request: ImportAttendanceRequest): Promise<ImportAttendanceResponse> => {
+    const result = await api.post<ImportAttendanceResponse>(
+      `/attendance/import/machine/${machineId}`,
+      request,
+      { timeout: 600_000 },
+    );
+
+    if (result.status !== 200) {
+      throw new Error(i18n.t(i18nKeyContainer.errors.attendance.importFailed));
     }
 
     return result.data;

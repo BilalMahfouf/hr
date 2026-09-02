@@ -37,6 +37,11 @@ namespace Modules.Employees.Migrations
                         .HasColumnType("text")
                         .HasColumnName("description");
 
+                    b.Property<string>("GroupNumber")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("group_number");
+
                     b.Property<bool>("IsSecurity")
                         .HasColumnType("boolean")
                         .HasColumnName("is_security");
@@ -51,6 +56,10 @@ namespace Modules.Employees.Migrations
                         .HasColumnName("rotation_start_date");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("GroupNumber")
+                        .IsUnique()
+                        .HasDatabaseName("ix_employee_groups_group_number");
 
                     b.HasIndex("Name")
                         .IsUnique()

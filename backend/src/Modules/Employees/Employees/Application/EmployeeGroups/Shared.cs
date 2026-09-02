@@ -7,6 +7,7 @@ namespace Modules.Employees.Application.EmployeeGroups;
 
 public sealed record EmployeeGroupResponse(
     Guid Id,
+    string GroupNumber,
     string Name,
     bool IsSecurity,
     string? Description,
@@ -166,6 +167,7 @@ public static class EmployeeGroupMapper
     public static EmployeeGroupResponse ToResponse(EmployeeGroup group) =>
         new(
             group.Id.Value,
+            group.GroupNumber,
             group.Name,
             group.IsSecurity,
             group.Description,

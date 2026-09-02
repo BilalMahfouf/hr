@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.EntityFrameworkCore;
 using Modules.Employees.Application.Abstractions;
 using Modules.Employees.Domain.EmployeeGroups;
 using Modules.Shared.CQRS;
@@ -11,15 +12,17 @@ namespace Modules.Employees.Application.EmployeeGroups.Rotations;
 
 public static class GetAllRotations
 {
-    public sealed class Handler(IEmployeeGroupRepository repository)
+    public sealed class Handler(IEmployeeDbContext dbContext)
         : IQueryHandler<GetAllRotationsQuery, IReadOnlyList<RotationEntryResponse>>
     {
         public async Task<Result<IReadOnlyList<RotationEntryResponse>>> Handle(
             GetAllRotationsQuery query,
             CancellationToken cancellationToken = default)
         {
-            var group = await repository.GetByIdWithDetailsAsync(
-                new EmployeeGroupId(query.EmployeeGroupId), cancellationToken);
+            var group = await dbContext.EmployeeGroups
+                .Include(g => g.RotationEntries)
+                    .ThenInclude(re => re.WorkSchedule)
+                .FirstOrDefaultAsync(g => g.Id == new EmployeeGroupId(query.EmployeeGroupId), cancellationToken);
             if (group is null)
             {
                 return Result<IReadOnlyList<RotationEntryResponse>>.Failure(EmployeeGroupErrors.NotFound);

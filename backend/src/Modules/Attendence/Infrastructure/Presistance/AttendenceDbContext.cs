@@ -5,6 +5,7 @@ using global::Modules.Attendence.Application.Shared;
 using global::Modules.Attendence.Domain.AttendenceRecords;
 using global::Modules.Attendence.Domain.Machines;
 using global::Modules.Attendence.Domain.Punches;
+using global::Modules.Attendence.Domain.PunchPolling;
 using global::Modules.Shared.Infrastructure.Outbox;
 using Microsoft.EntityFrameworkCore;
 
@@ -25,6 +26,8 @@ public sealed class AttendanceDbContext
     public DbSet<AttendanceRecord> AttendanceRecords { get; set; } = null!;
 
     public DbSet<AttendenceMachine> Machines { get; set; } = null!;
+
+    public DbSet<PunchPollingSettings> PunchPollingSettings { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

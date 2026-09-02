@@ -2,6 +2,7 @@ using FluentValidation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.EntityFrameworkCore;
 using Modules.Employees.Application.Abstractions;
 using Modules.Employees.Domain.EmployeeGroups;
 using Modules.Employees.Domain.EmployeeGroups.WorkSchedules;
@@ -25,7 +26,6 @@ public static class CreateWorkRotation
     }
 
     public sealed class Handler(
-        IEmployeeGroupRepository repository,
         IEmployeeDbContext dbContext,
         IValidator<CreateWorkRotationCommand> validator)
         : ICommandHandler<CreateWorkRotationCommand, RotationEntryResponse>
@@ -36,8 +36,10 @@ public static class CreateWorkRotation
         {
             validator.ValidateAndThrow(command);
 
-            var group = await repository.GetByIdWithDetailsAsync(
-                new EmployeeGroupId(command.EmployeeGroupId), cancellationToken);
+            var group = await dbContext.EmployeeGroups
+                .Include(g => g.WorkSchedules)
+                .Include(g => g.RotationEntries)
+                .FirstOrDefaultAsync(g => g.Id == new EmployeeGroupId(command.EmployeeGroupId), cancellationToken);
             if (group is null)
             {
                 return Result<RotationEntryResponse>.Failure(EmployeeGroupErrors.NotFound);
