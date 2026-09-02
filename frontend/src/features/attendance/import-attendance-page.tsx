@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import i18nKeyContainer from "@/lib/i18n/keyContainer";
+import { queryClient } from "@/lib/queryClient";
 import attendanceApi, { type ImportAttendanceResponse } from "./attendance-api";
 import attendanceMachineApi from "@/features/machines/attendance-machine-api";
 import employeesApi, { type EmployeeListItem } from "@/features/employees/employees-api";
@@ -76,6 +77,8 @@ export default function ImportAttendancePage() {
       success(t(i18nKeyContainer.attendance.import.result.success), {
         description: `${t(i18nKeyContainer.attendance.import.result.machinesCount, { count: data.machineCount })} | ${t(i18nKeyContainer.attendance.import.result.punchesCount, { count: data.punchCount })}`,
       });
+      queryClient.invalidateQueries({ queryKey: ["attendance-punches"] });
+      queryClient.invalidateQueries({ queryKey: ["attendance-records"] });
     },
     onError: (error) => {
       handleApiError(error, i18nKeyContainer.errors.attendance.importFailed);
@@ -89,6 +92,8 @@ export default function ImportAttendancePage() {
       success(t(i18nKeyContainer.attendance.import.result.success), {
         description: `${t(i18nKeyContainer.attendance.import.result.machinesCount, { count: data.machineCount })} | ${t(i18nKeyContainer.attendance.import.result.punchesCount, { count: data.punchCount })}`,
       });
+      queryClient.invalidateQueries({ queryKey: ["attendance-punches"] });
+      queryClient.invalidateQueries({ queryKey: ["attendance-records"] });
     },
     onError: (error) => {
       handleApiError(error, i18nKeyContainer.errors.attendance.importFailed);
@@ -102,6 +107,8 @@ export default function ImportAttendancePage() {
       success(t(i18nKeyContainer.attendance.import.result.success), {
         description: `${t(i18nKeyContainer.attendance.import.result.machinesCount, { count: data.machineCount })} | ${t(i18nKeyContainer.attendance.import.result.punchesCount, { count: data.punchCount })}`,
       });
+      queryClient.invalidateQueries({ queryKey: ["attendance-punches"] });
+      queryClient.invalidateQueries({ queryKey: ["attendance-records"] });
     },
     onError: (error) => {
       handleApiError(error, i18nKeyContainer.errors.attendance.importFailed);

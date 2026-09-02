@@ -112,7 +112,9 @@ const attendanceApi = {
   },
 
   runPunchPollingNow: async (): Promise<PullNowResponse> => {
-    const result = await api.post<PullNowResponse>("/attendance/punch-polling/run");
+    const result = await api.post<PullNowResponse>("/attendance/punch-polling/run", undefined, {
+      timeout: 600_000,
+    });
 
     if (result.status !== 200) {
       throw new Error(i18n.t(i18nKeyContainer.errors.attendance.runPollingNow));
@@ -122,7 +124,9 @@ const attendanceApi = {
   },
 
   importAllMachines: async (request: ImportAttendanceRequest): Promise<ImportAttendanceResponse> => {
-    const result = await api.post<ImportAttendanceResponse>("/attendance/import", request);
+    const result = await api.post<ImportAttendanceResponse>("/attendance/import", request, {
+      timeout: 600_000, // 10 minutes — machines are polled sequentially and can take a long time
+    });
 
     if (result.status !== 200) {
       throw new Error(i18n.t(i18nKeyContainer.errors.attendance.importFailed));
@@ -135,6 +139,7 @@ const attendanceApi = {
     const result = await api.post<ImportAttendanceResponse>(
       `/attendance/import/employee/${employeeId}`,
       request,
+      { timeout: 600_000 },
     );
 
     if (result.status !== 200) {
@@ -148,6 +153,7 @@ const attendanceApi = {
     const result = await api.post<ImportAttendanceResponse>(
       `/attendance/import/machine/${machineId}`,
       request,
+      { timeout: 600_000 },
     );
 
     if (result.status !== 200) {
