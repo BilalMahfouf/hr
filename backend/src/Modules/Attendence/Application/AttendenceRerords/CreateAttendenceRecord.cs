@@ -5,6 +5,7 @@ using Modules.Employees.Contracts;
 using Modules.Shared.CQRS;
 using Modules.Shared.Domain.Common;
 using Modules.Shared.Results;
+using Modules.Shared.Util;
 using System;
 using System.Collections.Generic;
 
@@ -39,15 +40,15 @@ public static class CreateAttendenceRecord
 
             var punches = await db.Punches
                .Where(e => e.EmployeeBadge == command.EmployeeBadge &&
-                       e.PunchOccurredAt.Date >= employee.Value.ShiftStartDateTime.Date &&
-                       e.PunchOccurredAt.Date <= employee.Value.ShiftEndDateTime.Date)
+                       e.PunchOccurredAt.Date >= employee.Value.ShiftStartDateTime.ToUtc().Date &&
+                       e.PunchOccurredAt.Date <= employee.Value.ShiftEndDateTime.ToUtc().Date)
                .OrderBy(e => e.PunchOccurredAt)
                .ToListAsync(cancellationToken);
 
             var attendanceRecords = await db.AttendanceRecords
                 .Where(e => e.EmployeeId == employee.Value.EmployeeId &&
-                        e.CheckInAt.Date >= employee.Value.ShiftStartDateTime.Date &&
-                        e.CheckInAt.Date <= employee.Value.ShiftEndDateTime.Date)
+                        e.CheckInAt.Date >= employee.Value.ShiftStartDateTime.ToUtc().Date &&
+                        e.CheckInAt.Date <= employee.Value.ShiftEndDateTime.ToUtc().Date)
                 .OrderBy(e => e.CheckInAt)
                 .ToListAsync(cancellationToken);
             if (attendanceRecords.Any())
@@ -67,7 +68,7 @@ public static class CreateAttendenceRecord
                     try
                     {
                         newRecord.RegisterCheckIn(punch.PunchOccurredAt,
-                                                   employee.Value.ShiftStartDateTime,
+                                                   employee.Value.ShiftStartDateTime.ToUtc(),
                                                    lastRecord);
                     }
                     catch (DomainException)
@@ -79,7 +80,7 @@ public static class CreateAttendenceRecord
                 }
                 var schedule = new Modules.Attendence.Domain.AttendenceRecords.WorkSchedule(
                              employee.Value.WorkTime,
-                            employee.Value.ShiftEndDateTime);
+                            employee.Value.ShiftEndDateTime.ToUtc());
 
                 try
                 {
@@ -98,13 +99,13 @@ public static class CreateAttendenceRecord
         {
             var punches = await db.Punches
                    .Where(e => e.EmployeeBadge == command.EmployeeBadge &&
-                           e.PunchOccurredAt.Date == command.PunchOccurredAt.Date)
+                           e.PunchOccurredAt.Date == command.PunchOccurredAt.ToUtc().Date)
                    .OrderBy(e => e.PunchOccurredAt)
                    .ToListAsync(cancellationToken);
 
             var attendanceRecords = await db.AttendanceRecords
                 .Where(e => e.EmployeeId == employee.EmployeeId &&
-                        e.CheckInAt.Date == command.PunchOccurredAt.Date)
+                        e.CheckInAt.Date == command.PunchOccurredAt.ToUtc().Date)
                 .OrderBy(e => e.CheckInAt)
                 .ToListAsync(cancellationToken);
             foreach (var punch in punches)
@@ -118,7 +119,7 @@ public static class CreateAttendenceRecord
                     try
                     {
                         newRecord.RegisterCheckIn(punch.PunchOccurredAt,
-                                                   employee.ShiftEndDateTime,
+                                                   employee.ShiftEndDateTime.ToUtc(),
                                                    lastRecord);
                     }
                     catch (DomainException)

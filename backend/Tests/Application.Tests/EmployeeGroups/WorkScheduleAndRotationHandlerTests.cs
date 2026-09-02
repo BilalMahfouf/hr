@@ -26,7 +26,6 @@ public sealed class WorkScheduleAndRotationHandlerTests
         var handler = new CreateEmployeeGroup.Handler(ctx, new CreateEmployeeGroup.Validator());
         var result = await handler.Handle(
             new CreateEmployeeGroupCommand(
-                "GRP-001",
                 "Day Shift",
                 false,
                 null,

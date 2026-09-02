@@ -51,7 +51,6 @@ public sealed record CreateRotationEntryRequest(
     int? WorkScheduleIndex);
 
 public sealed record CreateEmployeeGroupRequest(
-    string GroupNumber,
     string Name,
     bool IsSecurity,
     string? Description,
@@ -89,7 +88,6 @@ public sealed record UpdateRotationRequest(
     Guid? WorkScheduleId);
 
 public sealed record CreateEmployeeGroupCommand(
-    string GroupNumber,
     string Name,
     bool IsSecurity,
     string? Description,

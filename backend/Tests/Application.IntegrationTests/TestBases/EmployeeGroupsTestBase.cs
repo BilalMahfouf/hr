@@ -160,7 +160,7 @@ public abstract class EmployeeGroupsTestBase : IntegrationTestBase
     protected static async Task<EmployeeGroup> SeedGroupAsync(
         IEmployeeDbContext db,
         string name = "Group A",
-        string groupNumber = "GRP-001")
+        string groupNumber = "01")
     {
         var group = EmployeeGroup.Create(groupNumber, name, false, new DateOnly(2026, 1, 1), "Test group");
         db.EmployeeGroups.Add(group);
@@ -171,7 +171,7 @@ public abstract class EmployeeGroupsTestBase : IntegrationTestBase
     protected static async Task<EmployeeGroup> SeedGroupWithScheduleAsync(
         IEmployeeDbContext db,
         string name = "Group A",
-        string groupNumber = "GRP-001")
+        string groupNumber = "01")
     {
         var group = EmployeeGroup.Create(groupNumber, name, false, new DateOnly(2026, 1, 1), "Test group");
         group.AddWorkSchedule(new CreateWorkScheduleDto(
@@ -191,7 +191,7 @@ public abstract class EmployeeGroupsTestBase : IntegrationTestBase
     protected static async Task<(EmployeeGroup Group, WorkSchedule Schedule)> SeedGroupWithScheduleReturnScheduleAsync(
         IEmployeeDbContext db,
         string name = "Group A",
-        string groupNumber = "GRP-001")
+        string groupNumber = "01")
     {
         var group = EmployeeGroup.Create(groupNumber, name, false, new DateOnly(2026, 1, 1), "Test group");
         group.AddWorkSchedule(new CreateWorkScheduleDto(
@@ -213,7 +213,7 @@ public abstract class EmployeeGroupsTestBase : IntegrationTestBase
     protected static async Task<EmployeeGroup> SeedGroupWithScheduleAndRotationAsync(
         IEmployeeDbContext db,
         string name = "Group A",
-        string groupNumber = "GRP-001")
+        string groupNumber = "01")
     {
         var group = EmployeeGroup.Create(groupNumber, name, false, new DateOnly(2026, 1, 1), "Test group");
         group.ReplaceSchedulesAndRotations(

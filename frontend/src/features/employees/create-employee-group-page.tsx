@@ -179,6 +179,7 @@ export default function CreateEmployeeGroupPage() {
         workScheduleIndex: r.type === "Work" && r.workScheduleId !== "" ? Number(r.workScheduleId) : null,
       })),
     };
+    // console.log(request);
     mutation.mutate(request);
   };
 

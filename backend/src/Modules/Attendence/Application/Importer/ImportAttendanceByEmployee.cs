@@ -182,11 +182,11 @@ public static class ImportAttendanceByEmployee
                 async (
                     string employeeId,
                     ImportByEmployeeCommand command,
-                    ICommandHandler<ImportByEmployeeCommand, Response> handler,
-                    CancellationToken cancellationToken) =>
+                    ICommandHandler<ImportByEmployeeCommand, Response> handler
+                    ) =>
                 {
                     var cmd = command with { EmployeeId = employeeId };
-                    var result = await handler.Handle(cmd, cancellationToken);
+                    var result = await handler.Handle(cmd, CancellationToken.None);
                     return result.IsSuccess
                         ? Results.Ok(result.Value)
                         : result.Problem();

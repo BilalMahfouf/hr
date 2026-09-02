@@ -22,7 +22,6 @@ public sealed class EmployeeGroupCrudTests : EmployeeGroupsTestBase
         var handler = CreateCreateHandler(scope.ServiceProvider);
 
         var command = new CreateEmployeeGroupCommand(
-            "GRP-001",
             "Security Alpha",
             true,
             "Main security group",
@@ -33,6 +32,7 @@ public sealed class EmployeeGroupCrudTests : EmployeeGroupsTestBase
         var result = await handler.Handle(command, CancellationToken.None);
 
         Assert.True(result.IsSuccess);
+        Assert.Equal("01", result.Value.GroupNumber);
         Assert.Equal("Security Alpha", result.Value.Name);
         Assert.True(result.Value.IsSecurity);
         Assert.Equal("Main security group", result.Value.Description);
@@ -52,11 +52,10 @@ public sealed class EmployeeGroupCrudTests : EmployeeGroupsTestBase
     {
         using var scope = CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<IEmployeeDbContext>();
-        await SeedGroupAsync(db, "Existing Group");
+        await SeedGroupAsync(db, "Existing Group", "01");
 
         var handler = CreateCreateHandler(scope.ServiceProvider);
         var command = new CreateEmployeeGroupCommand(
-            "GRP-002",
             "Existing Group",
             false,
             null,
@@ -76,7 +75,6 @@ public sealed class EmployeeGroupCrudTests : EmployeeGroupsTestBase
         using var scope = CreateScope();
         var handler = CreateCreateHandler(scope.ServiceProvider);
         var command = new CreateEmployeeGroupCommand(
-            "GRP-003",
             "",
             false,
             null,
@@ -94,7 +92,6 @@ public sealed class EmployeeGroupCrudTests : EmployeeGroupsTestBase
         using var scope = CreateScope();
         var handler = CreateCreateHandler(scope.ServiceProvider);
         var command = new CreateEmployeeGroupCommand(
-            "GRP-004",
             "Group",
             false,
             null,
@@ -112,7 +109,6 @@ public sealed class EmployeeGroupCrudTests : EmployeeGroupsTestBase
         using var scope = CreateScope();
         var handler = CreateCreateHandler(scope.ServiceProvider);
         var command = new CreateEmployeeGroupCommand(
-            "GRP-005",
             "Group",
             false,
             null,
@@ -130,7 +126,6 @@ public sealed class EmployeeGroupCrudTests : EmployeeGroupsTestBase
         using var scope = CreateScope();
         var handler = CreateCreateHandler(scope.ServiceProvider);
         var command = new CreateEmployeeGroupCommand(
-            "GRP-006",
             "Group",
             false,
             null,
@@ -173,8 +168,8 @@ public sealed class EmployeeGroupCrudTests : EmployeeGroupsTestBase
     {
         using var scope = CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<IEmployeeDbContext>();
-        var groupA = await SeedGroupAsync(db, "Group A", "GRP-001");
-        var groupB = await SeedGroupAsync(db, "Group B", "GRP-002");
+        var groupA = await SeedGroupAsync(db, "Group A", "01");
+        var groupB = await SeedGroupAsync(db, "Group B", "02");
 
         var handler = CreateUpdateHandler(scope.ServiceProvider);
         var command = new UpdateEmployeeGroupCommand(
@@ -308,9 +303,9 @@ public sealed class EmployeeGroupCrudTests : EmployeeGroupsTestBase
     {
         using var scope = CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<IEmployeeDbContext>();
-        await SeedGroupAsync(db, "Charlie", "GRP-003");
-        await SeedGroupAsync(db, "Alpha", "GRP-001");
-        await SeedGroupAsync(db, "Bravo", "GRP-002");
+        await SeedGroupAsync(db, "Charlie", "03");
+        await SeedGroupAsync(db, "Alpha", "01");
+        await SeedGroupAsync(db, "Bravo", "02");
 
         var handler = CreateGetAllHandler(scope.ServiceProvider);
         var result = await handler.Handle(

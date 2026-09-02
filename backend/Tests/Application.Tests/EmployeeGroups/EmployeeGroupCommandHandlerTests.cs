@@ -22,9 +22,8 @@ public sealed class EmployeeGroupCommandHandlerTests
             5,
             5);
 
-    private static CreateEmployeeGroupCommand ValidCommand(string name = "Day Shift", string groupNumber = "GRP-001") =>
+    private static CreateEmployeeGroupCommand ValidCommand(string name = "Day Shift") =>
         new(
-            groupNumber,
             name,
             false,
             null,
@@ -61,7 +60,7 @@ public sealed class EmployeeGroupCommandHandlerTests
         Assert.True(result.IsSuccess);
         var group = await db.EmployeeGroups.Include(g => g.WorkSchedules).Include(g => g.RotationEntries).SingleAsync();
         Assert.Equal("Day Shift", group.Name);
-        Assert.Equal("GRP-001", group.GroupNumber);
+        Assert.Equal("01", group.GroupNumber);
         Assert.Single(group.WorkSchedules);
         Assert.Equal(2, group.NumberOfRotations);
         Assert.Equal(RotationStatus.Work, group.RotationEntries.First(e => e.Position == 1).Status);
@@ -70,16 +69,20 @@ public sealed class EmployeeGroupCommandHandlerTests
     }
 
     [Fact]
-    public async Task Create_WhenGroupNumberAlreadyExists_ReturnsGroupNumberAlreadyExists()
+    public async Task Create_MultipleGroups_AutoIncrementsGroupNumber()
     {
-        var (_, ctx) = CreateDb();
+        var (db, ctx) = CreateDb();
         var handler = CreateCreateHandler(ctx);
 
-        await handler.Handle(ValidCommand(groupNumber: "GRP-001"), CancellationToken.None);
-        var result = await handler.Handle(ValidCommand(groupNumber: "GRP-001"), CancellationToken.None);
+        await handler.Handle(ValidCommand("First"), CancellationToken.None);
+        await handler.Handle(ValidCommand("Second"), CancellationToken.None);
+        await handler.Handle(ValidCommand("Third"), CancellationToken.None);
 
-        Assert.False(result.IsSuccess);
-        Assert.Equal(EmployeeGroupErrors.GroupNumberAlreadyExists.Code, result.Error.Code);
+        var groups = await db.EmployeeGroups.OrderBy(g => g.GroupNumber).ToListAsync();
+        Assert.Equal(3, groups.Count);
+        Assert.Equal("01", groups[0].GroupNumber);
+        Assert.Equal("02", groups[1].GroupNumber);
+        Assert.Equal("03", groups[2].GroupNumber);
     }
 
     [Fact]
@@ -88,8 +91,8 @@ public sealed class EmployeeGroupCommandHandlerTests
         var (_, ctx) = CreateDb();
         var handler = CreateCreateHandler(ctx);
 
-        await handler.Handle(ValidCommand(name: "Day Shift", groupNumber: "GRP-001"), CancellationToken.None);
-        var result = await handler.Handle(ValidCommand(name: "Day Shift", groupNumber: "GRP-002"), CancellationToken.None);
+        await handler.Handle(ValidCommand(name: "Day Shift"), CancellationToken.None);
+        var result = await handler.Handle(ValidCommand(name: "Day Shift"), CancellationToken.None);
 
         Assert.False(result.IsSuccess);
         Assert.Equal(EmployeeGroupErrors.NameAlreadyExists.Code, result.Error.Code);
@@ -101,7 +104,6 @@ public sealed class EmployeeGroupCommandHandlerTests
         var (_, ctx) = CreateDb();
         var handler = CreateCreateHandler(ctx);
         var command = new CreateEmployeeGroupCommand(
-            "GRP-001",
             "Day Shift",
             false,
             null,
@@ -118,7 +120,6 @@ public sealed class EmployeeGroupCommandHandlerTests
         var (_, ctx) = CreateDb();
         var handler = CreateCreateHandler(ctx);
         var command = new CreateEmployeeGroupCommand(
-            "GRP-001",
             "Day Shift",
             false,
             null,
@@ -135,7 +136,6 @@ public sealed class EmployeeGroupCommandHandlerTests
         var (_, ctx) = CreateDb();
         var handler = CreateCreateHandler(ctx);
         var command = new CreateEmployeeGroupCommand(
-            "GRP-001",
             "Day Shift",
             false,
             null,
@@ -152,7 +152,6 @@ public sealed class EmployeeGroupCommandHandlerTests
         var (_, ctx) = CreateDb();
         var handler = CreateCreateHandler(ctx);
         var command = new CreateEmployeeGroupCommand(
-            "GRP-001",
             "Day Shift",
             false,
             null,
@@ -202,8 +201,8 @@ public sealed class EmployeeGroupCommandHandlerTests
     {
         var (_, ctx) = CreateDb();
         var createHandler = CreateCreateHandler(ctx);
-        await createHandler.Handle(ValidCommand("A", "GRP-001"), CancellationToken.None);
-        await createHandler.Handle(ValidCommand("B", "GRP-002"), CancellationToken.None);
+        await createHandler.Handle(ValidCommand("A"), CancellationToken.None);
+        await createHandler.Handle(ValidCommand("B"), CancellationToken.None);
 
         var handler = new GetAllEmployeeGroups.Handler(ctx);
         var result = await handler.Handle(new GetAllEmployeeGroupsQuery(), CancellationToken.None);
@@ -252,8 +251,8 @@ public sealed class EmployeeGroupCommandHandlerTests
     {
         var (_, ctx) = CreateDb();
         var createHandler = CreateCreateHandler(ctx);
-        await createHandler.Handle(ValidCommand("Day Shift", "GRP-001"), CancellationToken.None);
-        var createResult2 = await createHandler.Handle(ValidCommand("Night Shift", "GRP-002"), CancellationToken.None);
+        await createHandler.Handle(ValidCommand("Day Shift"), CancellationToken.None);
+        var createResult2 = await createHandler.Handle(ValidCommand("Night Shift"), CancellationToken.None);
 
         var handler = new UpdateEmployeeGroup.Handler(ctx, new UpdateEmployeeGroup.Validator());
         var result = await handler.Handle(

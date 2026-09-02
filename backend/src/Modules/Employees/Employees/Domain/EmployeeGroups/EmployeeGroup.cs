@@ -327,6 +327,10 @@ public sealed class EmployeeGroup : Entity
 
     public RotationEntry? GetRotation(DateOnly date)
     {
+        if (NumberOfRotations <= 0)
+        {
+            return null;
+        }
         if (date < RotationStartDate)
         {
             return null;

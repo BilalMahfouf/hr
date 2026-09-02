@@ -145,10 +145,9 @@ public static class ImportAttendanceLogs
 
             app.MapPost("attendance/import", async (
                 Command command,
-                ICommandHandler<ImportAttendanceLogs.Command, ImportAttendanceLogs.Response> handler,
-                CancellationToken cancellationToken) =>
+                ICommandHandler<ImportAttendanceLogs.Command, ImportAttendanceLogs.Response> handler) =>
             {
-                var result = await handler.Handle(command, cancellationToken);
+                var result = await handler.Handle(command, CancellationToken.None);
                 return result.IsSuccess ? Results.Ok(result.Value)
                 : result.Problem();
             })
