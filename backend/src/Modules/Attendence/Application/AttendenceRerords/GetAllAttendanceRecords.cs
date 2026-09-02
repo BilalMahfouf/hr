@@ -34,13 +34,6 @@ public static class GetAllAttendanceRecords
             TableRequest<Response> query,
             CancellationToken cancellationToken = default)
         {
-            var count = await db.AttendanceRecords.CountAsync(cancellationToken);
-            if (count <= 0)
-            {
-                return Result<OffSetPagedList<Response>>
-                    .Failure(AttendanceRecordErrors.RecordsNotFound);
-            }
-
             var records = await db.AttendanceRecords
                 .AsNoTracking()
                 .ToListAsync(cancellationToken);
@@ -96,7 +89,7 @@ public static class GetAllAttendanceRecords
 
             var result = OffSetPagedList<Response>.Create(
                 items,
-                count,
+                responses.Count,
                 query.Page,
                 query.PageSize);
 

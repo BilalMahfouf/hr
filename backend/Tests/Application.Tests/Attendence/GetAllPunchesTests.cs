@@ -64,15 +64,16 @@ public sealed class GetAllPunchesTests
         AttendenceMachine.Create(id, ip, 1, MachineType.ZKTecoSdk, 8080);
 
     [Fact]
-    public async Task Handle_WhenNoPunches_ReturnsPunchesNotFound()
+    public async Task Handle_WhenNoPunches_ReturnsEmptyPagedList()
     {
         var (handler, _) = Arrange();
         var query = TableRequest<GetAllPunches.Response>.Create(10, 1);
 
         var result = await handler.Handle(query, CancellationToken.None);
 
-        Assert.False(result.IsSuccess);
-        Assert.Equal("Punch.PunchesNotFound", result.Error.Code);
+        Assert.True(result.IsSuccess);
+        Assert.Equal(0, result.Value.TotalCount);
+        Assert.Empty(result.Value.Item);
     }
 
     [Fact]

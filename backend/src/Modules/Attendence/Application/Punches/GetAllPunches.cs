@@ -34,13 +34,6 @@ public static class GetAllPunches
             TableRequest<Response> query,
             CancellationToken cancellationToken = default)
         {
-            var count = await db.Punches.CountAsync(cancellationToken);
-            if (count <= 0)
-            {
-                return Result<OffSetPagedList<Response>>
-                    .Failure(PunchErrors.PunchesNotFound);
-            }
-
             var punches = await db.Punches
                 .AsNoTracking()
                 .ToListAsync(cancellationToken);
@@ -105,7 +98,7 @@ public static class GetAllPunches
 
             var result = OffSetPagedList<Response>.Create(
                 items,
-                count,
+                responses.Count,
                 query.Page,
                 query.PageSize);
 

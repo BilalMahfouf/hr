@@ -72,15 +72,16 @@ public sealed class GetAllAttendanceRecordsTests
     }
 
     [Fact]
-    public async Task Handle_WhenNoRecords_ReturnsRecordsNotFound()
+    public async Task Handle_WhenNoRecords_ReturnsEmptyPagedList()
     {
         var (handler, _) = Arrange();
         var query = TableRequest<GetAllAttendanceRecords.Response>.Create(10, 1);
 
         var result = await handler.Handle(query, CancellationToken.None);
 
-        Assert.False(result.IsSuccess);
-        Assert.Equal("AttendanceRecord.RecordsNotFound", result.Error.Code);
+        Assert.True(result.IsSuccess);
+        Assert.Equal(0, result.Value.TotalCount);
+        Assert.Empty(result.Value.Item);
     }
 
     [Fact]
