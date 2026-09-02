@@ -42,13 +42,14 @@ export default function ImportAttendancePage() {
 
   const [selectedMachineId, setSelectedMachineId] = useState("");
 
+  const maxLengthForImportingInDays=30
   const validateDates = useCallback(
     (from: string, to: string) => {
       if (!from || !to) {
         setDateError(null);
         return false;
       }
-      if (getDaysBetween(from, to) > 7) {
+      if (getDaysBetween(from, to) > maxLengthForImportingInDays) {
         setDateError(t(i18nKeyContainer.attendance.import.maxOneWeek));
         return false;
       }
@@ -68,7 +69,7 @@ export default function ImportAttendancePage() {
     validateDates(fromDate, value);
   };
 
-  const datesValid = fromDate && toDate && !dateError && getDaysBetween(fromDate, toDate) <= 7;
+  const datesValid = fromDate && toDate && !dateError && getDaysBetween(fromDate, toDate) <= maxLengthForImportingInDays;
 
   const importMutation = useMutation({
     mutationFn: (request: { from: string; to: string }) =>
