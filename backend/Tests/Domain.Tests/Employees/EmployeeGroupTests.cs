@@ -846,6 +846,62 @@ public sealed class EmployeeGroupTests
 
     #endregion
 
+    #region UpdateDetails
+
+    [Fact]
+    public void UpdateDetails_WithRotationStartDate_UpdatesDateAndRaisesEvent()
+    {
+        var rotationStartDate = DateOnly.FromDateTime(DateTime.UtcNow);
+        var group = CreateGroup(rotationStartDate: rotationStartDate);
+
+        var newRotationStartDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(1));
+        var oldDomainEvents = group.DomainEvents.ToList();
+
+        group.UpdateDetails("New Name", true, "New Description", newRotationStartDate);
+
+        Assert.Equal("New Name", group.Name);
+        Assert.True(group.IsSecurity);
+        Assert.Equal("New Description", group.Description);
+        Assert.Equal(newRotationStartDate, group.RotationStartDate);
+
+        var domainEvents = group.DomainEvents.Except(oldDomainEvents).ToList();
+        var rotationEvent = domainEvents.OfType<EmployeeGroupRotationStartDateUpdatedDomainEvent>().SingleOrDefault();
+        Assert.NotNull(rotationEvent);
+        Assert.Equal(group.Id, rotationEvent.GroupId);
+        Assert.Equal(rotationStartDate, rotationEvent.OldRotationStartDate);
+    }
+
+    [Fact]
+    public void UpdateDetails_WithNullRotationStartDate_DoesNotUpdateDate()
+    {
+        var rotationStartDate = DateOnly.FromDateTime(DateTime.UtcNow);
+        var group = CreateGroup(rotationStartDate: rotationStartDate);
+
+        group.UpdateDetails("New Name", true, "New Description", null);
+
+        Assert.Equal("New Name", group.Name);
+        Assert.True(group.IsSecurity);
+        Assert.Equal("New Description", group.Description);
+        Assert.Equal(rotationStartDate, group.RotationStartDate);
+
+        var domainEvents = group.DomainEvents.ToList();
+        var rotationEvent = domainEvents.OfType<EmployeeGroupRotationStartDateUpdatedDomainEvent>().SingleOrDefault();
+        Assert.Null(rotationEvent);
+    }
+
+    [Fact]
+    public void UpdateDetails_WithInvalidRotationStartDate_ThrowsDomainException()
+    {
+        var group = CreateGroup();
+
+        var exception = Assert.Throws<DomainException>(() =>
+            group.UpdateDetails("New Name", true, "New Description", new DateOnly()));
+
+        Assert.Equal(EmployeeGroupErrors.RotationStartDateRequired.Code, exception.Error.Code);
+    }
+
+    #endregion
+
     #region UpdateWorkSchedule In-Use Tests
 
     [Fact]

@@ -168,8 +168,8 @@ export default function CreateEmployeeGroupPage() {
       workSchedules: workSchedules.map((s) => ({
         shiftStartTime: s.shiftStartTime + ":00",
         shiftEndTime: s.shiftEndTime + ":00",
-        breakStartTime: s.hasBreak ? s.breakStartTime + ":00" : null,
-        breakEndTime: s.hasBreak ? s.breakEndTime + ":00" : null,
+        breakStartTime: s.hasBreak ? s.breakStartTime + ":00" : "00:00:00",
+        breakEndTime: s.hasBreak ? s.breakEndTime + ":00" : "00:00:00",
         endDayOffset: Number(s.endDayOffset),
         allowedCheckInLatenessMinutes: Number(s.allowedCheckInLatenessMinutes),
         allowedCheckOutEarlinessMinutes: Number(s.allowedCheckOutEarlinessMinutes),

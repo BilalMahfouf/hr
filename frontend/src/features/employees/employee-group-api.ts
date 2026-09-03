@@ -11,6 +11,7 @@ export type TimeOnly = string;
 
 export type EmployeeGroupResponse = {
   id: Guid;
+  groupNumber?: string;
   name: string;
   isSecurity: boolean;
   description: string | null;
@@ -71,6 +72,7 @@ export type UpdateEmployeeGroupRequest = {
   name?: string;
   isSecurity?: boolean;
   description?: string | null;
+  rotationStartDate?: IsoDate;
 };
 
 export type ReplaceSchedulesAndRotationsRequest = {

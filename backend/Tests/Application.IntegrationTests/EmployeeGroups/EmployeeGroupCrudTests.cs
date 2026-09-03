@@ -145,11 +145,13 @@ public sealed class EmployeeGroupCrudTests : EmployeeGroupsTestBase
         var group = await SeedGroupAsync(db);
 
         var handler = CreateUpdateHandler(scope.ServiceProvider);
+        var newRotationStartDate = new DateOnly(2026, 2, 1);
         var command = new UpdateEmployeeGroupCommand(
             group.Id.Value,
             "Updated Group",
             true,
-            "Updated description");
+            "Updated description",
+            newRotationStartDate);
 
         var result = await handler.Handle(command, CancellationToken.None);
 
@@ -157,10 +159,13 @@ public sealed class EmployeeGroupCrudTests : EmployeeGroupsTestBase
         Assert.Equal("Updated Group", result.Value.Name);
         Assert.True(result.Value.IsSecurity);
         Assert.Equal("Updated description", result.Value.Description);
+        Assert.Equal(newRotationStartDate, result.Value.RotationStartDate);
 
         var saved = await db.EmployeeGroups.AsNoTracking()
             .SingleAsync(g => g.Id == group.Id);
+        Assert.NotNull(saved);
         Assert.Equal("Updated Group", saved.Name);
+        Assert.Equal(newRotationStartDate, saved.RotationStartDate);
     }
 
     [Fact]
@@ -175,6 +180,7 @@ public sealed class EmployeeGroupCrudTests : EmployeeGroupsTestBase
         var command = new UpdateEmployeeGroupCommand(
             groupA.Id.Value,
             "Group B",
+            null,
             null,
             null);
 
@@ -192,17 +198,20 @@ public sealed class EmployeeGroupCrudTests : EmployeeGroupsTestBase
         var group = await SeedGroupAsync(db, "Group A");
 
         var handler = CreateUpdateHandler(scope.ServiceProvider);
+        var newRotationStartDate = new DateOnly(2026, 3, 1);
         var command = new UpdateEmployeeGroupCommand(
             group.Id.Value,
             "Group A",
             true,
-            "new desc");
+            "new desc",
+            newRotationStartDate);
 
         var result = await handler.Handle(command, CancellationToken.None);
 
         Assert.True(result.IsSuccess);
         Assert.Equal("Group A", result.Value.Name);
         Assert.True(result.Value.IsSecurity);
+        Assert.Equal(newRotationStartDate, result.Value.RotationStartDate);
     }
 
     [Fact]
@@ -213,6 +222,7 @@ public sealed class EmployeeGroupCrudTests : EmployeeGroupsTestBase
         var command = new UpdateEmployeeGroupCommand(
             Guid.NewGuid(),
             "Name",
+            null,
             null,
             null);
 

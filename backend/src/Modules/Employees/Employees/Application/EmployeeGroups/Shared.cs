@@ -61,7 +61,8 @@ public sealed record CreateEmployeeGroupRequest(
 public sealed record UpdateEmployeeGroupRequest(
     string? Name,
     bool? IsSecurity,
-    string? Description);
+    string? Description,
+    DateOnly? RotationStartDate);
 
 public sealed record ReplaceSchedulesAndRotationsRequest(
     IReadOnlyList<CreateWorkScheduleRequest> WorkSchedules,
@@ -103,7 +104,8 @@ public sealed record UpdateEmployeeGroupCommand(
     Guid Id,
     string? Name,
     bool? IsSecurity,
-    string? Description) : ICommand<EmployeeGroupResponse>;
+    string? Description,
+    DateOnly? RotationStartDate) : ICommand<EmployeeGroupResponse>;
 
 public sealed record ReplaceSchedulesAndRotationsCommand(
     Guid GroupId,

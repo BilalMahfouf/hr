@@ -223,14 +223,16 @@ public sealed class EmployeeGroupCommandHandlerTests
         var createResult = await createHandler.Handle(ValidCommand(), CancellationToken.None);
 
         var handler = new UpdateEmployeeGroup.Handler(ctx, new UpdateEmployeeGroup.Validator());
+        var rotationStartDate = DateOnly.FromDateTime(DateTime.UtcNow);
         var result = await handler.Handle(
-            new UpdateEmployeeGroupCommand(createResult.Value.Id, "Night Shift", true, "Updated"),
+            new UpdateEmployeeGroupCommand(createResult.Value.Id, "Night Shift", true, "Updated", rotationStartDate),
             CancellationToken.None);
 
         Assert.True(result.IsSuccess);
         Assert.Equal("Night Shift", result.Value.Name);
         Assert.True(result.Value.IsSecurity);
         Assert.Equal("Updated", result.Value.Description);
+        Assert.Equal(rotationStartDate, result.Value.RotationStartDate);
     }
 
     [Fact]
@@ -240,7 +242,7 @@ public sealed class EmployeeGroupCommandHandlerTests
         var handler = new UpdateEmployeeGroup.Handler(ctx, new UpdateEmployeeGroup.Validator());
 
         var result = await handler.Handle(
-            new UpdateEmployeeGroupCommand(Guid.NewGuid(), "Night", null, null), CancellationToken.None);
+            new UpdateEmployeeGroupCommand(Guid.NewGuid(), "Night", null, null, null), CancellationToken.None);
 
         Assert.False(result.IsSuccess);
         Assert.Equal(EmployeeGroupErrors.NotFound.Code, result.Error.Code);
@@ -255,8 +257,9 @@ public sealed class EmployeeGroupCommandHandlerTests
         var createResult2 = await createHandler.Handle(ValidCommand("Night Shift"), CancellationToken.None);
 
         var handler = new UpdateEmployeeGroup.Handler(ctx, new UpdateEmployeeGroup.Validator());
+        var rotationStartDate = DateOnly.FromDateTime(DateTime.UtcNow);
         var result = await handler.Handle(
-            new UpdateEmployeeGroupCommand(createResult2.Value.Id, "Day Shift", null, null),
+            new UpdateEmployeeGroupCommand(createResult2.Value.Id, "Day Shift", null, null, rotationStartDate),
             CancellationToken.None);
 
         Assert.False(result.IsSuccess);

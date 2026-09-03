@@ -6,19 +6,41 @@ import {
   type DataTableColumn,
   type RowAction,
 } from "@/components/tables";
-import { Eye, Trash2, Shield } from "lucide-react";
+import { Eye, Pencil, Trash2, Shield } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import i18nKeyContainer from "@/lib/i18n/keyContainer";
 import { cn } from "@/lib/utils";
+import ConfirmDeleteDialog from "@/components/ui/confirm-delete-dialog";
+import { useToast } from "@/hooks/use-toast";
 import employeeGroupApi, { type EmployeeGroupResponse } from "./employee-group-api";
 
 interface EmployeeGroupsDataTableProps {
   onView?: (group: EmployeeGroupResponse) => void;
+  onEdit?: (group: EmployeeGroupResponse) => void;
 }
 
-export default function EmployeeGroupsDataTable({ onView }: EmployeeGroupsDataTableProps) {
+export default function EmployeeGroupsDataTable({ onView, onEdit }: EmployeeGroupsDataTableProps) {
   const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const { handleApiError, success } = useToast();
   const isRtl = i18n.language === "ar";
+  const [deleteTarget, setDeleteTarget] = useState<EmployeeGroupResponse | null>(null);
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => employeeGroupApi.deleteEmployeeGroup(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["employee-groups"] });
+      success(i18nKeyContainer.employeeGroups.toast.deleted, {
+        description: i18nKeyContainer.employeeGroups.toast.deletedDesc,
+      });
+      setDeleteTarget(null);
+    },
+    onError: (error) => handleApiError(error, i18nKeyContainer.employeeGroups.genericError),
+  });
 
   const employeeGroupsColumns: DataTableColumn<EmployeeGroupResponse>[] = [
     {
@@ -122,12 +144,23 @@ export default function EmployeeGroupsDataTable({ onView }: EmployeeGroupsDataTa
         const actions: RowAction<EmployeeGroupResponse>[] = [
           {
             label: t(i18nKeyContainer.table.viewDetails),
-            onClick: () => onView?.(row.original),
+            onClick: () => {
+              if (onView) onView(row.original);
+              else navigate(`/employee-groups/${row.original.id}`);
+            },
             icon: Eye,
           },
           {
+            label: t(i18nKeyContainer.common.edit),
+            onClick: () => {
+              if (onEdit) onEdit(row.original);
+              else navigate(`/employee-groups/${row.original.id}/edit`);
+            },
+            icon: Pencil,
+          },
+          {
             label: t(i18nKeyContainer.common.delete),
-            onClick: () => {}, // Handled by parent with confirmation
+            onClick: () => setDeleteTarget(row.original),
             icon: Trash2,
             variant: "destructive",
           },
@@ -150,6 +183,16 @@ export default function EmployeeGroupsDataTable({ onView }: EmployeeGroupsDataTa
         emptyMessage={t(i18nKeyContainer.employeeGroups.empty)}
         searchDebounceMs={1000}
         onView={onView}
+      />
+
+      <ConfirmDeleteDialog
+        open={deleteTarget !== null}
+        onClose={() => !deleteMutation.isPending && setDeleteTarget(null)}
+        onConfirm={() => deleteTarget && deleteMutation.mutate(deleteTarget.id)}
+        title={t(i18nKeyContainer.employeeGroups.confirm.deleteTitle)}
+        description={t(i18nKeyContainer.employeeGroups.confirm.deleteDescription)}
+        itemName={deleteTarget?.name}
+        isLoading={deleteMutation.isPending}
       />
     </div>
   );

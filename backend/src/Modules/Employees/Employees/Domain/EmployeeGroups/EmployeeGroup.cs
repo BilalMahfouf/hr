@@ -73,15 +73,7 @@ public sealed class EmployeeGroup : Entity
             rotationStartDate);
     }
 
-    public void SetRotationStartDate(DateOnly rotationStartDate)
-    {
-        if (rotationStartDate == default)
-            throw new DomainException(EmployeeGroupErrors.RotationStartDateRequired);
-
-        RotationStartDate = rotationStartDate;
-    }
-
-    public void UpdateDetails(string? name, bool? isSecurity, string? description)
+    public void UpdateDetails(string? name, bool? isSecurity, string? description, DateOnly? rotationStartDate)
     {
         if (name is not null)
         {
@@ -95,6 +87,16 @@ public sealed class EmployeeGroup : Entity
 
         if (description is not null)
             Description = description;
+
+        if (rotationStartDate.HasValue)
+        {
+            if (rotationStartDate.Value == default)
+                throw new DomainException(EmployeeGroupErrors.RotationStartDateRequired);
+
+            var oldRotationStartDate = RotationStartDate;
+            RotationStartDate = rotationStartDate.Value;
+            this.RaiseDomainEvent(new EmployeeGroupRotationStartDateUpdatedDomainEvent(Id, oldRotationStartDate));
+        }
     }
 
     public void AddWorkSchedule(CreateWorkScheduleDto schedule)
@@ -352,7 +354,8 @@ public sealed class EmployeeGroup : Entity
         }
         if (rotation.Status == RotationStatus.Rest)
         {
-            var prevRotation = _rotationEntries.FirstOrDefault(e => e.Position == rotation.Position - 1);
+            var prevPosition = rotation.Position == 1 ? NumberOfRotations : rotation.Position - 1;
+            var prevRotation = _rotationEntries.FirstOrDefault(e => e.Position == prevPosition);
             if (prevRotation != null &&
                 prevRotation.WorkSchedule != null &&
                 prevRotation.WorkSchedule.EndDayOffset > 0)
@@ -367,7 +370,7 @@ public sealed class EmployeeGroup : Entity
                     expectedCheckin,
                     expectedCheckout,
                     prevRotation.WorkSchedule.WorkTime,
-                    rotation.Status);
+                    RotationStatus.Work);
             }
             return new WorkScheduleResponse(
                 defaultCheckInDateTime,

@@ -21,6 +21,11 @@ public static class UpdateEmployeeGroup
                 .NotEmpty()
                 .MaximumLength(100)
                 .When(x => x.Name is not null);
+
+            RuleFor(x => x.RotationStartDate)
+                .NotEqual(DateOnly.MinValue)
+                .WithErrorCode(EmployeeGroupErrors.RotationStartDateRequired.Code)
+                .When(x => x.RotationStartDate.HasValue);
         }
     }
 
@@ -55,7 +60,7 @@ public static class UpdateEmployeeGroup
                 }
             }
 
-            group.UpdateDetails(command.Name, command.IsSecurity, command.Description);
+            group.UpdateDetails(command.Name, command.IsSecurity, command.Description, command.RotationStartDate);
 
             await dbContext.SaveChangesAsync(cancellationToken);
 
@@ -73,7 +78,7 @@ public static class UpdateEmployeeGroup
                 ICommandHandler<UpdateEmployeeGroupCommand, EmployeeGroupResponse> handler,
                 CancellationToken ct) =>
             {
-                var command = new UpdateEmployeeGroupCommand(id, request.Name, request.IsSecurity, request.Description);
+                var command = new UpdateEmployeeGroupCommand(id, request.Name, request.IsSecurity, request.Description, request.RotationStartDate);
                 var result = await handler.Handle(command, ct);
                 return result.IsSuccess ? Results.Ok(result.Value) : result.Problem();
             })

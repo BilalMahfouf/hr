@@ -24,6 +24,7 @@ import ViewEmployeePage from './features/employees/view-employee-page';
 import EmployeeGroupsPage from './features/employees/employee-groups-page';
 import CreateEmployeeGroupPage from './features/employees/create-employee-group-page';
 import EditEmployeeGroupPage from './features/employees/edit-employee-group-page';
+import ViewEmployeeGroupPage from './features/employees/view-employee-group-page';
 
 export const router = createBrowserRouter([
     {
@@ -146,6 +147,10 @@ export const router = createBrowserRouter([
         },
         {
             path: '/employee-groups/:id',
+            element: <ViewEmployeeGroupPage />,
+        },
+        {
+            path: '/employee-groups/:id/edit',
             element: <EditEmployeeGroupPage />,
         },
         {

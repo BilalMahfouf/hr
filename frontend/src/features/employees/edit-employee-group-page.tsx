@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
-import { Plus, Trash2, Clock, RotateCcw, ShieldCheck, ShieldOff, Save } from "lucide-react";
+import { ArrowLeft, Plus, Trash2, Clock, RotateCcw, Shield, ShieldCheck, ShieldOff, Save } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,17 +11,18 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import ConfirmActionDialog from "@/components/ui/confirm-action-dialog";
-import ConfirmDeleteDialog from "@/components/ui/confirm-delete-dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import i18nKeyContainer from "@/lib/i18n/keyContainer";
+import { cn } from "@/lib/utils";
 import employeeGroupApi, { type WorkScheduleResponse } from "./employee-group-api";
 import TimeInput from "./TimeInput";
 import NumberInput from "./NumberInput";
 import SelectInput from "./SelectInput";
+import DateInput from "./DateInput";
+import TextArea from "./TextArea";
 
 type ConfirmTarget =
-  | { kind: "delete-group"; id: string; name: string }
   | { kind: "delete-schedule"; scheduleId: string }
   | { kind: "toggle-schedule"; schedule: WorkScheduleResponse };
 
@@ -57,16 +58,16 @@ function toForm(schedule: WorkScheduleResponse): ScheduleForm {
   const hasBreak =
     schedule.breakStartTime !== null &&
     schedule.breakEndTime !== null &&
-    fromTime(schedule.breakStartTime) !== "00:00" &&
-    fromTime(schedule.breakEndTime) !== "00:00";
+    fromTime(schedule.breakStartTime as string) !== "00:00" &&
+    fromTime(schedule.breakEndTime as string) !== "00:00";
   return {
     key: schedule.id,
     id: schedule.id,
     shiftStartTime: fromTime(schedule.shiftStartTime),
     shiftEndTime: fromTime(schedule.shiftEndTime),
     hasBreak,
-    breakStartTime: hasBreak ? fromTime(schedule.breakStartTime) : "",
-    breakEndTime: hasBreak ? fromTime(schedule.breakEndTime) : "",
+    breakStartTime: hasBreak ? fromTime(schedule.breakStartTime as string) : "",
+    breakEndTime: hasBreak ? fromTime(schedule.breakEndTime as string) : "",
     endDayOffset: String(schedule.endDayOffset),
     allowedCheckInLatenessMinutes: String(schedule.allowedCheckInLatenessMinutes),
     allowedCheckOutEarlinessMinutes: String(schedule.allowedCheckOutEarlinessMinutes),
@@ -81,6 +82,15 @@ export default function EditEmployeeGroupPage() {
   const isRtl = i18n.language === "ar";
   const { handleApiError, success, warning } = useToast();
 
+  // Details form
+  const [detailName, setDetailName] = useState("");
+  const [detailIsSecurity, setDetailIsSecurity] = useState(false);
+  const [detailDescription, setDetailDescription] = useState("");
+  const [detailRotationStartDate, setDetailRotationStartDate] = useState("");
+  const [detailErrors, setDetailErrors] = useState<Record<string, string>>({});
+  const [detailHydrated, setDetailHydrated] = useState(false);
+
+  // Schedules / Rotations
   const [schedules, setSchedules] = useState<ScheduleForm[]>([]);
   const [rotations, setRotations] = useState<RotationForm[]>([]);
   const [hydrated, setHydrated] = useState(false);
@@ -90,7 +100,16 @@ export default function EditEmployeeGroupPage() {
   const { data: group, isLoading, isError } = useQuery({
     queryKey: ["employee-groups", id],
     queryFn: () => employeeGroupApi.getEmployeeGroupById(id),
+    enabled: id !== "",
   });
+
+  if (group && !detailHydrated) {
+    setDetailName(group.name);
+    setDetailIsSecurity(group.isSecurity);
+    setDetailDescription(group.description ?? "");
+    setDetailRotationStartDate(group.rotationStartDate);
+    setDetailHydrated(true);
+  }
 
   if (group && !hydrated) {
     setSchedules(group.workSchedules.map(toForm));
@@ -117,17 +136,47 @@ export default function EditEmployeeGroupPage() {
     queryClient.invalidateQueries({ queryKey: ["employee-groups"] });
   };
 
-  const deleteGroupMutation = useMutation({
-    mutationFn: () => employeeGroupApi.deleteEmployeeGroup(id),
+  const updateDetailsMutation = useMutation({
+    mutationFn: () =>
+      employeeGroupApi.updateEmployeeGroup(id, {
+        name: detailName.trim(),
+        isSecurity: detailIsSecurity,
+        description: detailDescription.trim() ? detailDescription.trim() : null,
+        rotationStartDate: detailRotationStartDate || undefined,
+      }),
     onSuccess: () => {
       invalidateGroup();
-      success(i18nKeyContainer.employeeGroups.toast.deleted, {
-        description: i18nKeyContainer.employeeGroups.toast.deletedDesc,
+      success(i18nKeyContainer.employeeGroups.toast.updated, {
+        description: i18nKeyContainer.employeeGroups.toast.updatedDesc,
       });
-      navigate("/employee-groups");
+      setDetailErrors({});
     },
     onError: (error) => handleApiError(error, i18nKeyContainer.employeeGroups.genericError),
   });
+
+  const validateDetails = (): boolean => {
+    const errs: Record<string, string> = {};
+    if (!detailName.trim()) {
+      errs.name = t(i18nKeyContainer.employeeGroups.form.validation.nameRequired);
+    } else if (detailName.trim().length > 100) {
+      errs.name = t(i18nKeyContainer.employeeGroups.form.validation.nameMaxLength);
+    }
+    if (!detailRotationStartDate) {
+      errs.rotationStartDate = t(i18nKeyContainer.employeeGroups.form.validation.rotationStartDateRequired);
+    }
+    setDetailErrors(errs);
+    return Object.keys(errs).length === 0;
+  };
+
+  const handleSaveDetails = () => {
+    if (!validateDetails()) {
+      warning(i18nKeyContainer.common.warning, {
+        description: i18nKeyContainer.errors.validationDesc,
+      });
+      return;
+    }
+    updateDetailsMutation.mutate();
+  };
 
   const toggleScheduleMutation = useMutation({
     mutationFn: (schedule: WorkScheduleResponse) =>
@@ -135,6 +184,9 @@ export default function EditEmployeeGroupPage() {
         ? employeeGroupApi.deactivateWorkSchedule(id, schedule.id)
         : employeeGroupApi.activateWorkSchedule(id, schedule.id),
     onSuccess: (_, schedule) => {
+      setSchedules((prev) =>
+        prev.map((s) => (s.id === schedule.id ? { ...s, isActive: !schedule.isActive } : s)),
+      );
       invalidateGroup();
       success(
         schedule.isActive
@@ -151,7 +203,13 @@ export default function EditEmployeeGroupPage() {
 
   const deleteScheduleMutation = useMutation({
     mutationFn: (scheduleId: string) => employeeGroupApi.deleteWorkSchedule(id, scheduleId),
-    onSuccess: () => {
+    onSuccess: (_, scheduleId) => {
+      setSchedules((prev) => prev.filter((s) => s.id !== scheduleId));
+      setRotations((prev) =>
+        prev
+          .filter((r) => r.workScheduleId !== scheduleId)
+          .map((r, i) => ({ ...r, position: i + 1 })),
+      );
       invalidateGroup();
       success(i18nKeyContainer.employeeGroups.toast.scheduleDeleted);
       setConfirmTarget(null);
@@ -168,8 +226,8 @@ export default function EditEmployeeGroupPage() {
         workSchedules: schedules.map((s) => ({
           shiftStartTime: toTime(s.shiftStartTime),
           shiftEndTime: toTime(s.shiftEndTime),
-          breakStartTime: s.hasBreak ? toTime(s.breakStartTime) : null,
-          breakEndTime: s.hasBreak ? toTime(s.breakEndTime) : null,
+          breakStartTime: s.hasBreak ? toTime(s.breakStartTime) : "00:00:00",
+          breakEndTime: s.hasBreak ? toTime(s.breakEndTime) : "00:00:00",
           endDayOffset: Number(s.endDayOffset),
           allowedCheckInLatenessMinutes: Number(s.allowedCheckInLatenessMinutes),
           allowedCheckOutEarlinessMinutes: Number(s.allowedCheckOutEarlinessMinutes),
@@ -199,10 +257,7 @@ export default function EditEmployeeGroupPage() {
         });
         return false;
       }
-      if (
-        s.endDayOffset === "0" &&
-        s.shiftStartTime >= s.shiftEndTime
-      ) {
+      if (s.endDayOffset === "0" && s.shiftStartTime >= s.shiftEndTime) {
         warning(i18nKeyContainer.errors.validation, {
           description: i18nKeyContainer.errors.validationDesc,
         });
@@ -215,10 +270,7 @@ export default function EditEmployeeGroupPage() {
           });
           return false;
         }
-        if (
-          s.endDayOffset === "0" &&
-          (s.breakStartTime >= s.breakEndTime)
-        ) {
+        if (s.endDayOffset === "0" && s.breakStartTime >= s.breakEndTime) {
           warning(i18nKeyContainer.errors.validation, {
             description: i18nKeyContainer.errors.validationDesc,
           });
@@ -312,8 +364,7 @@ export default function EditEmployeeGroupPage() {
 
   const isConfirmPending =
     toggleScheduleMutation.isPending ||
-    deleteScheduleMutation.isPending ||
-    deleteGroupMutation.isPending;
+    deleteScheduleMutation.isPending;
 
   if (isLoading || (isError && !group)) {
     return (
@@ -349,45 +400,88 @@ export default function EditEmployeeGroupPage() {
       {/* Header */}
       <div className="flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">{group.name}</h1>
+          <h1 className="text-2xl font-bold text-slate-900">{t(i18nKeyContainer.employeeGroups.editTitle)}</h1>
           <p className="text-slate-500">
-            {t(i18nKeyContainer.employeeGroups.editDescription)}
+            {group.name} {group.groupNumber ? `· #${group.groupNumber}` : ""}
           </p>
         </div>
-        <Button
-          type="button"
-          variant="outline"
-          onClick={() =>
-            setConfirmTarget({ kind: "delete-group", id: group.id, name: group.name })
-          }
-          className="border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
-        >
-          <Trash2 className="h-4 w-4" />
-          {t(i18nKeyContainer.common.delete)}
+        <Button variant="white" className="h-10" onClick={() => navigate(`/employee-groups/${group.id}`)}>
+          <ArrowLeft className="h-4 w-4 rtl:rotate-180" />
+          {t(i18nKeyContainer.common.back)}
         </Button>
       </div>
 
-      {/* Group Info — readonly */}
+      {/* Group Details — editable */}
       <Card className="border-slate-200 bg-white shadow-sm">
         <CardHeader>
           <CardTitle className="text-lg text-slate-900 flex items-center gap-2">
-            <ShieldCheck className="h-5 w-5 text-primary" />
-            {t(i18nKeyContainer.employees.view.personalInfoSection)}
+            <Shield className="h-5 w-5 text-primary" />
+            {t(i18nKeyContainer.employeeGroups.form.name)}
           </CardTitle>
-          <CardDescription>{group.description ?? "—"}</CardDescription>
+          <CardDescription>{t(i18nKeyContainer.employeeGroups.editDescription)}</CardDescription>
         </CardHeader>
-        <CardContent className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <InfoRow label={t(i18nKeyContainer.employeeGroups.list.name)} value={group.name} />
-          <InfoRow
-            label={t(i18nKeyContainer.employeeGroups.form.isSecurity)}
-            value={
-              group.isSecurity
-                ? t(i18nKeyContainer.common.active)
-                : t(i18nKeyContainer.common.inactive)
-            }
+        <CardContent className="space-y-5">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className="space-y-1.5">
+              <Label htmlFor="edit-name" className="text-sm font-medium text-slate-700">
+                {t(i18nKeyContainer.employeeGroups.form.name)} <span className="text-red-500">*</span>
+              </Label>
+              <input
+                id="edit-name"
+                value={detailName}
+                onChange={(e) => setDetailName(e.target.value)}
+                placeholder={t(i18nKeyContainer.employeeGroups.form.namePlaceholder)}
+                maxLength={100}
+                className={cn(
+                  "w-full h-11 rounded-lg border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm placeholder:text-slate-400 focus:bg-white focus:border-primary focus:ring-1 focus:ring-primary",
+                  detailErrors.name && "border-red-300 focus:border-red-500 focus:ring-red-500",
+                )}
+              />
+              {detailErrors.name && <p className="text-sm text-red-600">{detailErrors.name}</p>}
+            </div>
+
+            <div className="space-y-1.5 flex flex-col justify-end pb-1">
+              <Label htmlFor="edit-isSecurity" className="flex items-center gap-2 text-sm font-medium text-slate-700 cursor-pointer">
+                <Checkbox
+                  id="edit-isSecurity"
+                  checked={detailIsSecurity}
+                  onCheckedChange={(checked) => setDetailIsSecurity(checked === true)}
+                  className="h-4 w-4 rounded border-slate-300 text-primary focus:ring-primary"
+                />
+                {t(i18nKeyContainer.employeeGroups.form.isSecurity)}
+              </Label>
+            </div>
+          </div>
+
+          <TextArea
+            id="edit-description"
+            label={t(i18nKeyContainer.employeeGroups.form.description)}
+            value={detailDescription}
+            onChange={setDetailDescription}
+            placeholder={t(i18nKeyContainer.employeeGroups.form.descriptionPlaceholder)}
+            rows={3}
           />
-          <InfoRow label={t(i18nKeyContainer.employeeGroups.list.rotationStartDate)} value={group.rotationStartDate} />
-          <InfoRow label={t(i18nKeyContainer.employeeGroups.list.rotationsCount)} value={String(group.numberOfRotations)} />
+
+          <DateInput
+            id="edit-rotationStartDate"
+            label={t(i18nKeyContainer.employeeGroups.form.rotationStartDate)}
+            value={detailRotationStartDate}
+            onChange={setDetailRotationStartDate}
+            required
+            error={detailErrors.rotationStartDate}
+          />
+
+          <div className="flex justify-end">
+            <Button
+              type="button"
+              onClick={handleSaveDetails}
+              disabled={updateDetailsMutation.isPending}
+              className="h-10 px-6"
+            >
+              <Save className="h-4 w-4" />
+              {updateDetailsMutation.isPending ? t(i18nKeyContainer.common.saving) : t(i18nKeyContainer.common.save)}
+            </Button>
+          </div>
         </CardContent>
       </Card>
 
@@ -649,13 +743,13 @@ export default function EditEmployeeGroupPage() {
         </TabsContent>
       </Tabs>
 
-      {/* Actions */}
+      {/* Schedules & Rotations save */}
       <div className="flex gap-3 justify-end pb-4">
         <Button
           type="button"
           variant="white"
           className="h-11 px-6"
-          onClick={() => navigate("/employee-groups")}
+          onClick={() => navigate(`/employee-groups/${id}`)}
           disabled={saveMutation.isPending}
         >
           {t(i18nKeyContainer.common.cancel)}
@@ -672,17 +766,6 @@ export default function EditEmployeeGroupPage() {
             : t(i18nKeyContainer.common.save)}
         </Button>
       </div>
-
-      {/* Delete group confirmation */}
-      <ConfirmDeleteDialog
-        open={confirmTarget?.kind === "delete-group"}
-        onClose={() => !isConfirmPending && setConfirmTarget(null)}
-        onConfirm={() => confirmTarget?.kind === "delete-group" && deleteGroupMutation.mutate()}
-        title={t(i18nKeyContainer.employeeGroups.confirm.deleteTitle)}
-        description={t(i18nKeyContainer.employeeGroups.confirm.deleteDescription)}
-        itemName={confirmTarget?.kind === "delete-group" ? confirmTarget.name : undefined}
-        isLoading={deleteGroupMutation.isPending}
-      />
 
       {/* Delete schedule confirmation */}
       <ConfirmActionDialog
@@ -726,15 +809,6 @@ export default function EditEmployeeGroupPage() {
         itemName={rotationToDelete !== null ? `#${rotationToDelete}` : undefined}
         confirmAction={t(i18nKeyContainer.common.delete)}
       />
-    </div>
-  );
-}
-
-function InfoRow({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex items-center justify-between gap-4 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3">
-      <span className="text-sm text-slate-600">{label}</span>
-      <span className="text-sm font-medium text-slate-900 text-right">{value}</span>
     </div>
   );
 }

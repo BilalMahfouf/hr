@@ -1,5 +1,6 @@
 using Application.IntegrationTests.Infrastructure;
 using Application.IntegrationTests.TestBases;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Modules.Attendence.Application.AttendenceRerords;
 using Modules.Attendence.Application.Punches;
@@ -38,23 +39,6 @@ public sealed class PunchAndRecordQueryHandlerTests : AttendenceTestBase
         new(
             services.GetRequiredService<IAttendanceDbContext>(),
             services.GetRequiredService<IEmployeeApi>());
-
-    private static WorkScheduleReadDto DummySchedule() => new(
-        Guid.NewGuid(), Guid.NewGuid(),
-        new TimeOnly(9, 0), new TimeOnly(17, 0),
-        TimeSpan.FromHours(8), 0,
-        new TimeOnly(12, 0), new TimeOnly(13, 0),
-        5, 5, true,
-        DateTime.UtcNow.Date.AddHours(9), DateTime.UtcNow.Date.AddHours(17),
-        DateTime.UtcNow.Date.AddHours(12), DateTime.UtcNow.Date.AddHours(13),
-        EmployeeWorkStatus.Work);
-
-    private static EmployeeResponse Employee(int badge, string employeeId, string fullName) =>
-        new(
-            employeeId,
-            badge,
-            fullName,
-            DummySchedule());
 
     private static async Task<AttendenceMachine> SeedMachineAsync(
         IAttendanceDbContext db,
@@ -124,11 +108,10 @@ public sealed class PunchAndRecordQueryHandlerTests : AttendenceTestBase
         var punchA = await SeedPunchAsync(db, machineA.Id, 100, new DateTime(2026, 8, 20, 8, 0, 0, DateTimeKind.Utc));
         var punchB = await SeedPunchAsync(db, machineB.Id, 200, new DateTime(2026, 8, 20, 9, 0, 0, DateTimeKind.Utc));
 
-        EmployeeApi.Employees =
-        [
-            Employee(100, "E100", "Alice Smith"),
-            Employee(200, "E200", "Bob Jones")
-        ];
+        EmployeeRepository.AddEmployee(new Modules.Employees.Application.Abstractions.EmployeeDto(
+            "E100", "100", "GRP-01", "Alice Smith"));
+        EmployeeRepository.AddEmployee(new Modules.Employees.Application.Abstractions.EmployeeDto(
+            "E200", "200", "GRP-01", "Bob Jones"));
 
         var result = await handler.Handle(
             TableRequest<GetAllPunches.Response>.Create(10, 1),
@@ -157,11 +140,10 @@ public sealed class PunchAndRecordQueryHandlerTests : AttendenceTestBase
         await SeedPunchAsync(db, machine.Id, 100, new DateTime(2026, 8, 20, 8, 0, 0, DateTimeKind.Utc));
         await SeedPunchAsync(db, machine.Id, 200, new DateTime(2026, 8, 20, 9, 0, 0, DateTimeKind.Utc));
 
-        EmployeeApi.Employees =
-        [
-            Employee(100, "E100", "Alice Smith"),
-            Employee(200, "E200", "Bob Jones")
-        ];
+        EmployeeRepository.AddEmployee(new Modules.Employees.Application.Abstractions.EmployeeDto(
+            "E100", "100", "GRP-01", "Alice Smith"));
+        EmployeeRepository.AddEmployee(new Modules.Employees.Application.Abstractions.EmployeeDto(
+            "E200", "200", "GRP-01", "Bob Jones"));
 
         var result = await handler.Handle(
             TableRequest<GetAllPunches.Response>.Create(10, 1, "bob", "employeefullname", "asc"),
@@ -182,7 +164,8 @@ public sealed class PunchAndRecordQueryHandlerTests : AttendenceTestBase
         var machine = await SeedMachineAsync(db, "192.168.3.205");
         var punch = await SeedPunchAsync(db, machine.Id, 100, new DateTime(2026, 8, 20, 8, 0, 0, DateTimeKind.Utc));
 
-        EmployeeApi.Response = Result<EmployeeResponse>.Success(Employee(100, "E100", "Alice Smith"));
+        EmployeeRepository.AddEmployee(new Modules.Employees.Application.Abstractions.EmployeeDto(
+            "E100", "100", "GRP-01", "Alice Smith"));
 
         var result = await handler.Handle(
             new GetPunchById.Query(punch.Id),
@@ -221,7 +204,8 @@ public sealed class PunchAndRecordQueryHandlerTests : AttendenceTestBase
         var checkOut = new DateTime(2026, 8, 20, 16, 0, 0, DateTimeKind.Utc);
         var record = await SeedRecordAsync(db, machine.Id, "E100", checkIn, checkOut);
 
-        EmployeeApi.Employees = [Employee(100, "E100", "Alice Smith")];
+        EmployeeRepository.AddEmployee(new Modules.Employees.Application.Abstractions.EmployeeDto(
+            "E100", "100", "GRP-01", "Alice Smith"));
 
         var result = await handler.Handle(
             TableRequest<GetAllAttendanceRecords.Response>.Create(10, 1),
@@ -249,11 +233,10 @@ public sealed class PunchAndRecordQueryHandlerTests : AttendenceTestBase
         await SeedRecordAsync(db, machine.Id, "E100", new DateTime(2026, 8, 20, 8, 0, 0, DateTimeKind.Utc));
         await SeedRecordAsync(db, machine.Id, "E200", new DateTime(2026, 8, 20, 9, 0, 0, DateTimeKind.Utc));
 
-        EmployeeApi.Employees =
-        [
-            Employee(100, "E100", "Alice Smith"),
-            Employee(200, "E200", "Bob Jones")
-        ];
+        EmployeeRepository.AddEmployee(new Modules.Employees.Application.Abstractions.EmployeeDto(
+            "E100", "100", "GRP-01", "Alice Smith"));
+        EmployeeRepository.AddEmployee(new Modules.Employees.Application.Abstractions.EmployeeDto(
+            "E200", "200", "GRP-01", "Bob Jones"));
 
         var result = await handler.Handle(
             TableRequest<GetAllAttendanceRecords.Response>.Create(10, 1, "bob"),
@@ -278,7 +261,8 @@ public sealed class PunchAndRecordQueryHandlerTests : AttendenceTestBase
             "E100",
             new DateTime(2026, 8, 20, 8, 0, 0, DateTimeKind.Utc));
 
-        EmployeeApi.Response = Result<EmployeeResponse>.Success(Employee(100, "E100", "Alice Smith"));
+        EmployeeRepository.AddEmployee(new Modules.Employees.Application.Abstractions.EmployeeDto(
+            "E100", "100", "GRP-01", "Alice Smith"));
 
         var result = await handler.Handle(
             new GetAttendanceRecordById.Query(record.Id),
