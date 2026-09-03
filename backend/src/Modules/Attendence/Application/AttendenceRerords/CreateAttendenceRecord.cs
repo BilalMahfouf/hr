@@ -45,16 +45,12 @@ public static class CreateAttendenceRecord
                .OrderBy(e => e.PunchOccurredAt)
                .ToListAsync(cancellationToken);
 
-            var attendanceRecords = await db.AttendanceRecords
-                .Where(e => e.EmployeeId == employee.Value.EmployeeId &&
-                        e.CheckInAt.Date >= employee.Value.ShiftStartDateTime.ToUtc().Date &&
-                        e.CheckInAt.Date <= employee.Value.ShiftEndDateTime.ToUtc().Date)
-                .OrderBy(e => e.CheckInAt)
-                .ToListAsync(cancellationToken);
-            if (attendanceRecords.Any())
-            {
-                db.AttendanceRecords.RemoveRange(attendanceRecords);
-            }
+            await db.AttendanceRecords
+                           .Where(e => e.EmployeeId == employee.Value.EmployeeId &&
+                                   e.CheckInAt.Date >= employee.Value.ShiftStartDateTime.ToUtc().Date &&
+                                   e.CheckInAt.Date <= employee.Value.ShiftEndDateTime.ToUtc().Date)
+                           .OrderBy(e => e.CheckInAt)
+                           .ExecuteDeleteAsync();
 
             var newAttendanceRecords = new List<AttendanceRecord>();
             foreach (var punch in punches)
@@ -103,11 +99,13 @@ public static class CreateAttendenceRecord
                    .OrderBy(e => e.PunchOccurredAt)
                    .ToListAsync(cancellationToken);
 
-            var attendanceRecords = await db.AttendanceRecords
-                .Where(e => e.EmployeeId == employee.EmployeeId &&
-                        e.CheckInAt.Date == command.PunchOccurredAt.ToUtc().Date)
-                .OrderBy(e => e.CheckInAt)
-                .ToListAsync(cancellationToken);
+            await db.AttendanceRecords
+               .Where(e => e.EmployeeId == employee.EmployeeId &&
+                       e.CheckInAt.Date == command.PunchOccurredAt.ToUtc().Date)
+               .OrderBy(e => e.CheckInAt)
+               .ExecuteDeleteAsync();
+
+            List<AttendanceRecord> attendanceRecords = new();
             foreach (var punch in punches)
             {
                 var lastRecord = attendanceRecords
