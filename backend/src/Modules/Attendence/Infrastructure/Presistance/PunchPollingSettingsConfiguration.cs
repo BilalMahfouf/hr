@@ -17,18 +17,22 @@ public sealed class PunchPollingSettingsConfiguration
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.Id)
+            .HasColumnName("id")
             .HasConversion(
                 id => id.Value,
                 value => new PunchPollingSettingsId(value))
             .ValueGeneratedNever();
 
         builder.Property(x => x.IsEnabled)
+            .HasColumnName("is_enabled")
             .IsRequired();
 
         builder.Property(x => x.IntervalMinutes)
+            .HasColumnName("interval_minutes")
             .IsRequired();
 
         builder.Property(x => x.UpdatedAt)
+            .HasColumnName("updated_at")
             .IsRequired();
     }
 }
