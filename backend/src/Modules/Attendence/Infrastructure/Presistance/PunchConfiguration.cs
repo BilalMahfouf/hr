@@ -20,24 +20,29 @@ namespace Modules.Attendence.Infrastructure.Presistance
             builder.HasKey(x => x.Id);
 
             builder.Property(x => x.Id)
+                .HasColumnName("id")
                 .HasConversion(
                     id => id.Value,
                     value => new PunchId(value))
                 .ValueGeneratedNever();
 
             builder.Property(x => x.MachineId)
+                .HasColumnName("machine_id")
                 .HasConversion(
                     id => id.Value,
                     value => new MachineId(value))
                 .IsRequired();
 
             builder.Property(x => x.EmployeeBadge)
+                .HasColumnName("employee_badge")
                 .IsRequired();
 
             builder.Property(x => x.PunchOccurredAt)
+                .HasColumnName("punch_occurred_at")
                 .IsRequired();
 
             builder.Property(x => x.CreatedOnUtc)
+                .HasColumnName("created_on_utc")
                 .IsRequired();
 
             // Optional but highly recommended for attendance ingestion

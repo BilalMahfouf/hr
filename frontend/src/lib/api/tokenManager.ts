@@ -54,8 +54,8 @@ export const tokenManager = {
           { skipAuthRefresh: true } as any, // httpOnly cookie sent automatically
         );
 
-        if (response.status === 200 && response.data?.value?.token) {
-          const newToken: string = response.data.value.token;
+        if (response.status === 200 && response.data?.token) {
+          const newToken: string = response.data.token;
           tokenManager.setAccessToken(newToken);
           return newToken;
         }
@@ -83,6 +83,7 @@ function redirectToLogin() {
   const message = i18n.t(i18nKeyContainer.sessionExpiredMessage);
   toast.error(message);
   setTimeout(() => {
+    isRedirecting = false;
     window.location.href = '/login';
   }, 600);
 }
